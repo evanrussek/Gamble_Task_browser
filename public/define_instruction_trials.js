@@ -105,7 +105,7 @@ var corr_string = '{"Q0":' + '"'+options1a[correct1a]+'",' + '"Q1":' + '"'+optio
                         /* define instruction check block */
 var instructioncorrect = false;
 var instruction_check = {
-    type: "survey-multi-choice",
+    type: "evan-quiz",
     preamble: ["<p align='center'><b>Please answer every question. Answering 'I do not know' or answering incorrectly will require you return to the beginning of the instructions. </b></p>"],
     questions: [
         {prompt: "<b>Question 1</b>: What determines the bonus for this task?",
@@ -155,11 +155,11 @@ var conditional_splash1 = {
 
 
 var intro_w_trials = [];
-intro_w_trials.push(instruction_pages1a);
-intro_w_trials = intro_w_trials.concat(instruc1a_trials);
-intro_w_trials.push(instruction_pages1b);
-intro_w_trials = intro_w_trials.concat(instruc1b_trials);
-intro_w_trials.push(instruction_pages1c);
+//intro_w_trials.push(instruction_pages1a);
+//intro_w_trials = intro_w_trials.concat(instruc1a_trials);
+//intro_w_trials.push(instruction_pages1b);
+////intro_w_trials = intro_w_trials.concat(instruc1b_trials);
+//intro_w_trials.push(instruction_pages1c);
 intro_w_trials.push(instruction_check);
 intro_w_trials.push(conditional_splash1);
 

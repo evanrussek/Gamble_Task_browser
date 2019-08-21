@@ -321,18 +321,6 @@ all_win_trials = jsPsych.randomization.repeat(all_win_trials,1);
 // the task is 168 trials...
 
 
-// add random reward quizes into choice_trial quizes
-//var t_new1 = 0;
-//var a = all_win_trials.length;
-//for (var t = 1; t < a; t++){
-//  t_new1 = t_new1 + 1;
-//  if (Math.random() < 1/8){
-//    var quiz = rand_gen_rew_quiz_main();
-//    all_win_trials.splice(t_new1,0, quiz[0], quiz[1]);
-//    t_new1 = t_new1 + 1;
-//  }
-//}
-
 
 var all_trials = []
 
@@ -425,37 +413,17 @@ if (loss_first){
 }
 
 
-// make the matched trials...
-// loop through trigger vals and p_os, gain, loss
-
-// 280 trials...
-//var all_trials = all_win_trials;
-//var all_trials_shuff =  all_trials.slice(0,2);
-// add trial_number
-// should we be counterbalancing order in some way? // also want a few breaks maybe
 var main_task = all_trials; //jsPsych.randomization.repeat(all_trials, 1);
 //var all_trials_shuff = all_trials;
 // insert a half way through
 
 for (var tn = 0; tn < main_task.length; tn++){
-  console.log(tn);
   var b = tn;
   if (main_task[tn].type == "evan-run-trial"){
     main_task[tn].data.trial_num = b+1;
   }
 }
 
-// add random reward quizes into choice_trial quizes
-//var t_new1 = 0;
-//var a = main_task.length;
-//for (var t = 1; t < a; t++){
-//  t_new1 = t_new1 + 1;
-//  if (Math.random() < 1/8){
-//    var quiz = rand_gen_rew_quiz_main();
-//    main_task.splice(t_new1,0, quiz[0], quiz[1]);
-//    t_new1 = t_new1 + 1;
-//  }
-//}
 
 // add more than just half way marks - maybe 1/4 parts
 quart_text = build_text_trial("Great job! You're a quarter of the way through this part of the task.","","",true);
