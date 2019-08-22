@@ -28,12 +28,12 @@ var define_parameters = function(exp_stage){
     var outcome_fadeout_time = 300;
   }else{
     // this seems good for now...
-    var pre_trial_time = 750; // this is the ITI
-    var info_time = 2500;
+    var pre_trial_time = 700; // this is the ITI
+    var info_time = 2000;
     var post_info_time = 800;
     var max_response_time = 5000;
     var outcome_time = 750;
-    var post_choice_time = 700;
+    var post_choice_time = 600;
     var choice_fadeout_time = 50;
     var outcome_fadein_time = 0;
     var outcome_fadeout_time = 50;

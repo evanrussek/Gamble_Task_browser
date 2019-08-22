@@ -52,6 +52,69 @@
 
 
 
+  // compute bonus for the main task...
+  var end_screen = {
+  	type: 'html-button-response',
+      timing_post_trial: 0,
+  	//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+      choices: ['End Task'],
+  /*	on_start: function(){
+  		var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('points_received').values
+  		practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
+  		practice_bonus_trial_points_avg =  arrAvg(practice_bonus_trial_points);
+  		practice_quiz_pct = jsPsych.data.get().filter({trial_type: 'evan-info-quiz'}).select('correct').mean();
+  		practice_quiz_pct = 100*practice_quiz_pct;
+  	}, */
+      is_html: true,
+      stimulus: function(){
+  		var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('points_received').values
+  		if (point_vals.length > 0){
+  			var practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
+  			var practice_bonus_trial_points_avg =  Math.round(arrAvg(practice_bonus_trial_points));
+  			var practice_quiz_pct = jsPsych.data.get().filter({trial_type: 'evan-info-quiz'}).select('correct').mean();
+  			var practice_quiz_pct = Math.round(100*practice_quiz_pct);
+  		} else{
+  			var practice_bonus_trial_points_avg= 0
+  			var practice_quiz_pct = 0;
+  		}
+
+
+  		var test_point_vals = jsPsych.data.get().filterCustom(function(trial){
+  											return ((trial.points_received != null) & (trial.phase == 'TEST'));
+  										}).select('points_received').values
+  		if (test_point_vals.length > 0){
+  			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 4)
+  			var test_bonus_trial_points_avg =  Math.round(arrAvg(rand_test_point_vals));
+  			var test_quiz_perf = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').mean()
+  			var test_quiz_pct = Math.round(100*test_quiz_perf);
+  		}else{
+  			var test_quiz_pct = 0;
+  			var test_bonus_trial_points_avg = 0;
+  		}
+
+  		// write this data
+  		var bonus_data = {
+  			'practice_quiz_pct': practice_quiz_pct,
+  			'practice_bonus_trial_points_avg': practice_bonus_trial_points_avg,
+  			'test_quiz_pct': test_quiz_pct,
+  			'test_bonus_trial_points_avg': test_bonus_trial_points_avg
+  		};
+  		jsPsych.data.write(bonus_data)
+
+  		var string = 'You have finished the task. Thank you for your contribution to science! \
+  		 			For the attention checks in the first task, you got ' + practice_quiz_pct + ' percent correct. \
+  					On four randomly selected choice games from the first task the average number of points you collected was ' + practice_bonus_trial_points_avg + '. \
+  					For the attention checks in the second task, you got ' + test_quiz_pct + ' percent correct. On four randomly selected games from the second task, \
+  					the average number of points you collected was '  + test_bonus_trial_points_avg + '. \
+  					 Your bonus will be based on these results. You should receive your payment and bonus shortly.';
+
+  		return string;
+  	}
+  }
+
+
+
+
 // put together the full timeline
  timeline = [];
  timeline.push(full_screen);
@@ -60,6 +123,9 @@
  timeline = timeline.concat(instruc_timeline2);
  timeline = timeline.concat(task2_timeline);
  timeline.push(end_screen);
+
+
+
 
 
 

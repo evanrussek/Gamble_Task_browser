@@ -324,7 +324,7 @@ all_win_trials = jsPsych.randomization.repeat(all_win_trials,1);
 
 var all_trials = []
 
-//var loss_first = true;
+var loss_first = (Math.random() < .5);
 // want to counterbalance which comes first
 if (loss_first){
   for (var i = 0; i < 6; i++){
@@ -426,9 +426,9 @@ for (var tn = 0; tn < main_task.length; tn++){
 
 
 // add more than just half way marks - maybe 1/4 parts
-quart_text = build_text_trial("Great job! You're a quarter of the way through this part of the task.","","",true);
-half_way_txt = build_text_trial("Great job! You're half way through this part of the task.","","",true);
-three_quart_text = build_text_trial("Great job! You're three quarters of the way through this part of the task.","","",true);
+quart_text = build_text_trial("Great job! You're a quarter of the way through this task.","","",true);
+half_way_txt = build_text_trial("Great job! You're half way through this task.","","",true);
+three_quart_text = build_text_trial("Great job! You're three quarters of the way through this task.","","",true);
 
 main_task.splice(Math.round(main_task.length/4), 0, quart_text)
 main_task.splice(Math.round(main_task.length/2)+1, 0, half_way_txt)

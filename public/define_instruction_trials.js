@@ -102,6 +102,15 @@ var corr_string = '{"Q0":' + '"'+options1a[correct1a]+'",' + '"Q1":' + '"'+optio
     '"Q4":' + '"'+options5a[correct5a]+'",' + '"Q5":' + '"'+options6a[correct6a]+'",'
      + '"Q6":' + '"'+options7a[correct7a]+'"' + '}';
 
+var questions1_arr = ["What determines the bonus for this task?",
+		"How does collecting positive point and negative point banknotes affect your bonus?",
+		"How many banknotes are in this task?",
+		"How many slot machines are in this task?",
+		"How do different slot machines produce different banknotes?",
+		"Do the chances that a given slot machine will produce a certain banknote change over the course of the task?",
+		"What determines the point value of a banknote on a choice game?"];
+
+
                         /* define instruction check block */
 var instructioncorrect = false;
 var instruction_check = {
@@ -126,12 +135,26 @@ var instruction_check = {
         on_finish: function(data) {
             console.log(data.responses)
             console.log(corr_string)
-            if( data.responses == corr_string) {
+            if( data.responses == corr_string){
                 action = false;
                 instructioncorrect = true;
-            }
+								data.incor_questions;
+            }else{
+							var post_choices = data.choice_idxs
+							// this is global
+							incor_questions = ['<br> </br'];
+							var correct_choices = [correct1a, correct2a, correct3a, correct4a, correct5a, correct6a, correct7a];
+							for (var i = 0; i < correct_choices.length; i++){
+								if (correct_choices[i] != post_choices[i]){
+									incor_questions.push('<br>' + questions1_arr[i] + '</br>');
+								}
+							}
+							data.incor_questions = incor_questions;
+							//alert('The following questions were answered incorrectly: ' + incor_choices)
+						}
         }
     }
+
 
 /* define a page for the incorrect response */
 var showsplash = true;
@@ -141,7 +164,11 @@ var splash_screen = {
 	//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
     choices: ['Click here to read the instructions again'],
     is_html: true,
-    stimulus: 'At least one of your answers was either incorrect or you answered "I do not know".'
+    stimulus: function(){
+			var incor_q = jsPsych.data.get().last(1).select('incor_questions').values
+			var next_stimulus = 'The following questions were answered incorrectly: ' + incor_q;
+			return next_stimulus
+		}
 }
 
 /* ...but push it to a conditional node that only shows it if the response was wrong */
@@ -155,11 +182,11 @@ var conditional_splash1 = {
 
 
 var intro_w_trials = [];
-//intro_w_trials.push(instruction_pages1a);
-//intro_w_trials = intro_w_trials.concat(instruc1a_trials);
-//intro_w_trials.push(instruction_pages1b);
-////intro_w_trials = intro_w_trials.concat(instruc1b_trials);
-//intro_w_trials.push(instruction_pages1c);
+intro_w_trials.push(instruction_pages1a);
+intro_w_trials = intro_w_trials.concat(instruc1a_trials);
+intro_w_trials.push(instruction_pages1b);
+intro_w_trials = intro_w_trials.concat(instruc1b_trials);
+intro_w_trials.push(instruction_pages1c);
 intro_w_trials.push(instruction_check);
 intro_w_trials.push(conditional_splash1);
 
@@ -189,7 +216,7 @@ var finish_instruc1_screen = {
 	//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
     choices: ['Begin the first task!'],
     is_html: true,
-    stimulus: 'You passed the quiz! Great work. The first task will take about 35 minutes. Press the button to begin.'
+    stimulus: 'You passed the quiz! Great work. The first task will take about 30 minutes. Press the button to begin.'
 }
 instruc_timeline1.push(finish_instruc1_screen);
 // add a prompt to the feedback screen?
@@ -290,9 +317,18 @@ var corr2_string = '{"Q0":' + '"'+options1b[correct1b]+'",' + '"Q1":' + '"'+opti
     '"Q4":' + '"'+options5b[correct5b]+'",' + '"Q5":' + '"'+options6b[correct6b]+'",'
      + '"Q6":' + '"'+options7b[correct7b]+'"' + '}';
 
+var questions2_arr = ["How many banknotes are in this task?",
+										"How many slot machines are in this task?",
+									 	"What happens if you accept a slot machine?",
+									 "What happens if you reject a slot machine?",
+									 "Will the chances of getting a certain banknote after accepting a given slot machine change over the course of the task?",
+									 "Are the chances of getting a certain banknote after accepting a given slot machine different in this task than they were in the last task?",
+									 "What determines my bonus in this task?"
+								 ];
+
 var instruction2correct = false;
 var instruction2_check = {
-    type: "survey-multi-choice",
+    type: "evan-quiz",
     preamble: ["<p align='center'><b>Please answer every question. Answering 'I do not know' or answering incorrectly will require you return to the beginning of the instructions. </b></p>"],
     questions: [
         {prompt: "<b>Question 1</b>: How many banknotes are in this task?",
@@ -310,17 +346,42 @@ var instruction2_check = {
         {prompt: "<b>Question 7</b>: What determines my bonus in this task?",
                                 options: options7b, required: true}
 				],
-        on_finish: function(data) {
-            if( data.responses == corr2_string) {
+				on_finish: function(data) {
+            if( data.responses == corr2_string){
                 action = false;
                 instruction2correct = true;
-            }
-        }
+            }else{
+							var post_choices = data.choice_idxs
+							// this is global
+							incor_questions = ['<br> </br'];
+							var correct_choices = [correct1b, correct2b, correct3b, correct4b, correct5b, correct6b, correct7b];
+							for (var i = 0; i < correct_choices.length; i++){
+								if (correct_choices[i] != post_choices[i]){
+									incor_questions.push('<br>' + questions2_arr[i] + '</br>');
+								}
+							}
+							data.incor_questions = incor_questions;
+							//alert('The following questions were answered incorrectly: ' + incor_choices)
+						}
+					}
     }
+
+var splash_screen2 = {
+			type: 'html-button-response',
+		    timing_post_trial: 0,
+			//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
+		    choices: ['Click here to read the instructions again'],
+		    is_html: true,
+		    stimulus: function(){
+					var incor_q = jsPsych.data.get().last(1).select('incor_questions').values
+					var next_stimulus = 'The following questions were answered incorrectly: ' + incor_q;
+					return next_stimulus
+				}
+		}
 
 	/* ...but push it to a conditional node that only shows it if the response was wrong */
 	var conditional_splash2 = {
-	  timeline: [splash_screen],
+	  timeline: [splash_screen2],
 	  conditional_function: function(data) {
 		return !instruction2correct // skip if correct
 	  }
@@ -333,7 +394,7 @@ var instruction2_check = {
 		//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
 	    choices: ['Begin the second task!'],
 	    is_html: true,
-	    stimulus: 'You passed the quiz! Great work. This task will take about 45 minutes. Press the button to begin.'
+	    stimulus: 'You passed the quiz! Great work. This task will take about 40 minutes. Press the button to begin.'
 	}
 
 
@@ -373,63 +434,3 @@ var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('poin
 var practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
 practice_bonus_trial_points =  arrAvg(practice_bonus_trial_points);
 // how correct were they on check trials?
-
-// compute bonus for the main task...
-var end_screen = {
-	type: 'html-button-response',
-    timing_post_trial: 0,
-	//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
-    choices: ['End Task'],
-/*	on_start: function(){
-		var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('points_received').values
-		practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
-		practice_bonus_trial_points_avg =  arrAvg(practice_bonus_trial_points);
-		practice_quiz_pct = jsPsych.data.get().filter({trial_type: 'evan-info-quiz'}).select('correct').mean();
-		practice_quiz_pct = 100*practice_quiz_pct;
-	}, */
-    is_html: true,
-    stimulus: function(){
-		var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('points_received').values
-		if (point_vals.length > 0){
-			var practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
-			var practice_bonus_trial_points_avg =  Math.round(arrAvg(practice_bonus_trial_points));
-			var practice_quiz_pct = jsPsych.data.get().filter({trial_type: 'evan-info-quiz'}).select('correct').mean();
-			var practice_quiz_pct = Math.round(100*practice_quiz_pct);
-		} else{
-			var practice_bonus_trial_points_avg= 0
-			var practice_quiz_pct = 0;
-		}
-
-
-		var test_point_vals = jsPsych.data.get().filterCustom(function(trial){
-											return ((trial.points_received != null) & (trial.phase == 'TEST'));
-										}).select('points_received').values
-		if (test_point_vals.length > 0){
-			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 4)
-			var test_bonus_trial_points_avg =  Math.round(arrAvg(rand_test_point_vals));
-			var test_quiz_perf = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').mean()
-			var test_quiz_pct = Math.round(100*test_quiz_perf);
-		}else{
-			var test_quiz_pct = 0;
-			var test_bonus_trial_points_avg = 0;
-		}
-
-		// write this data
-		var bonus_data = {
-			'practice_quiz_pct': practice_quiz_pct,
-			'practice_bonus_trial_points_avg': practice_bonus_trial_points_avg,
-			'test_quiz_pct': test_quiz_pct,
-			'test_bonus_trial_points_avg': test_bonus_trial_points_avg
-		};
-		jsPsych.data.write(bonus_data)
-
-		var string = 'You have finished the task. Thank you for your contribution to science! \
-		 			For the attention checks in the first task, you got ' + practice_quiz_pct + ' percent correct. \
-					On four randomly selected choice games from the first task the average number of points you collected was ' + practice_bonus_trial_points_avg + '. \
-					For the attention checks in the second task, you got ' + test_quiz_pct + ' percent correct. On four randomly selected games from the second task, \
-					the average number of points you collected was '  + test_bonus_trial_points_avg + '. \
-					 Your bonus will be based on these results. You should receive your payment and bonus shortly.';
-
-		return string;
-	}
-}

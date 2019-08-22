@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My experiment</title>
+    <title>Task</title>
     <script type = "text/javascript" src = "index.js"></script>
     <script src="jspsych-6.0.5/jspsych.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-html-keyboard-response.js"></script>
@@ -23,7 +23,12 @@
     <link rel='stylesheet' type='text/css' href='style.css'>
     <script type="text/javascript" src="jspsych-6.0.5/d3.min.js"></script>
   </head>
-  <body></body>
+  <body>
+    <div class="form" id="mainSection">
+            <header class="form__header" id="header"><h2 id="header_title" class="form__title"></h2></header>
+            <section class="mainInstructions" id="consent"></section>
+      </div>
+  </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
 <!--  <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase.js"></script> -->
   <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-app.js"></script>
@@ -58,6 +63,8 @@
   <script type="text/javascript" src="define_trials.js"></script>
   <script type="text/javascript" src="define_instruction_trials.js"></script>
   <script type="text/javascript" src="index.js"></script>
+  <script src="https://browser.sentry-cdn.com/4.4.1/bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 
 </html>
