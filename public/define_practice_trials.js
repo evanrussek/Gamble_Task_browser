@@ -69,7 +69,7 @@ var build_text_trial = function(line_1,line_2,line_3, wait_for_press){
     line_2: line_2,
     line_3: line_3,
     wait_for_press: wait_for_press,
-    data: {phase: 'TRAIN INFO'}
+    data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
   }
   return text_trial;
 }

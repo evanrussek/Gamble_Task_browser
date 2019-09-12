@@ -4,7 +4,7 @@
 
 jsPsych.plugins["evan-display-text"] = (function() {
 
-  var plugin = {};
+  var plugin = {}; ///
 
   plugin.info = {
     name: "evan-display-text",
