@@ -1,15 +1,10 @@
 var safe_name = outcome_names[2];
 // for two-stim choice add parameter for whether to limit choice time.
-var instruction_pages_1a = ['Stimuli/Evan_Stimuli/Slide1.JPG',
-                            'Stimuli/Evan_Stimuli/Slide2.JPG',
-                            'Stimuli/Evan_Stimuli/Slide3.JPG',
-														'Stimuli/Evan_Stimuli/Slide4.JPG'];
+var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide1.JPG',
+                            'Stimuli/uws_instr_slides_ver2_jpg/Slide2.JPG',
+                            'Stimuli/uws_instr_slides_ver2_jpg/Slide3.JPG'];
 
-var instruction_pages_1b = ['Stimuli/Evan_Stimuli/Slide6.JPG',
-														'Stimuli/Evan_Stimuli/Slide7.JPG'
-													];
-
-
+var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG'
 
 var outcome_state_idx = both_idx_vec[cond_idx][1];
 
@@ -21,10 +16,6 @@ var pages1a = [];
 for (var i = 0; i < instruction_pages_1a.length; i++){
     pages1a.push('<img src= "'+ instruction_pages_1a[i] +  '" alt = "" >')
 }
-var pages1b = [];
-for (var i = 0; i < instruction_pages_1b.length; i++){
-    pages1b.push('<img src= "'+ instruction_pages_1b[i] +  '" alt = "" >')
-}
 
 
 var instruction_pages1a = {
@@ -33,17 +24,9 @@ var instruction_pages1a = {
     show_clickable_nav: true
 }
 
-var instruction_pages1b = {
-    type: 'instructions',
-    pages: pages1b,
-    show_clickable_nav: true
-}
 
 
-var instruc1a_trials = jsPsych.randomization.repeat([build_practice_trial_stg1(1,.2,true,false), build_practice_trial_stg1(2,.4,true,false),
-    build_practice_trial_stg1(3,.6,true,false), build_practice_trial_stg1(4,.8,true,false)],1);
-
-instruc1a_trials.splice(2,0,rand_gen_info_quiz());
+//instruc1a_trials.splice(2,0,rand_gen_info_quiz());
 
 
 // define the instruction quiz...
@@ -145,18 +128,24 @@ var conditional_splash1 = {
   }
 }
 
-
-
 var intro_w_trials = [];
 intro_w_trials.push(instruction_pages1a);
-intro_w_trials = intro_w_trials.concat(instruc1a_trials);
-intro_w_trials.push(instruction_pages1b);
-intro_w_trials.push(instruction_check);
-intro_w_trials.push(conditional_splash1);
+var n_rounds = 12;
+for (var i = 0; i < n_rounds; i++){
+	var schematic = {
+	    type: 'instructions',
+	    pages: ['<img src= "'+ schematic_slide +  '" alt = "" >'],
+	    show_clickable_nav: true
+	}
+	intro_w_trials.push(schematic);
+	var quiz_trials = make_struc_quiz_block(i + 1);
+	intro_w_trials = intro_w_trials.concat(quiz_trials);
+}
+
+//intro_w_trials = intro_w_trials.concat(instruc1a_trials);
 
 var introloop = [];
 introloop.push(instruction_pages1a);
-introloop.push(instruction_pages1b);
 introloop.push(instruction_check);
 introloop.push(conditional_splash1);
 /* finally, add the entirety of this introductory section to a loop node ... */
@@ -170,7 +159,7 @@ var loop_node = {
 	return !instructioncorrect // stop looping if correct
 	}
 }
-intro_w_trials.push(loop_node);
+//intro_w_trials.push(loop_node);
 var instruc_timeline1 = intro_w_trials;
 
 var finish_instruc1_screen = {
@@ -181,16 +170,16 @@ var finish_instruc1_screen = {
     is_html: true,
     stimulus: 'You passed the quiz! Great work. The first task will take about 30 minutes. Press the button to begin.'
 }
-instruc_timeline1.push(finish_instruc1_screen);
+//instruc_timeline1.push(finish_instruc1_screen);
 // add a prompt to the feedback screen?
 
 instruc2_timeline_w_trials = [];
-var instruction_pages_2a = ['Stimuli/Evan_Stimuli/Slide8.JPG',
-                            'Stimuli/Evan_Stimuli/Slide9.JPG',
-                            'Stimuli/Evan_Stimuli/Slide10.JPG',
-														'Stimuli/Evan_Stimuli/Slide11.JPG']
-var instruction_pages_2b = ['Stimuli/Evan_Stimuli/Slide13.JPG'];
-var instruction_pages_2c = ["Stimuli/Evan_Stimuli/Slide15.JPG"];
+var instruction_pages_2a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide5.JPG',
+                            'Stimuli/uws_instr_slides_ver2_jpg/Slide6.JPG',
+                            'Stimuli/uws_instr_slides_ver2_jpg/Slide7.JPG',
+														'Stimuli/uws_instr_slides_ver2_jpg/Slide8.JPG']
+var instruction_pages_2b = ['Stimuli/uws_instr_slides_ver2_jpg/Slide10.JPG'];
+var instruction_pages_2c = ["Stimuli/uws_instr_slides_ver2_jpg/Slide12.JPG"];
 
 var pages2a = [];
 for (var i = 0; i < instruction_pages_2a.length; i++){
@@ -297,8 +286,8 @@ var questions2_arr = ["How many banknotes are in this task?",
 									 	"What happens if you accept a slot machine?",
 									 "What happens if you reject a slot machine?",
 									 "Will the chances of getting a certain banknote after accepting a given slot machine change over the course of the task?",
-									 "Are the chances of getting a certain banknote after accepting a given slot machine different in this task than they were in the last task?",
-									 "What determines my bonus in this task?",
+ 								 	"Are the chances of getting a certain banknote after accepting a given slot machine different than what you were tested on in the last task?",
+ 									 "What determines my bonus in this task?",
 									 "How does collecting positive point and negative point banknotes affect your bonus?"
 								 ];
 
@@ -317,7 +306,7 @@ var instruction2_check = {
                         options: options4b, required: true},
         {prompt: "<b>Question 5</b>: Will the chances of getting a certain banknote after accepting a given slot machine change over the course of the task?",
                         options: options5b, required: true},
-        {prompt: "<b>Question 6</b>: Are the chances of getting a certain banknote after accepting a given slot machine different in this task than they were in the last task?",
+        {prompt: "<b>Question 6</b>: Are the chances of getting a certain banknote after accepting a given slot machine different than what you were tested on in the last task?",
                     options: options6b, required: true},
         {prompt: "<b>Question 7</b>: What determines my bonus in this task?",
                                 options: options7b, required: true},

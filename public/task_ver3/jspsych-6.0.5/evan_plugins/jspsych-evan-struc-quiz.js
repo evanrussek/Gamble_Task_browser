@@ -80,16 +80,16 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
       place_text(txt_q, 'Prompt', q_text_x, q_text_y, par.text_font_size/2, 1, "White");
 
       // place the money...
-      place_img_bkg("info",2*par.w/3 - .8*par.img_bkg_width/2, 1.65*par.h/5 - .8*par.img_bkg_height/2, .8*par.img_bkg_width,.8*par.img_bkg_height,par.img_bkg_color,1);
-      place_img(trial.outcome_image, "info", 2*par.w/3 - .8*par.image_width,  1.65*par.h/5 - .8*par.image_height/2, .8*par.image_width, .8*par.image_height, 1);
+      place_img_bkg("info",2*par.w/3 - .8*par.img_bkg_width/2, 1.7*par.h/5 - .8*par.img_bkg_height/2, .8*par.img_bkg_width,.8*par.img_bkg_height,par.img_bkg_color,1);
+      place_img(trial.outcome_image, "info", 2*par.w/3 - .8*par.image_width,  1.7*par.h/5 - .8*par.image_height/2, .8*par.image_width, .8*par.image_height, 1);
 
       var img_bkg_width = par.choice_stim_bkg_width/2;
       var img_bkg_height = par.choice_stim_bkg_height/2;
       var choice_img_width = par.choice_stim_width/2;
       var choice_img_height = par.choice_stim_height/2;
       // place the slot machine...
-      place_img_bkg("choice_stim",par.w/3 - img_bkg_height/2 ,1.65*par.h/5 - img_bkg_height/2, img_bkg_width,img_bkg_height, par.choice_stim_bkg_color, 1);
-      place_img(trial.choice_image, "choice_stim cL", par.w/3 - choice_img_width/2, 1.65*par.h/5 - choice_img_height/2, choice_img_width,choice_img_height,1);
+      place_img_bkg("choice_stim",par.w/3 - img_bkg_height/2 ,1.7*par.h/5 - img_bkg_height/2, img_bkg_width,img_bkg_height, par.choice_stim_bkg_color, 1);
+      place_img(trial.choice_image, "choice_stim cL", par.w/3 - choice_img_width/2, 1.7*par.h/5 - choice_img_height/2, choice_img_width,choice_img_height,1);
 
       d3.select("svg").append("line")
                       .attr("x1",par.w/3 + 2*img_bkg_height/3 )
@@ -110,7 +110,7 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
     var box_height = par.w/10;
     var box_x = [prob_x[0] - box_width/2, prob_x[1] - box_width/2,
                   prob_x[2] - box_width/2, prob_x[3] - box_width/2];
-    var box_y = 2*par.h/3 - box_height/2;
+    var box_y = 24*par.h/40 - box_height/2;
 
     for (var i = 0; i < 4; i++){
       var k = i+1;
@@ -118,17 +118,17 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
     }
 
     for (var i = 0; i < 4; i++){
-      place_text(prob_vals[i], 'Prompt', prob_x[i], 2*par.h/3, par.text_font_size/2, 1, "Yellow");
+      place_text(100*prob_vals[i] + '%', 'Prompt', prob_x[i], 24*par.h/40, par.text_font_size/2, 1, "Yellow");
     }
 
     // place key under it
     var key_vals = [1, 2, 3, 4];
 
     for (var i = 0; i < 4; i++){
-      place_text(key_vals[i], 'Prompt', prob_x[i], 22.5*par.h/40, par.text_font_size/3, 1, "White");
+      place_text(key_vals[i], 'Prompt', prob_x[i], 2*par.h/3, par.text_font_size/3, 1, "White");
     }
 
-    place_text('Key Press ', 'Prompt', par.w/2, 23.5*par.h/40, par.text_font_size/3, 1, "White");
+    place_text('Key Press ', 'Prompt', par.w/2, 2.2*par.h/3, par.text_font_size/3, 1, "White");
 
 
       var handle_response = function(info){
@@ -142,7 +142,11 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
         console.log(bkg_class)
         d3.select(bkg_class).style("opacity",1);
 
-        if (shuffledInds[parseInt(choice_char)-1] == 0){
+        // here... add correct / incorrect - it's based on the prob that was chosen...
+        chosen_p = prob_vals[parseInt(choice_char)-1];
+        //console.log(chosen_p)
+        //console.log(trial.correct_p)
+        if (Math.abs(chosen_p - trial.correct_p) < .0001){
           correct = 1;
           wait_for_time(par.quiz_pause_resp_time,function(){place_text('CORRECT!', 'Prompt', par.w/2, 29*par.h/40, par.text_font_size, 1, "Red")})
           wait_for_time(par.quiz_pause_resp_time + par.quiz_feedback_time,end_trial)
@@ -169,6 +173,7 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
           key: null
         };
         var correct = null;
+        var chosen_p = null;
 
           /// stage 4 - end trial, save data,
           var end_trial = function(){
@@ -180,8 +185,9 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
 
             var trial_data = {
               "outcome_image": trial.outcome_image,
-              "outcome_val": trial.outcome_val,
-              "outcome_name": trial.outcome_name,
+              "choice_image": trial.choice_image,
+              "correct_p": trial.correct_p,
+              "chosen_p": chosen_p,
               "correct": correct,
               "rt": response.rt,
               "key": response.key

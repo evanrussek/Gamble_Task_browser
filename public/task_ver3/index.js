@@ -11,12 +11,10 @@ firebase.firestore().enablePersistence().catch(function(err) {
     }
 });
 
-
 firebase.auth().signInAnonymously();
 
 // User ID
 var uid;
-
 
 // Consent form
 var check_consent = function (elem) {
@@ -61,7 +59,13 @@ function task(uid){
     var db = firebase.firestore();
 
     console.log(uid)
-    db.collection('gambletask').doc('run2').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).set({
+    db.collection('gambletask').doc('run3_v').collection('subjects').doc(uid).set({
+        last_subjectID: subjectID,  // this refers to the subject's ID from prolific
+        last_date: new Date().toLocaleDateString(),
+        last_time: new Date().toLocaleTimeString()
+    })
+
+    db.collection('gambletask').doc('run3_v').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).set({
         subjectID: subjectID,  // this refers to the subject's ID from prolific/
         date: new Date().toLocaleDateString(),
         start_time: new Date().toLocaleTimeString(),
@@ -86,7 +90,7 @@ function task(uid){
     all_task_images = all_task_images.concat(pos_outcome_images);
     all_task_images = all_task_images.concat(pos_choice_images);
     all_task_images = all_task_images.concat(instruction_pages_1a);
-    all_task_images = all_task_images.concat(instruction_pages_1b);
+    all_task_images = all_task_images.concat(schematic_slide);
     all_task_images = all_task_images.concat(instruction_pages_2a);
     all_task_images = all_task_images.concat(instruction_pages_2b);
     all_task_images = all_task_images.concat(instruction_pages_2c);
@@ -101,7 +105,7 @@ function task(uid){
          choices: ['End Task'],
      	on_start: function(){
             var task_data = jsPsych.data.get().json();
-            db.collection('gambletask').doc('run2').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).update({
+            db.collection('gambletask').doc('run3_v').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).update({
                 task_data: task_data})
             },
          is_html: true,
@@ -140,7 +144,7 @@ function task(uid){
      		};
      		jsPsych.data.write(bonus_data)
             var task_data = jsPsych.data.get().json();
-            db.collection('gambletask').doc('run2').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).update({
+            db.collection('gambletask').doc('run3_v').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).update({
                 bonus_data: bonus_data,
                 end_time: new Date().toLocaleTimeString()})
      		var string = 'You have finished the task. Thank you for your contribution to science! \
@@ -158,8 +162,8 @@ function task(uid){
      // put together the full timeline
       timeline = [];
       timeline.push(full_screen);
-      timeline = timeline.concat(instruc_timeline1); // put this back later!!!!
-      timeline = timeline.concat(task1_timeline);
+      timeline = timeline.concat(instruc_timeline1);
+      //timeline = timeline.concat(task1_timeline);
       timeline = timeline.concat(instruc_timeline2);
       timeline = timeline.concat(task2_timeline);
       //timeline = task2_timeline.slice(0,2);
@@ -185,7 +189,6 @@ function task(uid){
      }
     });
 }
-
 
 document.getElementById('header_title').innerHTML = "Welcome";
 document.getElementById('consent').innerHTML = "        <p><b>Who is conducting this research study?</b><p>\n" +
@@ -215,8 +218,8 @@ document.getElementById('consent').innerHTML = "        <p><b>Who is conducting 
     "\n" +
     "        <p><b>What will happen to me if I take part?</b><p>\n" +
     "        <p>\n" +
-    "            You will play one or more online computer games, which will last approximately 90 minutes. You will receive\n" +
-    "            at least £6.50 per hour for helping us out with an opportunity for an additional bonus depending on your choices. The amount may vary with the decisions you make in the games.\n" +
+    "            You will play one or more online computer games, which will last approximately 65 minutes. You will receive\n" +
+    "            at least £6.50 per hour for helping us out with an opportunity for an additional bonus of up to £3.00 depending on your choices. The amount may vary with the decisions you make in the games.\n" +
     "            Remember, you are free to withdraw at any time without giving a reason.\n" +
     "        </p>\n" +
     "\n" +
