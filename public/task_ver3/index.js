@@ -219,7 +219,7 @@ document.getElementById('consent').innerHTML = "        <p><b>Who is conducting 
     "        <p><b>What will happen to me if I take part?</b><p>\n" +
     "        <p>\n" +
     "            You will play one or more online computer games, which will last approximately 65 minutes. You will receive\n" +
-    "            at least £6.50 per hour for helping us out with an opportunity for an additional bonus of up to £3.00 depending on your choices. The amount may vary with the decisions you make in the games.\n" +
+    "            at least £6.50 per hour for helping us out with an opportunity for an additional bonus depending on your choices. The amount may vary with the decisions you make in the games.\n" +
     "            Remember, you are free to withdraw at any time without giving a reason.\n" +
     "        </p>\n" +
     "\n" +
