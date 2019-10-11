@@ -83,6 +83,8 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
   plugin.trial = function(display_element, trial) {
 
+
+
     var outcome_images = [trial.o1_image, trial.o2_image, trial.safe_image];
     var outcome_vals = [trial.o1_val, trial.o2_val, trial.safe_val];
 
@@ -95,6 +97,8 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     //          trial.safe_image, trial.o1_val, trial.o2_val, trial.safe_val);
 
     var par = define_parameters(trial.exp_stage);
+
+
 
     if (show_diode){
       h_center = par.w/2 + 20;
@@ -131,7 +135,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     // functions to assist with callbacks after multiple transitions are run
     var setupMT = function(sel){
       counter = sel.size(); // set a function
-      console.log('counter_start:' + counter)
+      //console.log('counter_start:' + counter)
     }
     var onMT = function(next_fun){
       counter--;
@@ -288,9 +292,61 @@ jsPsych.plugins["evan-run-trial"] = (function() {
       place_info(0);
     }
 
+
+    // each time you end a stange, set frame_count to 0, and
+    // frame_count_stage to
+    // 0
+    // function for stopping the presentation
+
+    // special variables for requestAnimateFrame
+    var estimated_frame_duration = null;
+    var frame_count;
+    var frame_count_stage;
+    var frame_count_diode;
+
+    // function for easier update of stage variables
+    // so, we do this with frame counts --- timing stims is 
+    var update_stage_vars = function(timing_stim, timing_diode, txt, response_on = false) {
+        frame_count = 0;
+        frame_count_stage = Math.round(timing_stim / estimated_frame_duration);
+        frame_count_diode = Math.round(timing_diode / estimated_frame_duration);
+        txt_offset = txt;
+        if (response_on) {
+            diode_on = false;
+        } else {
+            diode_on = true;
+        }
+        // print stage info
+        if (verbose) {
+            console.log("---------- " + txt + " stage ---------")
+            console.log("Target frame count stage", frame_count_stage)
+            console.log("Target frame count diode", frame_count_diode)
+        };
+    };
+
+    var check_timeout = function(timestamp) {
+        frame_count++;
+        // diode specific timeout
+        if (frame_count >= frame_count_diode && diode_on) {
+            document.querySelector('#diode').remove();
+            data_temp[txt_offset + '_diode_offset'] = window.performance.now();
+            diode_on = false;
+            window.requestAnimationFrame(check_timeout);
+        // general stage timeout
+        } else if (frame_count >= frame_count_stage) {
+            next_stage();
+        // otherwise repeat the loop
+        } else {
+            window.requestAnimationFrame(check_timeout);
+        };
+    };  // end of the function
+
+
+
     ////// master function which runs the whole trial
     var trial_master = function(trial_stage){
-      console.log('trial_stage: ' + trial_stage)
+      // reset frame stuff...
+
 
       switch(trial_stage){
         // part 1 is stage 1
@@ -556,7 +612,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     }
     d3.select('svg').remove()
 
-    var trial_data = {
+    var trial_data = { // need to add timing to this.
       "stim_pos_y": stim_pos_y,
       "stim_pos_x": stim_pos_x,
       "first_stage": trial.first_stage,
@@ -599,9 +655,23 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     place_everything();
 
     // wait pretrial time sec (ITI), call trial master
-    jsPsych.pluginAPI.setTimeout(function() {
-       trial_master(trial.first_stage) //
-     }, par.pre_trial_time); // this is where the wait time goes
+    // h
+    // we use the allotted time to estimate the frame rate
+    //estimate_frame_rate(function(frame_rate){
+    //    estimated_frame_duration = frame_rate;
+    //    setTimeout(next_stage, 100);
+    //}, trial.timing_ITI - 100, true);
+    // we use the allotted time to estimate the frame rate
+    estimate_frame_rate(function(frame_rate){
+        estimated_frame_duration = frame_rate;
+        console.log('frame_rate: ' + estimated_frame_duration)
+        setTimeout(function(){trial_master(trial.first_stage)}, 100);
+    }, par.pre_trial_time - 100, true);
+
+    //jsPsych.pluginAPI.setTimeout(function() {
+    //   trial_master(trial.first_stage) //
+     //}, par.pre_trial_time); // this is where the wait time goes / rn this is 1250 sec
+     // check the frame rate here...
   };
 
   return plugin;
