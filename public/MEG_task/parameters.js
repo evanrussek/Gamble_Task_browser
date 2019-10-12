@@ -357,13 +357,16 @@ var place_diode = function(background_height, background_width, h){
 }
 
 var display_diode = function(){
-  d3.select(".diode").style("opacity",1)
+  d3.select(".diode").style("opacity",1);
 }
 
 var remove_diode = function(){
-  d3.select(".diode").style("opacity",0)
+  d3.select(".diode").style("opacity",0);
 }
 
+var place_diode_for_time = function(msec){
+  display_diode();
+}
 
 
 /// functions for placing things, should move these at some point

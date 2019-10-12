@@ -152,7 +152,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
                 .attr("width", par.w)
                 .attr("height", par.h)
 
-
     // place grey background on it
     d3.select("svg").append("rect")
           .attr("x", 0).attr("y", 0).attr("width", par.w)
@@ -173,7 +172,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
       };
 
     place_diode(par.background_height, par.background_width, par.h);
-    display_diode();
+    //display_diode();
     d3.select('svg')
       .append('line')
       .attr('x1', par.diode_width)
@@ -303,9 +302,10 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     var frame_count;
     var frame_count_stage;
     var frame_count_diode;
+    var data_temp = {};
 
     // function for easier update of stage variables
-    // so, we do this with frame counts --- timing stims is 
+    // so, we do this with frame counts --- timing stims is
     var update_stage_vars = function(timing_stim, timing_diode, txt, response_on = false) {
         frame_count = 0;
         frame_count_stage = Math.round(timing_stim / estimated_frame_duration);
@@ -327,14 +327,20 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     var check_timeout = function(timestamp) {
         frame_count++;
         // diode specific timeout
+        console.log('frame_count_diode: ' + frame_count_diode)
+        console.log('frame_count: '+  frame_count)
         if (frame_count >= frame_count_diode && diode_on) {
-            document.querySelector('#diode').remove();
+            //document.querySelector('#diode').remove();
+            remove_diode();
             data_temp[txt_offset + '_diode_offset'] = window.performance.now();
+            console.log(data_temp)
             diode_on = false;
             window.requestAnimationFrame(check_timeout);
         // general stage timeout
         } else if (frame_count >= frame_count_stage) {
-            next_stage();
+            //next_fun();
+            next_stage_fun();
+            //next_stage();
         // otherwise repeat the loop
         } else {
             window.requestAnimationFrame(check_timeout);
@@ -352,11 +358,16 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         // part 1 is stage 1
         case 1:
           // information
+          txt_offset = 'info';
           stage_1_master(1);
           break;
 
         case 2:
+          console.log('trial_part_2 starting')
+          window.cancelAnimationFrame(rafID1);
+          window.cancelAnimationFrame(rafID2);
           // choice
+          txt_offset = 'choice_stim';
           stage_2_master(1);
           break;
         case 3:
@@ -379,7 +390,8 @@ jsPsych.plugins["evan-run-trial"] = (function() {
           display_trial_info();
           break;
         case 2: // got here twice?
-          wait_for_time(par.info_time,remove_trial_info);
+          remove_trial_info();
+          //wait_for_time(par.info_time,remove_trial_info);
           break;
         case 3:
           if (trial.last_stage < 2){var next_stage_number = 4} else{var next_stage_number = 2};
@@ -424,22 +436,41 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
     /// specific functions called by each stage trial_master
     // stage 1 funcs
-    var display_trial_info = function(stop_here){
+    par.info_diode_time = 500;
+    var display_trial_info = function(){
 
       //d3.select('.info_bkg').transition().style("opacity",1).duration(par.info_fadein_time);
-      d3.select('.info_bkg').style("opacity",1)
+      rafID1 = window.requestAnimationFrame(function() {
+          rafID2 = window.requestAnimationFrame(function(timestamp) {
 
-      d3.selectAll('.info')
-        .transition()
-        .style("opacity",1)
-        .duration(par.info_fadein_time);
+            // display trial info
+            d3.select('.info_bkg').style("opacity",1)
+            d3.selectAll('.info')
+              .style("opacity",1)
 
-      if (typeof stop_here == 'undefined'){
-        wait_for_time(par.info_fadein_time, function(){ return stage_1_master(2)});
-      }
-    } // end display trial info
+            display_diode();
+
+            time_onset = window.performance.now();
+            data_temp[txt_offset + '_diode_onset'] = time_onset;
+            data_temp[txt_offset + '_onset'] = time_onset;
+            // set the diode_timing global
+            diode_on = true
+            frame_count_diode = Math.round(par.info_diode_time / estimated_frame_duration);
+            //console.log('frame_count_diode ' + frame_count_diode)
+            frame_count_stage = Math.round(par.info_time / estimated_frame_duration);
+            frame_count = 0;
+            next_stage_fun = function(){stage_1_master(2)};
+
+            // wait for info time par.info_time
+            window.requestAnimationFrame(check_timeout);
+        })
+      })
+    }
+
+     // end display trial info
 
     var remove_trial_info = function(){
+      // this runs for info fadeout time...
       this_next_fun = function(){
          stage_1_master(3);
       }
@@ -452,29 +483,54 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         .style("opacity",0).duration(par.info_fadeout_time)
         .on('end', this_MT);
 
+      data_temp[txt_offset + '_offset_start'] = time_onset;
+
     } // end remove trial info
 
     ///// stage 2 funcs
     var display_choice = function(){
       // want to add something showing that their choice was registered? - maybe change the background color?
       // display the choice and start the keyboard listeners
-      d3.selectAll('.choice_stim')
-        .transition()
-        .style("opacity",1)
-        .duration(par.choice_fadein_time)
+
+      rafID1 = window.requestAnimationFrame(function() {
+          rafID2 = window.requestAnimationFrame(function(timestamp) {
+            d3.selectAll('.choice_stim')
+              .style("opacity",1)
+
+              //.transition()
+              //.style("opacity",1)
+              //.duration(par.choice_fadein_time)
+
+              // do we want a prompt?
+              var bkg_y = par.h/2 + par.background_height/2;
+              //                   this should be the space between bottom and end of background
+              var txt_y = bkg_y + par.stg_bkg_y/2;
+              if (trial.show_prompt){
+                if (trial.allow_reject){
+                  place_text('Press 1 to PLAY the machine or 2 to REJECT.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
+                } else{
+                  place_text('Press 1 to PLAY the machine.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
+                }
+              }
+              // time stuff, etc.
+              display_diode();
+
+              time_onset = window.performance.now();
+              data_temp[txt_offset + '_diode_onset'] = time_onset;
+              data_temp[txt_offset + '_onset'] = time_onset;
+              // set the diode_timing global
+              diode_on = true
+              par.choice_stim_diode_time = 200;
+              frame_count_diode = Math.round(par.choice_stim_diode_time / estimated_frame_duration);
+              //console.log('frame_count_diode ' + frame_count_diode)
+              frame_count_stage = Math.round(par.max_response_time / estimated_frame_duration); // max choice time
+              frame_count = 0;
+              next_stage_fun = function(){handle_slow_response()};
+
+          })
+        })
 
 
-        // do we want a prompt?
-        var bkg_y = par.h/2 + par.background_height/2;
-        //                   this should be the space between bottom and end of background
-        var txt_y = bkg_y + par.stg_bkg_y/2;
-        if (trial.show_prompt){
-          if (trial.allow_reject){
-            place_text('Press 1 to PLAY the machine or 2 to REJECT.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
-          } else{
-            place_text('Press 1 to PLAY the machine.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
-          }
-        }
 
 
       var handle_response = function(info){
@@ -540,10 +596,10 @@ jsPsych.plugins["evan-run-trial"] = (function() {
           persist: false,
           allow_held_key: false
         });
-      if (trial.limit_time){
-        wait_for_time(par.max_response_time, handle_slow_response);
-      }
-    }
+      //if (trial.limit_time){
+      //  wait_for_time(par.max_response_time, handle_slow_response);
+      //}
+    } // end display choice...
 
     var remove_choice = function(){
       this_next_fun = function(){stage_2_master(3);}
