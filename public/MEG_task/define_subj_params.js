@@ -64,11 +64,12 @@ var outcome_names = [pos_outcome_names[outcome_idx_vec[0]],
 
 // this is constant for all subjects (160 trials)
 var all_prob_o1 = [.2, .4, .6, .8];
-var all_prob_trig =  [.2, .4, .6, .8];
-var all_win_safe_vals = [20, 40];
-var all_loss_safe_vals = [-20, -40];
-var all_win_amounts = [50, 70, 90];
-var all_loss_amounts = [-50, -70, -90];
+var all_win_safe_vals = [20, 40, 60, 80];
+var all_loss_safe_vals = [-20, -40, -60, -80];
+var all_win_amounts = [60, 80, 110];
+var all_loss_amounts = [-60, -80, -110];
+var all_prob_trig = all_prob_o1;
+
 
 
 // 120 trials have equal ... /// - do each one 3 times...

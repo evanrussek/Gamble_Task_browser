@@ -258,37 +258,7 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
     return this_trial;
 }
 
-// make a function that takes in trigger_val, p_trigger, gain or loss, o1_trigger and generates a trial.
-var o1_trig = true;
-var prob_trig_idx = 2;
-var matched_safe = false;
-var trig_val = 50;
 
-
-// this loop makes 120 trials match trials...
-var win_matched_trials = [];
-var loss_matched_trials = [];
-
-var alt_idx = 0;
-for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
-  for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
-    // o1_trig is true and matched safe is true
-    alt_idx = alt_idx + 1;
-    var match_w_o1 = gen_test_trial(true, p_idx, all_win_amounts[w_idx], true);
-    // o1_trig is false and matched safe is true
-    var match_w_o2 = gen_test_trial(false, p_idx, all_win_amounts[w_idx], true);
-    // o1_trig alternates and matched safe is true
-    var alt_o1_trig = Boolean(alt_idx % 2);
-    var match_w_alt = gen_test_trial(alt_o1_trig, p_idx, all_win_amounts[w_idx], true);
-    win_matched_trials = win_matched_trials.concat([match_w_o1, match_w_o2, match_w_alt]);
-
-    // just make the loss one's here as well
-    var match_l_o1 = gen_test_trial(true, p_idx, all_loss_amounts[w_idx], true);
-    var match_l_o2 = gen_test_trial(false, p_idx, all_loss_amounts[w_idx], true);
-    var match_l_alt = gen_test_trial(alt_o1_trig, p_idx, all_loss_amounts[w_idx], true);
-    loss_matched_trials = loss_matched_trials.concat([match_l_o1, match_l_o2, match_l_alt]);
-  }
-}
 
 // generates 160 non-matched trials
 var win_non_matched_trials = []; // remake the other trials...
@@ -298,29 +268,38 @@ var loss_non_matched_trials = []; // remake the other trials...
 for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
   for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
     for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
-      var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
-      var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
-      win_non_matched_trials = win_non_matched_trials.concat([nm_w_o1, nm_w_o2]);
+      if (all_win_safe_vals[sv_idx] < (all_win_amounts[w_idx] - 10)){
 
-      var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
-      var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
+        var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
+        var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
+        win_non_matched_trials = win_non_matched_trials.concat([nm_w_o1, nm_w_o2]);
 
-      loss_non_matched_trials = loss_non_matched_trials.concat([nm_l_o1, nm_l_o2]);
+        var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
+        var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
+
+        loss_non_matched_trials = loss_non_matched_trials.concat([nm_l_o1, nm_l_o2]);
+      }
     }
   }
 }
 
 // block the position of things...
 
-all_loss_trials = loss_matched_trials.concat(loss_non_matched_trials);
-all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
-var block_size = all_loss_trials.length/6; // form 6 blocks...
+//all_loss_trials = loss_matched_trials.concat(loss_non_matched_trials);
+//all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 
-all_win_trials = win_matched_trials.concat(win_non_matched_trials);
-all_win_trials = jsPsych.randomization.repeat(all_win_trials,1);
-// the task is 168 trials...
+all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,2);
+all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,2);
+// the task is
 
+console.log(all_loss_trials)
+console.log(all_win_trials)
 
+// 36 trials per block ( 14 win and 14 loss) // block the safe?
+
+// block size . ---
+
+var block_size = all_loss_trials.length/8; // form 8 blocks...
 
 var all_trials = []
 

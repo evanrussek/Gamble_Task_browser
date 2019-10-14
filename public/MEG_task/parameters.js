@@ -9,6 +9,10 @@ var define_parameters = function(exp_stage){
   var randomize_info_y = false;
   var randomize_info_x = false;
 
+  // diode stuff
+  outcome_diode_time = 400;
+
+
   //var info_time = 5000;
   var info_pos = 2;
   // for practice... seperate these for practice vs the regular game
