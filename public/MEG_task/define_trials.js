@@ -175,6 +175,11 @@ function rand_gen_trial(loss_trial){
 
 // this generates a trial for the main task...
 var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, safe_val_base){
+
+  //if (typeof block_number == "undefined"){
+  //  block_number = 0;
+  //}
+
   // need to define choice number, p_o1, o1_val, o2_val (that's it?)
   var prob_trig = all_prob_trig[prob_trig_idx];
 
@@ -239,7 +244,8 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
         phase:'TEST',
         matched_safe: matched_safe,
         gl_type: gl_type,
-        choice_number: choice_number
+        choice_number: choice_number,
+      //  block_number: block_number
       },
 
       first_stage: 1,
@@ -288,6 +294,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
 //all_loss_trials = loss_matched_trials.concat(loss_non_matched_trials);
 //all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 
+// need to actually copy these,
 all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,2);
 all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,2);
 // the task is
@@ -298,28 +305,36 @@ console.log(all_win_trials)
 // 36 trials per block ( 14 win and 14 loss) // block the safe?
 
 // block size . ---
+var n_blocks = 8;
 
-var block_size = all_loss_trials.length/8; // form 8 blocks...
+// 4 win blocks and 4 loss blocks...
+var block_size = all_loss_trials.length/(n_blocks/2); //
 
 var all_trials = []
 
-var loss_first = (Math.random() < .5);
+var loss_first = 1;//(Math.random() < .5); // need to counterbalance this for each subject...
 // want to counterbalance which comes first
+var quiz_p = 0;
+
 if (loss_first){
-  for (var i = 0; i < 6; i++){
-    all_trials.push(build_text_trial("The next set of games will all have negative points.","Collecting more of these will make your bonus smaller.","",true));
+  for (var i = 0; i < 4; i++){
+    all_trials.push(build_text_trial("This block of games will all have negative points.","Collecting more of these will make your bonus smaller.","",true));
     var loss_block = all_loss_trials.splice(0,block_size);
-    var c = Math.round(loss_block.length/2);
-    loss_block.splice(c,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
+  //  for var i = 0; i < loss_block.length()
+    var c = Math.round(loss_block.length/3);
+    //loss_block.splice(c,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = loss_block.length;
     for (var t = 1; t < a; t++){
+      loss_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
-      if (Math.random() < 1/8){
+      if (Math.random() < quiz_p){
         if (loss_block[t_new1].type == "evan-run-trial"){
           // loss ones
           var quiz = rand_gen_rew_quiz_main(true);
+          quiz[0].data.block_number = i + 1;
+          quiz[1].data.block_number = i + 1;
           loss_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
@@ -330,16 +345,19 @@ if (loss_first){
     //////////////////////////////////////////////////////////////////
     all_trials.push(build_text_trial("The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","",true));
     var win_block = all_win_trials.splice(0,block_size);
-    var b = Math.round(win_block.length/2);
-    win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
+    var b = Math.round(win_block.length/3);
+    //win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = win_block.length;
     for (var t = 1; t < a; t++){
+      win_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
-      if (Math.random() < 1/8){
+      if (Math.random() < quiz_p){
         if (win_block[t_new1].type == "evan-run-trial"){
           var quiz = rand_gen_rew_quiz_main(false);
+          quiz[0].data.block_number = i + 1;
+          quiz[1].data.block_number = i + 1;
           win_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
@@ -348,20 +366,23 @@ if (loss_first){
     all_trials = all_trials.concat(win_block);
   }
 }else{
-  for (var i = 0; i < 6; i++){
+  for (var i = 0; i < 4; i++){
     /// win
     all_trials.push(build_text_trial("The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","",true));
     var win_block = all_win_trials.splice(0,block_size);
-    var b = Math.round(win_block.length/2);
-    win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
+    var b = Math.round(win_block.length/3);
+    //win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = win_block.length;
     for (var t = 1; t < a; t++){
+      loss_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
-      if (Math.random() < 1/8){
+      if (Math.random() < quiz_p){
         if (win_block[t_new1].type == "evan-run-trial"){
           var quiz = rand_gen_rew_quiz_main(false);
+          quiz[0].data.block_number = i + 1;
+          quiz[1].data.block_number = i + 1;
           win_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
@@ -371,16 +392,19 @@ if (loss_first){
     // loss
     all_trials.push(build_text_trial("The next set of games will all have negative points.","Collecting more of these will make your bonus smaller.","",true));
     var loss_block = all_loss_trials.splice(0,block_size);
-    var c = Math.round(loss_block.length/2);
-    loss_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
+    var c = Math.round(loss_block.length/3);
+    //loss_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = loss_block.length;
     for (var t = 1; t < a; t++){
+      loss_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
-      if (Math.random() < 1/8){
+      if (Math.random() < quiz_p){
         if (loss_block[t_new1].type == "evan-run-trial"){
           var quiz = rand_gen_rew_quiz_main(true);
+          quiz[0].data.block_number = i + 1;
+          quiz[1].data.block_number = i + 1;
           loss_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
@@ -389,17 +413,22 @@ if (loss_first){
 
     all_trials = all_trials.concat(loss_block);
   }
-}
+} // the block is listed...
 
 
-var main_task = all_trials; //jsPsych.randomization.repeat(all_trials, 1);
+var main_task = []; //jsPsych.randomization.repeat(all_trials, 1);
 //var all_trials_shuff = all_trials;
 // insert a half way through
 
+var trial_number = 0;
 for (var tn = 0; tn < main_task.length; tn++){
-  var b = tn;
-  if (main_task[tn].type == "evan-run-trial"){
-    main_task[tn].data.trial_num = b+1;
+  if (all_trials[tn].type == "evan-run-trial"){
+    //console.log(trial_number)
+    //trial_number = trial_number + 1;
+    main_task.push(Object.assign({}, all_trials[tn]))
+    main_task[tn].data.trial_num = trial_number;
+    console.log(main_task[tn].data.trial_num)
+    console.log(main_task[tn].data)
   }
 }
 
@@ -409,9 +438,9 @@ quart_text = build_text_trial("Great job! You're a quarter of the way through th
 half_way_txt = build_text_trial("Great job! You're half way through this task.","","",true);
 three_quart_text = build_text_trial("Great job! You're three quarters of the way through this task.","","",true);
 
-main_task.splice(Math.round(main_task.length/4), 0, quart_text)
-main_task.splice(Math.round(main_task.length/2)+1, 0, half_way_txt)
-main_task.splice(Math.round(3*main_task.length/4)+2, 0, three_quart_text)
+//main_task.splice(Math.round(main_task.length/4), 0, quart_text)
+//main_task.splice(Math.round(main_task.length/2)+1, 0, half_way_txt)
+//main_task.splice(Math.round(3*main_task.length/4)+2, 0, three_quart_text)
 
 task2_timeline = main_task;
 //test_quiz = rand_gen_rew_quiz_main();
