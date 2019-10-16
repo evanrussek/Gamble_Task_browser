@@ -6,7 +6,7 @@
 // plugin to show either a photo, or a piece of text and ask which reward it was just paired with...
 jsPsych.plugins["evan-reward-quiz"] = (function() {
 
-  // add time up and record response...
+  // diode this...
 
   var plugin = {};
 
@@ -77,11 +77,26 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
     d3.select("svg").append("rect")
           .attr("x", 0).attr("y", 0).attr("width", par.w)
           .attr("height", par.h).style("fill", par.svg_color).style("opacity",.7);
+
+          d3.select('svg')
+            .append('line')
+            .attr('x1', par.diode_width)
+            .attr('x2', par.diode_width)
+            .attr('y1', 0)
+            .attr('y2', par.h)
+            .style('stroke-width', 1)
+            .style('stroke', 'black')
+
+
+            //d3.select('.info_bkg').transition().style("opacity",1).duration(par.info_fadein_time);
+
+//    place_diode(par.background_height, par.background_width, par.h);
+
     ////////////////////////////////////////
 
     // place question
     var q_text_y = par.h/5;
-    var q_text_x = par.w/2;
+    var q_text_x = par.w/2 + par.diode_width;
 
     if (trial.use_image){
       console.log("images")
@@ -89,8 +104,8 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
       var txt_q = 'How many points is this banknote worth?';
       place_text(txt_q, 'Prompt', q_text_x, q_text_y, par.text_font_size/2, 1, "White");
 
-      place_img_bkg("info",par.w/2 - .8*par.img_bkg_width/2, 1.65*par.h/5 - .8*par.img_bkg_height/2, .8*par.img_bkg_width,.8*par.img_bkg_height,par.img_bkg_color,1);
-      place_img(trial.outcome_image, "info", par.w/2 - .8*par.image_width,  1.65*par.h/5 - .8*par.image_height/2, .8*par.image_width, .8*par.image_height, 1);
+      place_img_bkg("info",par.w/2 - .8*par.img_bkg_width/2 + par.diode_width, 1.65*par.h/5 - .8*par.img_bkg_height/2, .8*par.img_bkg_width,.8*par.img_bkg_height,par.img_bkg_color,1);
+      place_img(trial.outcome_image, "info", par.w/2 - .8*par.image_width + par.diode_width,  1.65*par.h/5 - .8*par.image_height/2, .8*par.image_width, .8*par.image_height, 1);
 
     } else{
       console.log("text")
@@ -102,7 +117,8 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
     }
 
     // place money
-    var rew_x = [par.w/5, 2*par.w/5, 3*par.w/5, 4*par.w/5];
+    var rew_x = [par.w/5 + par.diode_width, 2*par.w/5 + par.diode_width,
+       3*par.w/5 + par.diode_width, 4*par.w/5 + par.diode_width];
     var money_vals = [trial.outcome_val, trial.other_vals[0], trial.other_vals[1], trial.other_vals[2]];
     var myInds = [0,1,2,3];
     var shuffledInds = jsPsych.randomization.repeat(myInds,1);
@@ -110,8 +126,11 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
     // background boxes
     var box_width = par.w/10;
     var box_height = par.w/10;
-    var box_x = [rew_x[0] - box_width/2, rew_x[1] - box_width/2,
-                  rew_x[2] - box_width/2, rew_x[3] - box_width/2];
+    var box_x = [rew_x[0] - box_width/2,
+     rew_x[1] - box_width/2,
+                  rew_x[2] - box_width/2,
+                  rew_x[3] - box_width/2];
+
     var box_y = par.h/2 - box_height/2;
 
     for (var i = 0; i < 4; i++){
@@ -130,7 +149,12 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
       place_text(key_vals[i], 'Prompt', rew_x[i], 22.5*par.h/40, par.text_font_size/3, 1, "White");
     }
 
-    place_text('Key Press ', 'Prompt', par.w/2, 23.5*par.h/40, par.text_font_size/3, 1, "White");
+    place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, 23.5*par.h/40, par.text_font_size/3, 1, "White");
+
+    var quiz_on_time = window.performance.now();
+//    display_diode();
+//    diode_on = true;
+//    count_time = true
 
 
       var handle_response = function(info){
@@ -146,11 +170,16 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
 
         if (shuffledInds[parseInt(choice_char)-1] == 0){
           correct = 1;
-          wait_for_time(par.quiz_pause_resp_time,function(){place_text('CORRECT!', 'Prompt', par.w/2, 29*par.h/40, par.text_font_size, 1, "Red")})
+          wait_for_time(par.quiz_pause_resp_time,function(){
+            place_text('CORRECT!', 'Prompt', par.w/2 + par.diode_width, 29*par.h/40, par.text_font_size, 1, "Red")
+            var feedback_time = window.performance.now();})
           wait_for_time(par.quiz_pause_resp_time + par.quiz_feedback_time,end_trial)
         } else{
           correct = 0;
-          wait_for_time(par.quiz_pause_resp_time,function(){place_text('WRONG!', 'Prompt', par.w/2, 29*par.h/40, par.text_font_size, 1, "Red")})
+          wait_for_time(par.quiz_pause_resp_time,function(){
+            place_text('WRONG!', 'Prompt', par.w/2 + par.diode_width, 29*par.h/40, par.text_font_size, 1, "Red")
+            var feedback_time = window.performance.now();
+          })
           wait_for_time(par.quiz_pause_resp_time + par.quiz_feedback_time,end_trial)
         }
       }
@@ -165,12 +194,15 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
         });
 
         wait_for_time(par.quiz_response_time, handle_slow_response);
+        //wait_for_time(par.quiz_response_time, 100000000);
 
       var response = {
           rt: null,
           key: null
         };
         var correct = null;
+        var quiz_on_time = null;
+        var feedback_time = null;
 
           /// stage 4 - end trial, save data,
           var end_trial = function(){
@@ -186,7 +218,9 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
               "outcome_name": trial.outcome_name,
               "correct": correct,
               "rt": response.rt,
-              "key": response.key
+              "key": response.key,
+              "quiz_on_time": quiz_on_time,
+              "feedback_time": feedback_time
               // need to add timing parameters
             };
 

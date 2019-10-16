@@ -84,7 +84,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
   plugin.trial = function(display_element, trial) {
 
 
-
     var outcome_images = [trial.o1_image, trial.o2_image, trial.safe_image];
     var outcome_vals = [trial.o1_val, trial.o2_val, trial.safe_val];
 
@@ -98,13 +97,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
     var par = define_parameters(trial.exp_stage);
 
-
-
-    if (show_diode){
-      h_center = par.w/2 + 20;
-    } else{
-      h_center = par.w/2;
-    }
 
     // you should randomize the y...
     if (par.randomize_info_y){
@@ -442,7 +434,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
     /// specific functions called by each stage trial_master
     // stage 1 funcs
-    par.info_diode_time = 500;
     var display_trial_info = function(){
 
       //d3.select('.info_bkg').transition().style("opacity",1).duration(par.info_fadein_time);
@@ -530,7 +521,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
               data_temp[txt_offset + '_onset'] = time_onset;
               // set the diode_timing global
               diode_on = true
-              par.choice_stim_diode_time = 200;
               frame_count_diode = Math.round(par.choice_stim_diode_time / estimated_frame_duration);
               //console.log('frame_count_diode ' + frame_count_diode)
               frame_count_stage = Math.round(par.max_response_time / estimated_frame_duration); // max choice time
@@ -666,7 +656,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
       rafID1 = window.requestAnimationFrame(function() {
           rafID2 = window.requestAnimationFrame(function(timestamp) {
-            par.outcome_diode_time = 400;
 
             // display the feedback with some delay
             d3.selectAll(sel_text)

@@ -1,3 +1,18 @@
+// this should be a function to be called by setupdb.js
+function define_trials(start_block){
+
+console.log(start_block)
+if (typeof start_block == 'undefined'){
+  console.log('this is undefined')
+  start_block = 1;
+}
+
+console.log(start_block)
+
+
+seed = 'Seed for subject ' + subjectID;
+Math.seedrandom(seed);
+
 function round5(x)
 {
     return Math.ceil(x/5)*5;
@@ -15,7 +30,7 @@ function rand_gen_rew_quiz_main(loss_trial){
   // generate a reward trial as well
   // set each outcome reward
   //
-  if (typeof loss_trial == undefined){
+  if (typeof loss_trial == 'undefined'){
     loss_trial = Math.random() < .5;
   }
 
@@ -86,7 +101,8 @@ function rand_gen_rew_quiz_main(loss_trial){
     outcome_name: this_outcome_text,
     outcome_val: this_outcome_val,
     other_vals: all_other_vals,
-    use_image: use_image
+    use_image: use_image,
+    data: {}
   }
 
   return([this_trial, reward_quiz])
@@ -264,26 +280,37 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
     return this_trial;
 }
 
+// need a function to add data from a block...
 
-
+var add_save_block_data = function(this_trial){
+  this_trial.on_finish = function(){
+    var this_block_data = jsPsych.data.get().filter({block_number: this.data.block_number}).json()
+    console.log('saving this block')
+    db.collection('gambletask').doc('MEG_1').collection('subjects').doc(uid).collection('taskdata').doc('block_' + this.data.block_number.toString()).set({
+      block_data: this_block_data
+    })
+  }
+}
 // generates 160 non-matched trials
 var win_non_matched_trials = []; // remake the other trials...
 var loss_non_matched_trials = []; // remake the other trials...
 
 // win_o1_trig_trials
-for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
-  for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
-    for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
-      if (all_win_safe_vals[sv_idx] < (all_win_amounts[w_idx] - 10)){
+for (var rep = 0; rep < 2; rep++){
+  for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
+    for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
+      for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
+        if (all_win_safe_vals[sv_idx] < (all_win_amounts[w_idx] - 10)){
 
-        var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
-        var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
-        win_non_matched_trials = win_non_matched_trials.concat([nm_w_o1, nm_w_o2]);
+          var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
+          var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
+          win_non_matched_trials = win_non_matched_trials.concat([nm_w_o1, nm_w_o2]);
 
-        var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
-        var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
+          var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
+          var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
 
-        loss_non_matched_trials = loss_non_matched_trials.concat([nm_l_o1, nm_l_o2]);
+          loss_non_matched_trials = loss_non_matched_trials.concat([nm_l_o1, nm_l_o2]);
+        }
       }
     }
   }
@@ -295,141 +322,159 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
 //all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 
 // need to actually copy these,
-all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,2);
-all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,2);
+all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,1);
+all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,1);
 // the task is
 
 console.log(all_loss_trials)
 console.log(all_win_trials)
 
+
 // 36 trials per block ( 14 win and 14 loss) // block the safe?
+// we're saving data!
+// now, let's get it so that we start from a certain point...
 
 // block size . ---
 var n_blocks = 8;
 
 // 4 win blocks and 4 loss blocks...
-var block_size = all_loss_trials.length/(n_blocks/2); //
+var block_size = all_loss_trials.length/(n_blocks/2);
 
 var all_trials = []
 
-var loss_first = 1;//(Math.random() < .5); // need to counterbalance this for each subject...
-// want to counterbalance which comes first
-var quiz_p = 0;
+var loss_first = 1;
+var quiz_p = 1;
+
 
 if (loss_first){
   for (var i = 0; i < 4; i++){
-    all_trials.push(build_text_trial("This block of games will all have negative points.","Collecting more of these will make your bonus smaller.","",true));
-    var loss_block = all_loss_trials.splice(0,block_size);
-  //  for var i = 0; i < loss_block.length()
+    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "",true);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var loss_block = [intro_text_trial];
+    loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
-    //loss_block.splice(c,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = loss_block.length;
     for (var t = 1; t < a; t++){
-      loss_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
       if (Math.random() < quiz_p){
         if (loss_block[t_new1].type == "evan-run-trial"){
-          // loss ones
           var quiz = rand_gen_rew_quiz_main(true);
-          quiz[0].data.block_number = i + 1;
-          quiz[1].data.block_number = i + 1;
           loss_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
       }
     }
+    loss_block.push(final_text_trial);
+
+    // add the loss block
+    for (var t = 0; t < loss_block.length; t++){
+      loss_block[t].data.block_number = 2*i + 1;
+    }
+    add_save_block_data(loss_block[loss_block.length - 2])
 
     all_trials = all_trials.concat(loss_block);
     //////////////////////////////////////////////////////////////////
-    all_trials.push(build_text_trial("The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","",true));
-    var win_block = all_win_trials.splice(0,block_size);
+    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var win_block = [intro_text_trial];
+    win_block = win_block.concat(all_win_trials.splice(0,block_size));
     var b = Math.round(win_block.length/3);
-    //win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = win_block.length;
     for (var t = 1; t < a; t++){
-      win_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
       if (Math.random() < quiz_p){
         if (win_block[t_new1].type == "evan-run-trial"){
           var quiz = rand_gen_rew_quiz_main(false);
-          quiz[0].data.block_number = i + 1;
-          quiz[1].data.block_number = i + 1;
           win_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
       }
     }
+    win_block.push(final_text_trial);
+    // add the win block
+    for (var t = 0; t < win_block.length; t++){
+      win_block[t].data.block_number = 2*i + 2;
+    } // save data on the last trial.
+    add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
   }
 }else{
   for (var i = 0; i < 4; i++){
     /// win
-    all_trials.push(build_text_trial("The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","",true));
-    var win_block = all_win_trials.splice(0,block_size);
+    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var win_block = [intro_text_trial];
+    win_block = loss_block.concat(all_win_trials.splice(0,block_size));
+
     var b = Math.round(win_block.length/3);
     //win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = win_block.length;
     for (var t = 1; t < a; t++){
-      loss_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
       if (Math.random() < quiz_p){
         if (win_block[t_new1].type == "evan-run-trial"){
           var quiz = rand_gen_rew_quiz_main(false);
-          quiz[0].data.block_number = i + 1;
-          quiz[1].data.block_number = i + 1;
           win_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
       }
     }
+
+    win_block.push(final_text_trial);
+    // add the win block
+    for (var t = 0; t < win_block.length; t++){
+      win_block[t].data.block_number = 2*i + 1;
+    }
+    add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
+
     // loss
-    all_trials.push(build_text_trial("The next set of games will all have negative points.","Collecting more of these will make your bonus smaller.","",true));
-    var loss_block = all_loss_trials.splice(0,block_size);
+    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var loss_block = [intro_text_trial];
+    loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
     //loss_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
 
     var t_new1 = 0;
     var a = loss_block.length;
     for (var t = 1; t < a; t++){
-      loss_block[t_new1].data.block_number = i + 1;
       t_new1 = t_new1 + 1;
       if (Math.random() < quiz_p){
         if (loss_block[t_new1].type == "evan-run-trial"){
           var quiz = rand_gen_rew_quiz_main(true);
-          quiz[0].data.block_number = i + 1;
-          quiz[1].data.block_number = i + 1;
           loss_block.splice(t_new1,0, quiz[0], quiz[1]);
           t_new1 = t_new1 + 1;
         }
       }
+    } // add to the end of each block...
+    // add the win block
+    loss_block.push(final_text_trial);
+    for (var t = 0; t < loss_block.length; t++){
+      loss_block[t].data.block_number = 2*i + 2;
     }
-
+    add_save_block_data(loss_block[loss_block.length - 2])
     all_trials = all_trials.concat(loss_block);
   }
 } // the block is listed...
 
-
-var main_task = []; //jsPsych.randomization.repeat(all_trials, 1);
-//var all_trials_shuff = all_trials;
+main_task = [];
 // insert a half way through
 
 var trial_number = 0;
-for (var tn = 0; tn < main_task.length; tn++){
-  if (all_trials[tn].type == "evan-run-trial"){
-    //console.log(trial_number)
-    //trial_number = trial_number + 1;
-    main_task.push(Object.assign({}, all_trials[tn]))
-    main_task[tn].data.trial_num = trial_number;
-    console.log(main_task[tn].data.trial_num)
-    console.log(main_task[tn].data)
+for (var tn = 0; tn < all_trials.length; tn++){
+  this_trial = all_trials[tn]
+  if (this_trial.type == "evan-run-trial"){
+    trial_number = trial_number + 1;
+    this_trial.data.trial_number = trial_number;
   }
+  main_task.push(this_trial)
 }
 
 
@@ -442,5 +487,40 @@ three_quart_text = build_text_trial("Great job! You're three quarters of the way
 //main_task.splice(Math.round(main_task.length/2)+1, 0, half_way_txt)
 //main_task.splice(Math.round(3*main_task.length/4)+2, 0, three_quart_text)
 
+// add data saving into the end of each block. also allow starting the task from any block.... // then random number generator, etc.
+
 task2_timeline = main_task;
-//test_quiz = rand_gen_rew_quiz_main();
+// filter so we're at the start block...
+task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
+
+/* create timeline */
+var timeline = [];
+
+var full_screen = {
+  type: 'fullscreen',
+  fullscreen_mode: true
+};
+
+
+// add to the end of every block
+
+
+
+// put together the full timeline
+timeline = [];
+timeline.push(full_screen);
+timeline = timeline.concat(task2_timeline);
+//timeline.push(end_screen);
+
+var all_task_images = [];
+
+/* start the experiment */
+jsPsych.init({
+ timeline: timeline,
+ show_preload_progress_bar: true,
+ on_finish: function() {
+   jsPsych.data.get().localSave('csv','evan_practice_new.csv');
+}
+});
+
+}

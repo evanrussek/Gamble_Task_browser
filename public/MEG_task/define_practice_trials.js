@@ -54,13 +54,13 @@ var build_more_like_quiz = function(outcome_number, c1_number, c2_number, correc
   return ml_trial
 }
 
-var build_text_trial = function(line_1,line_2,line_3, wait_for_press){
+var build_text_trial = function(line_1,line_2,line_3, wait_for_exp){
   var text_trial = {
     type: 'evan-display-text',
     line_1: line_1,
     line_2: line_2,
     line_3: line_3,
-    wait_for_press: wait_for_press,
+    wait_for_exp: wait_for_exp,
     data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
   }
   return text_trial;
@@ -256,7 +256,6 @@ practice_trials = this_round_trials;
 
 // figure out how long this will take.
 task1_timeline = practice_trials;
-
 
 
 

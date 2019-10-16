@@ -10,8 +10,9 @@ var define_parameters = function(exp_stage){
   var randomize_info_x = false;
 
   // diode stuff
-  outcome_diode_time = 400;
-
+  var outcome_diode_time = 400;
+  var info_diode_time = 500;
+  var choice_stim_diode_time = 200;
 
   //var info_time = 5000;
   var info_pos = 2;
@@ -210,7 +211,10 @@ var define_parameters = function(exp_stage){
   // instruction page 2 parametesr
 
   var ver1 = {
-
+    // diode stuff
+    outcome_diode_time: outcome_diode_time,
+    info_diode_time: info_diode_time,
+    choice_stim_diode_time: choice_stim_diode_time,
     diode_width: diode_width,
     diode_height: diode_height,
     randomize_info:randomize_info,

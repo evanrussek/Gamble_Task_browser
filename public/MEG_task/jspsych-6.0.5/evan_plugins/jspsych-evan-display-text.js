@@ -28,6 +28,10 @@ jsPsych.plugins["evan-display-text"] = (function() {
   wait_time: {
     type: jsPsych.plugins.parameterType.FLOAT,
     default: 5000
+  },
+  wait_for_exp: {
+    type: jsPsych.plugins.parameterType.BOOL,
+    default: false
   }
 }
 }
@@ -62,23 +66,29 @@ jsPsych.plugins["evan-display-text"] = (function() {
           .attr("x", 0).attr("y", 0).attr("width", par.w)
           .attr("height", par.h).style("fill", par.svg_color).style("opacity",.7);
 
-    place_text(trial.line_1, 'text', par.w/2, par.h/2 - par.text_font_size, par.text_font_size/2, 1, "White");
-    place_text(trial.line_2, 'text', par.w/2, par.h/2, par.text_font_size/2, 1, "White");
-    place_text(trial.line_3, 'text', par.w/2, par.h/2 + par.text_font_size, par.text_font_size/2, 1, "White");
+    place_text(trial.line_1, 'text', par.w/2 + par.diode_width, par.h/2 - par.text_font_size, par.text_font_size/2, 1, "White");
+    place_text(trial.line_2, 'text', par.w/2+ par.diode_width, par.h/2, par.text_font_size/2, 1, "White");
+    place_text(trial.line_3, 'text', par.w/2+ par.diode_width, par.h/2 + par.text_font_size, par.text_font_size/2, 1, "White");
 
     ///////////////////////////////////////
 
-
     // put up the svg
 
-
-    var valid_responses = ['4'];
+    if (trial.wait_for_exp){
+      var valid_responses = ['c'];
+    }else{
+      var valid_responses = ['4'];
+    }
 
     if (trial.wait_for_press){
       // set up max response time?
       var txt_y =  par.h  - par.stg_bkg_y;
-      var prompt = 'Press 4 to continue'
-      place_text(prompt, "prompt", par.w/2, txt_y, par.text_font_size/2, 1, "White")
+      if (trial.wait_for_exp){
+        var prompt = 'Waiting for experimenter to continue.'
+      }else{
+        var prompt = 'Press 4 to continue.'
+      }
+      place_text(prompt, "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/2, 1, "White")
 
       var handle_response = function(info){
         jsPsych.pluginAPI.clearAllTimeouts();
