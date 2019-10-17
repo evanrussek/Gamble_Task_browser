@@ -1,6 +1,6 @@
 // this could also be a trial // for the scanner, add the date and time, and other info
 
-// mememee
+//
 var subject_num = 1; // need to get this from JSPSYCH
 var date = 'aug_19_2019';
 var time = '1716';

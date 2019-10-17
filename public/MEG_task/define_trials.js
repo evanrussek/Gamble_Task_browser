@@ -477,7 +477,6 @@ for (var tn = 0; tn < all_trials.length; tn++){
   main_task.push(this_trial)
 }
 
-
 // add more than just half way marks - maybe 1/4 parts
 quart_text = build_text_trial("Great job! You're a quarter of the way through this task.","","",true);
 half_way_txt = build_text_trial("Great job! You're half way through this task.","","",true);
@@ -513,6 +512,10 @@ timeline = timeline.concat(task2_timeline);
 //timeline.push(end_screen);
 
 var all_task_images = [];
+
+var loc_trial = {
+
+}
 
 /* start the experiment */
 jsPsych.init({
