@@ -10,9 +10,17 @@ var define_parameters = function(exp_stage){
   var randomize_info_x = false;
 
   // diode stuff
+  var loc_max_response_time = 600;
+  var loc_pause_resp_time =  100;
+  var loc_feedback_time = 100;
   var outcome_diode_time = 400;
   var info_diode_time = 500;
   var choice_stim_diode_time = 200;
+  var loc_image_diode_time = 300;
+
+  var loc_image_time = 800;
+  var loc_image_fade_time = 200;
+  var loc_pre_trial_time = 200;
 
   //var info_time = 5000;
   var info_pos = 2;
@@ -212,6 +220,13 @@ var define_parameters = function(exp_stage){
 
   var ver1 = {
     // diode stuff
+    loc_pause_resp_time: quiz_pause_resp_time,
+    loc_feedback_time: quiz_feedback_time,
+    loc_max_response_time: loc_max_response_time,
+    loc_image_fade_time: loc_image_fade_time,
+    loc_image_diode_time: loc_image_diode_time,
+    loc_image_time: loc_image_time,
+    loc_pre_trial_time: loc_pre_trial_time,
     outcome_diode_time: outcome_diode_time,
     info_diode_time: info_diode_time,
     choice_stim_diode_time: choice_stim_diode_time,

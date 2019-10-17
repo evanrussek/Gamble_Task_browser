@@ -535,8 +535,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         })
 
 
-
-
       var handle_response = function(info){
         // kill the wait...
   //      console.log('response heard')
@@ -766,7 +764,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
   var outcome_reached = null;
   var points_received = null;
-
 
     //// start the trial -  place everything
     place_everything();
