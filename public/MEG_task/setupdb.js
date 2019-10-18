@@ -1,6 +1,5 @@
 // setup the fire base database stuff
-
-var subjectID = 'subj_' + 5;
+var subjectID = 'subj_1_10_18_2pm'
 // things like date would be good as well
 
 // firebase stuff
@@ -24,16 +23,25 @@ firebase.auth().onAuthStateChanged(function(user) {
 if (user) {
   uid = user.uid;
   // record new date and start time
-  db.collection('gambletask').doc('MEG_1').collection('subjects').doc(uid).set({
+  //Date =
+  db.collection('gambletask').doc('MEG_1').collection('computers').
+                doc(uid).set({
+                    subjectID: subjectID
+                })
+
+  db.collection('gambletask').doc('MEG_1').collection('computers').
+                doc(uid).collection('subjects').doc(subjectID).set({
       subjectID: subjectID
   })
+
   // record new date and start time
-  db.collection('gambletask').doc('MEG_1').collection('subjects').doc(uid).collection('taskdata').doc('start').set({
+  db.collection('gambletask').doc('MEG_1').collection('computers').
+                doc(uid).collection('subjects').doc(subjectID).collection('taskdata').doc('start').set({
       subjectID: subjectID,  // this refers to the subject's ID from prolific/
       date: new Date().toLocaleDateString(),
       start_time: new Date().toLocaleTimeString()
   })
-  define_trials();
+  define_trials(start_block);
 }
 });
 

@@ -11,8 +11,8 @@ var define_parameters = function(exp_stage){
 
   // diode stuff
   var loc_max_response_time = 600;
-  var loc_pause_resp_time =  100;
-  var loc_feedback_time = 100;
+  var loc_pause_resp_time =  50;
+  var loc_feedback_time = 50;
   var outcome_diode_time = 400;
   var info_diode_time = 500;
   var choice_stim_diode_time = 200;
@@ -77,11 +77,9 @@ var define_parameters = function(exp_stage){
   //  var h = parentDiv.clientHeight/2;
   //}
 
-
   // fixation
   var fixation_font_size = h/10;
   var fixation_color = "white";
-
 
   // background color
   var svg_color = d3.rgb(150, 150, 150);

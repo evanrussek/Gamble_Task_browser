@@ -1,6 +1,10 @@
 // this should be a function to be called by setupdb.js
 function define_trials(start_block){
 
+// this start block thing has to be changed for naming and filtering...
+
+// fix trial number and block number for filtering ... 
+
 console.log(start_block)
 if (typeof start_block == 'undefined'){
   console.log('this is undefined')
@@ -286,7 +290,9 @@ var add_save_block_data = function(this_trial){
   this_trial.on_finish = function(){
     var this_block_data = jsPsych.data.get().filter({block_number: this.data.block_number}).json()
     console.log('saving this block')
-    db.collection('gambletask').doc('MEG_1').collection('subjects').doc(uid).collection('taskdata').doc('block_' + this.data.block_number.toString()).set({
+    db.collection('gambletask').doc('MEG_1').collection('computers').
+                  doc(uid).collection('subjects').doc(subjectID).collection('taskdata')
+                  .doc('block_' + this.data.block_number.toString()).set({
       block_data: this_block_data
     })
   }
@@ -482,6 +488,8 @@ quart_text = build_text_trial("Great job! You're a quarter of the way through th
 half_way_txt = build_text_trial("Great job! You're half way through this task.","","",true);
 three_quart_text = build_text_trial("Great job! You're three quarters of the way through this task.","","",true);
 
+// does the task end appropriately?
+
 //main_task.splice(Math.round(main_task.length/4), 0, quart_text)
 //main_task.splice(Math.round(main_task.length/2)+1, 0, half_way_txt)
 //main_task.splice(Math.round(3*main_task.length/4)+2, 0, three_quart_text)
@@ -516,45 +524,78 @@ var all_task_images = [];
 // want to make a function to run a block in which we run each image 20 times - we'll do 5 blocks.
 
 
-var make_loc_block = function(){
+var make_loc_block = function(block_number){
+
+  var n_reps = 1;
+
   var slot_machine_arr = [1, 1, 1, 1, 0, 0, 0];
   var img_numbers = [1,2,3,4, 1,2,3];
-  var theseInds = [0 , 1, 2, 3, 4, 5, 6, 7];
+  var theseInds = [0, 1, 2, 3, 4, 5, 6];
   var shuffledInds = jsPsych.randomization.repeat(theseInds,1);
 
-  var all_names = choice_names.concat(outcome_names);
 
-  for (im_idx = 0; im_idx < shuffledInds.length){
+  var block_trials = [];
+  for (var im_idx = 0; im_idx < shuffledInds.length; im_idx++){
+    //var this_im_idx = shuffledInds[]
+    var all_names = choice_names.concat(outcome_names);
+    all_names.splice(im_idx,1);
+    console.log(all_names)
     if (slot_machine_arr[im_idx] == 1){
-      var this_image = choice_images[im_idx];
-      var this_image_name = choice_names[im_idx];
+      var this_image = choice_images[img_numbers[im_idx] -1];
+      var this_image_name = choice_names[img_numbers[im_idx] -1];
       var this_slot_machine = true;
-      var this_other_name = ... come up with that...
+      //var this_other_name = ... come up with that...
+    }else{
+      var this_image = outcome_images[img_numbers[im_idx] - 1];
+      var this_image_name = outcome_names[img_numbers[im_idx] - 1];
+      var this_slot_machine = false;
     }
+    console.log(this_image)
+    // remove the other name from all_names and select a random name from the list...
+    var this_other_name = jsPsych.randomization.sampleWithReplacement(all_names, 1);
+
+    var loc_trial = {
+      type: 'evan-localizer-trial',
+      image: this_image,
+      image_name: this_image_name,
+      other_name: this_other_name,
+      slot_machine: this_slot_machine,
+      data: {
+        img_number: img_numbers[im_idx],
+        block_number: ('loc_' + block_number)
+      }
+    }
+    block_trials.push(loc_trial);
   }
 
-  var loc_trial = {
-    type: 'evan-localizer-trial',
-    image: choice_images[],
-    image_name: choice_names[1],
-    other_name: choice_names[2],
-    slot_machine: false,
-    data: {
-      img_number: this_img_number;
-    }
+  block_trials = jsPsych.randomization.repeat(block_trials,n_reps);
+
+  add_save_block_data(block_trials[block_trials.length - 1])
+
+  return block_trials
+}
+
+var n_loc_blocks = 5;
+var loc_exp = [];
+for (var i = 0; i < n_loc_blocks; i++){
+  var block_num = i + 1;
+  var this_loc_block  = make_loc_block(block_num);
+  var final_text_trial = build_text_trial("Great work! ","You've completed " + block_num + " of 5 blocks.", "Let's take a short break",true);
+  this_loc_block.push(final_text_trial);
+  loc_exp = loc_exp.concat(this_loc_block)
+
+}
+
+  loc_block = make_loc_block(1);
+  timeline = [full_screen];
+  timeline = timeline.concat(loc_exp)
+  /* start the experiment */
+  jsPsych.init({
+   timeline: timeline,
+   show_preload_progress_bar: false,
+   on_finish: function() {
+     jsPsych.data.get().localSave('csv','evan_practice_new.csv');
   }
-}
-
-
-timeline = [full_screen, loc_trial];
-
-/* start the experiment */
-jsPsych.init({
- timeline: timeline,
- show_preload_progress_bar: false,
- on_finish: function() {
-   jsPsych.data.get().localSave('csv','evan_practice_new.csv');
-}
 });
 
 }

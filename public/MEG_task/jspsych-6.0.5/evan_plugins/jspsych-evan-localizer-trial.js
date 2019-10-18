@@ -51,16 +51,16 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
 
     var handle_slow_response = function(){
       jsPsych.pluginAPI.clearAllTimeouts();
+      // kill keyboard listeners
+      if (typeof keyboardListener !== 'undefined') {
+        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+      }
       place_reward('Please respond faster!', 'slow_reply', par.slow_reply_x, par.slow_reply_y, par.slow_reply_font_size, 1);
       d3.select(".slow_reply")
         .attr("fill", "red")
       response.choice = "SLOW";
       response.accept = "NA";
 
-      // kill keyboard listeners
-      if (typeof keyboardListener !== 'undefined') {
-        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-      }
 
       wait_for_time(100, end_trial);
     }
@@ -109,23 +109,23 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
             .style("opacity",1)
             .text('+') */
 
-    d3.select('svg')
-            .append('line')
-            .attr('x1', par.w/3 + par.diode_width)
-            .attr('x2', par.w/3 + par.diode_width)
-            .attr('y1', 0)
-            .attr('y2', par.h)
-            .style('stroke-width', 1)
-            .style('stroke', 'white')
+//    d3.select('svg')
+//            .append('line')
+//            .attr('x1', par.w/3 + par.diode_width)
+//            .attr('x2', par.w/3 + par.diode_width)
+//            .attr('y1', 0)
+//            .attr('y2', par.h)
+//            .style('stroke-width', 1)
+//            .style('stroke', 'white')
 
-    d3.select('svg')
+/*    d3.select('svg')
             .append('line')
             .attr('x1', 2*par.w/3 + par.diode_width)
             .attr('x2', 2*par.w/3 + par.diode_width)
             .attr('y1', 0)
             .attr('y2', par.h)
             .style('stroke-width', 1)
-            .style('stroke', 'white')
+            .style('stroke', 'white') */
 
 
             //d3.select('.info_bkg').transition().style("opacity",1).duration(par.info_fadein_time);
@@ -157,7 +157,6 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
           }
         };
     };  // end of the function
-
 
 
     var loc_stage1 = function(){
@@ -198,6 +197,8 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
   }
 
   var remove_stage1 = function(){
+    window.cancelAnimationFrame(rafID1); // cancel the info animation frame
+    window.cancelAnimationFrame(rafID2);
     d3.selectAll(".stg1").transition().style("opacity",0).duration(par.loc_image_fade_time)
     data_temp[txt_offset + '_offset'] = window.performance.now();
     // wait a second
@@ -232,20 +233,20 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
   }
 
   var loc_stage2 = function(){
-    var box_width = par.w/7;
+    var box_width = par.w/5;
     var box_height = par.w/7;
     place_img_bkg('bk1', 2*par.w/5 - box_width/2 + par.diode_width ,
-     par.h/2 - box_height/2 - par.text_font_size/3, box_width, box_height, par.good_color_vec[1], 0);
+     par.h/2 - box_height/2 - 1*par.text_font_size/4, box_width, box_height, par.good_color_vec[1], 0);
     place_text(image_texts[shuffledInds[0]], 'stg2', 2*par.w/5 + par.diode_width, par.h/2 , par.text_font_size, 1, "White");
     place_text('1', 'stg2', 2*par.w/5 + par.diode_width, par.h/2 + .25*box_height , par.text_font_size/3, 1, "White");
 
-    place_img_bkg('bk2', 3*par.w/5 - box_width/2 + par.diode_width , par.h/2 - box_height/2 - par.text_font_size/3,
+    place_img_bkg('bk2', 3*par.w/5 - box_width/2 + par.diode_width , par.h/2 - box_height/2 - 1*par.text_font_size/4,
      box_width, box_height, par.good_color_vec[1], 0);
     place_text(image_texts[shuffledInds[1]], 'stg2', 3*par.w/5 + par.diode_width, par.h/2, par.text_font_size , 1, "White");
     place_text('2', 'stg2', 3*par.w/5 + par.diode_width, par.h/2 + .25*box_height , par.text_font_size/3, 1, "White");
 
     // set up the keypress
-    var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+    keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
         callback_function: handle_response,
         valid_responses: ['1', '2'],
         rt_method: 'performance', // check this
@@ -263,6 +264,7 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
       key: null
     };
   var  correct = null;
+  var feedback_time = null;
   //loc_stage1();
   //remove_stage1();
 //  loc_stage2();
@@ -291,7 +293,8 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
               "slot_machine_type": trial.slot_machine,
               "correct": correct,
               "rt": response.rt,
-              "key": response.key
+              "key": response.key,
+              "feedback_onset": feedback_time
               // need to add timing parameters
             };
 
@@ -305,11 +308,8 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
             add_timing_data(['loc_image', 'loc_image_diode'])
             console.log(trial_data)
 
-
             jsPsych.finishTrial(trial_data);
         } // end end_trial
-
-
 
 
     // end trial
