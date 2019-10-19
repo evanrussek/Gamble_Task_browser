@@ -1,4 +1,4 @@
-var safe_name = outcome_names[2];
+var safe_name = outcome_names[2]; // need to fix this.
 // for two-stim choice add parameter for whether to limit choice time.
 var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide1.JPG',
                             'Stimuli/uws_instr_slides_ver2_jpg/Slide2.JPG',
@@ -23,7 +23,6 @@ var instruction_pages1a = {
     pages: pages1a,
     show_clickable_nav: true
 }
-
 
 
 //instruc1a_trials.splice(2,0,rand_gen_info_quiz());

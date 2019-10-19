@@ -1,5 +1,5 @@
 // setup the fire base database stuff
-var subjectID = 'subj_1_10_18_2pm'
+// var subjectID = 'subj_1_10_18_2pm'
 // things like date would be good as well
 
 // firebase stuff
@@ -41,7 +41,7 @@ if (user) {
       date: new Date().toLocaleDateString(),
       start_time: new Date().toLocaleTimeString()
   })
-  define_trials(start_block);
+  define_trials(exp_block);
 }
 });
 

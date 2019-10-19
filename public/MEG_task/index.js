@@ -95,8 +95,6 @@ function task(uid){
     all_task_images = all_task_images.concat(instruction_pages_2b);
     all_task_images = all_task_images.concat(instruction_pages_2c);
 
-
-
      // compute bonus for the main task...
      var end_screen = {
      	type: 'html-button-response',

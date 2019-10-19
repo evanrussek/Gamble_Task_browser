@@ -3,7 +3,7 @@ function define_trials(start_block){
 
 // this start block thing has to be changed for naming and filtering...
 
-// fix trial number and block number for filtering ... 
+// fix trial number and block number for filtering ...
 
 console.log(start_block)
 if (typeof start_block == 'undefined'){
@@ -297,7 +297,6 @@ var add_save_block_data = function(this_trial){
     })
   }
 }
-// generates 160 non-matched trials
 var win_non_matched_trials = []; // remake the other trials...
 var loss_non_matched_trials = []; // remake the other trials...
 
@@ -349,7 +348,8 @@ var block_size = all_loss_trials.length/(n_blocks/2);
 var all_trials = []
 
 var loss_first = 1;
-var quiz_p = 1;
+
+var quiz_p = .2;
 
 
 if (loss_first){
@@ -376,7 +376,7 @@ if (loss_first){
 
     // add the loss block
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 2*i + 1;
+      loss_block[t].data.block_number = 6 + 2*i + 1;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
 
@@ -403,7 +403,7 @@ if (loss_first){
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 2*i + 2;
+      win_block[t].data.block_number = 6 + 2*i + 2;
     } // save data on the last trial.
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -435,7 +435,7 @@ if (loss_first){
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 2*i + 1;
+      win_block[t].data.block_number = 6 + 2*i + 1;
     }
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -463,7 +463,7 @@ if (loss_first){
     // add the win block
     loss_block.push(final_text_trial);
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 2*i + 2;
+      loss_block[t].data.block_number = 6 + 2*i + 2;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
     all_trials = all_trials.concat(loss_block);
@@ -483,10 +483,7 @@ for (var tn = 0; tn < all_trials.length; tn++){
   main_task.push(this_trial)
 }
 
-// add more than just half way marks - maybe 1/4 parts
-quart_text = build_text_trial("Great job! You're a quarter of the way through this task.","","",true);
-half_way_txt = build_text_trial("Great job! You're half way through this task.","","",true);
-three_quart_text = build_text_trial("Great job! You're three quarters of the way through this task.","","",true);
+
 
 // does the task end appropriately?
 
@@ -498,7 +495,7 @@ three_quart_text = build_text_trial("Great job! You're three quarters of the way
 
 task2_timeline = main_task;
 // filter so we're at the start block...
-task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
+
 
 /* create timeline */
 var timeline = [];
@@ -512,21 +509,13 @@ var full_screen = {
 // add to the end of every block
 
 
-
-// put together the full timeline
-timeline = [];
-timeline.push(full_screen);
-timeline = timeline.concat(task2_timeline);
-//timeline.push(end_screen);
-
 var all_task_images = [];
 
-// want to make a function to run a block in which we run each image 20 times - we'll do 5 blocks.
-
+/////////////// LOCALIZER STUFF /////////////////////////////////////////////////////////////
 
 var make_loc_block = function(block_number){
 
-  var n_reps = 1;
+  var n_reps = 20;
 
   var slot_machine_arr = [1, 1, 1, 1, 0, 0, 0];
   var img_numbers = [1,2,3,4, 1,2,3];
@@ -562,7 +551,7 @@ var make_loc_block = function(block_number){
       slot_machine: this_slot_machine,
       data: {
         img_number: img_numbers[im_idx],
-        block_number: ('loc_' + block_number)
+        block_number: block_number
       }
     }
     block_trials.push(loc_trial);
@@ -581,14 +570,106 @@ for (var i = 0; i < n_loc_blocks; i++){
   var block_num = i + 1;
   var this_loc_block  = make_loc_block(block_num);
   var final_text_trial = build_text_trial("Great work! ","You've completed " + block_num + " of 5 blocks.", "Let's take a short break",true);
+  final_text_trial.data.block_number = block_num;
   this_loc_block.push(final_text_trial);
-  loc_exp = loc_exp.concat(this_loc_block)
-
+  loc_exp = loc_exp.concat(this_loc_block);
 }
 
-  loc_block = make_loc_block(1);
+
+/////////////////////////////////// Structure TRAINING stuff //////////////////////////////////////
+
+//////// IF YOU SCAN THIS .... PROBABLY WON'T THOUGH //////////////////
+
+
+var make_struc_quiz_block = function(round_number){
+
+  var shuffled_idx = jsPsych.randomization.shuffle([0,1,2,3,4,5,6,7]);
+  var choice_options = [1,2,3,4,1,2,3,4];
+  var outcome_options = [1,1,1,1,2,2,2,2];
+  var p_vec = [.2, .4, .6, .8];
+
+  var this_round_trials = [];
+
+  for (var i = 0; i < 8; i++){
+    var this_idx = shuffled_idx[i];
+    var this_choice_number = choice_options[this_idx];
+    var this_outcome_number = outcome_options[this_idx];
+    if (this_outcome_number == 1){
+      var correct_p = p_vec[this_choice_number - 1]
+    }else{
+      var correct_p =  1 - p_vec[this_choice_number - 1]
+    }
+
+    // make the trial
+    var this_trial = {
+      type: "evan-struc-quiz",
+      choice_image: choice_images[this_choice_number - 1],
+      outcome_image: outcome_images[this_outcome_number - 1],
+      correct_p: correct_p, // 1 - 4
+      limit_time: true,
+      data:{
+        phase: 'TRAIN STRUC QUIZ',
+        choice_number: this_choice_number,
+        outcome_number: this_outcome_number,
+      }
+    }
+    // append this trial to the block
+    this_round_trials.push(this_trial)
+  }
+  var feedback_trial = {
+    type: 'evan-display-text',
+    line_1: function(){
+                      var n_correct = jsPsych.data.get().last(8).filter({correct: 1}).count()
+                      var this_text = "You answered " + n_correct +" of the 8 questions correctly.";
+                      return this_text;
+                    },
+    line_2: "You've completed " + round_number + " out of 12 rounds.",
+    line_3: "",
+    wait_for_press: true,
+    data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
+  }
+  this_round_trials.push(feedback_trial);
+  return this_round_trials;
+}
+
+
+var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG';
+// this will change based on the task...
+
+// maybe this should be 2 blocks...
+var model_learning = [];
+var n_rounds = 12;
+for (var i = 0; i < n_rounds; i++){
+	var schematic = {
+	    type: 'instructions',
+	    pages: ['<img src= "'+ schematic_slide +  '" alt = "" >'],
+	    show_clickable_nav: false,
+      key_forward: '4'
+	}
+	model_learning.push(schematic);
+	var quiz_trials = make_struc_quiz_block(i + 1);
+	model_learning = model_learning.concat(quiz_trials);
+}
+//////////////////////////////////
+
+// add in the
+
+
+/////////// PUT THE TIMELINE TOGETHER
+
+
+task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
+loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
+
+
+
   timeline = [full_screen];
-  timeline = timeline.concat(loc_exp)
+  timeline = timeline.concat(model_learning);
+//  timeline = timeline.concat(loc_exp)
+//  timeline = timeline.concat(task2_timeline)
+
+
+  console.log(timeline)
   /* start the experiment */
   jsPsych.init({
    timeline: timeline,

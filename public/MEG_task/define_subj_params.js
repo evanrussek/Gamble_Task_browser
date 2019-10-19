@@ -1,26 +1,32 @@
 // this could also be a trial // for the scanner, add the date and time, and other info
 
 //
-//var subject_num = 1; // need to get this from JSPSYCH
-//var date = 'aug_19_2019';
+var subject_num = 1; // need to get this from JSPSYCH
+var date = 'aug_19_2019';
+var subjectID = 'subj_1_10_18_2pm'
 var time = '1716';
 var loss_first = false;
 
+
+
 // phases are loc, learn, task
 
-// fix block starting thing ... 
+// fix block starting thing ...
 // 5 localizer parts,
 // 1 model learning block ...
 // 8 task blocks,
 
-var start_phase = "LOC";
-
-var start_block = 1;
+var start_phase = "MAIN";
+var start_block = 2;
 
 if (start_phase == "LOC"){
       var exp_block = start_block;
 }else if (start_phase == "LEARN"){
-      var exp_block =
+      var exp_block = 6;
+} else if (start_phase == "MAIN"){
+      var exp_block = start_block + 6;
+} else{
+      console.log("WRONGE PHASE NAME");
 }
 
 //
