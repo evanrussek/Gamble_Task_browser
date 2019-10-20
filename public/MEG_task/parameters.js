@@ -13,10 +13,11 @@ var define_parameters = function(exp_stage){
   var loc_max_response_time = 600;
   var loc_pause_resp_time =  50;
   var loc_feedback_time = 50;
-  var outcome_diode_time = 400;
-  var info_diode_time = 500;
-  var choice_stim_diode_time = 200;
-  var loc_image_diode_time = 300;
+
+  var outcome_diode_time = 500; // this is middle...
+  var info_diode_time = 1000; // this could be 1 second
+  var choice_stim_diode_time = 50; // this is flexible, but could potentilaly be fast
+  var loc_image_diode_time = 200; // this one 800 msec its on
 
   var loc_image_time = 800;
   var loc_image_fade_time = 200;

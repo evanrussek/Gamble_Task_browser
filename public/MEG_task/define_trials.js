@@ -583,6 +583,8 @@ for (var i = 0; i < n_loc_blocks; i++){
 
 var make_struc_quiz_block = function(round_number){
 
+  // let's
+
   var shuffled_idx = jsPsych.randomization.shuffle([0,1,2,3,4,5,6,7]);
   var choice_options = [1,2,3,4,1,2,3,4];
   var outcome_options = [1,1,1,1,2,2,2,2];
@@ -654,6 +656,41 @@ for (var i = 0; i < n_rounds; i++){
 
 // add in the
 
+var welcome_slide ='Stimuli/MEG_slides/Slide2.JPG';
+var preloc_slide ='Stimuli/MEG_slides/Slide3.JPG';
+var pretrain_slide ='Stimuli/MEG_slides/Slide4.JPG';
+var pretask_slide ='Stimuli/MEG_slides/Slide5.JPG';
+
+var instr1 = {
+    type: 'instructions',
+    pages: ['<img src= "'+ welcome_slide +  '" alt = "" >',
+            '<img src= "'+ preloc_slide +  '" alt = "" >'],
+    show_clickable_nav: false,
+    key_forward: '4',
+    data: {
+      block_number: 1
+    }
+}
+
+var pretrain = {
+    type: 'instructions',
+    pages: ['<img src= "'+ pretrain_slide +  '" alt = "" >'],
+    show_clickable_nav: false,
+    key_forward: '4',
+    data: {
+      block_number: 6
+    }
+}
+
+var pretask = {
+    type: 'instructions',
+    pages: ['<img src= "'+ pretask_slide +  '" alt = "" >'],
+    show_clickable_nav: false,
+    key_forward: '4',
+    data: {
+      block_number: 7
+    }
+}
 
 /////////// PUT THE TIMELINE TOGETHER
 
@@ -662,12 +699,14 @@ task2_timeline = task2_timeline.filter(function(el){return el.data.block_number 
 loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
 
 
-
   timeline = [full_screen];
-  timeline = timeline.concat(model_learning);
-//  timeline = timeline.concat(loc_exp)
-//  timeline = timeline.concat(task2_timeline)
+  timeline.push(instr1);
 
+timeline = timeline.concat(loc_exp)
+timeline.push(pretrain);
+timeline = timeline.concat(model_learning);
+timeline.push(pretask);
+timeline = timeline.concat(task2_timeline);
 
   console.log(timeline)
   /* start the experiment */

@@ -16,8 +16,8 @@ var loss_first = false;
 // 1 model learning block ...
 // 8 task blocks,
 
-var start_phase = "MAIN";
-var start_block = 2;
+var start_phase = "LOC";
+var start_block = 1;
 
 if (start_phase == "LOC"){
       var exp_block = start_block;
