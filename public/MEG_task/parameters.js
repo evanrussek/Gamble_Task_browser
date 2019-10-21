@@ -16,10 +16,11 @@ var define_parameters = function(exp_stage){
   var loc_pause_resp_time =  50;
   var loc_feedback_time = 50;
 
+  var struc_quiz_diode_time = 100;
   var outcome_diode_time = 500; // this is middle...
   var info_diode_time = 1000; // this could be 1 second
   var choice_stim_diode_time = 50; // this is flexible, but could potentilaly be fast
-  var loc_image_diode_time = 200; // this one 800 msec its on
+  var loc_image_diode_time = 250; // this one 800 msec its on
 
   var loc_image_time = 800;
   var loc_image_fade_time = 200;
@@ -90,7 +91,7 @@ var define_parameters = function(exp_stage){
   var background_height = 3*h/4;
 
   var diode_height = background_height/2;
-  var diode_width = background_width/10;
+  var diode_width = 0; //background_width/10;
   //diode_width = background_width/10;
 
 
@@ -231,6 +232,7 @@ var define_parameters = function(exp_stage){
     loc_image_time: loc_image_time,
     loc_pre_trial_time: loc_pre_trial_time,
     outcome_diode_time: outcome_diode_time,
+    struc_quiz_diode_time: struc_quiz_diode_time,
     info_diode_time: info_diode_time,
     choice_stim_diode_time: choice_stim_diode_time,
     diode_width: diode_width,
@@ -368,7 +370,7 @@ par = define_parameters("trial");
 
 var place_diode = function(background_height, background_width, h){
 
-  var diode_height = background_height/2;
+  var diode_height = background_height/16;
   var diode_width = background_width/10;
 
   d3.select("svg")
@@ -376,7 +378,7 @@ var place_diode = function(background_height, background_width, h){
     .attr("class", "diode")
     .attr("height", diode_height)
     .attr("width", diode_width)
-    .attr("y", h/2 - diode_height/2)
+    .attr("y", h - diode_height)
     .attr("x", 0)
     .style("fill", "black")
     .style("opacity", 0)

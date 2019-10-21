@@ -7,8 +7,6 @@ var subjectID = 'subj_1_10_18_2pm'
 var time = '1716';
 var loss_first = false;
 
-
-
 // phases are loc, learn, task
 
 // fix block starting thing ...
@@ -16,7 +14,7 @@ var loss_first = false;
 // 1 model learning block ...
 // 8 task blocks,
 
-var start_phase = "LOC";
+var start_phase = "LEARN";
 var start_block = 1;
 
 if (start_phase == "LOC"){

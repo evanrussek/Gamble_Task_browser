@@ -581,7 +581,7 @@ for (var i = 0; i < n_loc_blocks; i++){
 //////// IF YOU SCAN THIS .... PROBABLY WON'T THOUGH //////////////////
 
 
-var make_struc_quiz_block = function(round_number){
+var make_struc_quiz_block = function(round_number, block_number){
 
   // let's
 
@@ -613,7 +613,8 @@ var make_struc_quiz_block = function(round_number){
         phase: 'TRAIN STRUC QUIZ',
         choice_number: this_choice_number,
         outcome_number: this_outcome_number,
-      }
+        block_number: block_number
+      } // want a block number here...
     }
     // append this trial to the block
     this_round_trials.push(this_trial)
@@ -628,7 +629,8 @@ var make_struc_quiz_block = function(round_number){
     line_2: "You've completed " + round_number + " out of 12 rounds.",
     line_3: "",
     wait_for_press: true,
-    data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
+    data: {phase: 'INFO',
+          block_number: block_number} // note this shows up in main phase as well so isn't train per se
   }
   this_round_trials.push(feedback_trial);
   return this_round_trials;
@@ -646,15 +648,18 @@ for (var i = 0; i < n_rounds; i++){
 	    type: 'instructions',
 	    pages: ['<img src= "'+ schematic_slide +  '" alt = "" >'],
 	    show_clickable_nav: false,
-      key_forward: '4'
+      key_forward: '4',
+      data: {
+        block_number: 6
+      }
 	}
 	model_learning.push(schematic);
-	var quiz_trials = make_struc_quiz_block(i + 1);
+	var quiz_trials = make_struc_quiz_block(i + 1, 6);
 	model_learning = model_learning.concat(quiz_trials);
 }
-//////////////////////////////////
 
-// add in the
+add_save_block_data[model_learning[model_learning.length - 2]]
+//////////////////////////////////
 
 var welcome_slide ='Stimuli/MEG_slides/Slide2.JPG';
 var preloc_slide ='Stimuli/MEG_slides/Slide3.JPG';
@@ -702,19 +707,26 @@ pre_text_trial2.data.block_number = 6;
 pre_text_trial3 = build_text_trial("", "Waiting for experimenter", "",true);
 pre_text_trial3.data.block_number = 7;
 
-task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
-loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
-
-timeline = [full_screen];
-timeline.push(instr1);
-timeline.push(pre_text_trial1);
+//task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
+//loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
+//full_screen
+timeline_main = [];
+timeline_main.push(instr1);
+timeline_main.push(pre_text_trial1);
 
 timeline = timeline.concat(loc_exp)
-timeline.push(pretrain);
-timeline = timeline.concat(model_learning);
-timeline.push(pretask);
-timeline.push(pre_text_trial3);
-timeline = timeline.concat(task2_timeline);
+timeline_main.push(pretrain);
+timeline_main = timeline_main.concat(model_learning);
+timeline_main.push(pretask);
+timeline_main.push(pre_text_trial3);
+timeline_main = timeline_main.concat(task2_timeline);
+
+console.log(model_learning)
+
+timeline_main = timeline_main.filter(function(el){return el.data.block_number >= start_block})
+
+timeline = [full_screen];
+timeline = timeline.concat(timeline_main);
 
   console.log(timeline)
   /* start the experiment */

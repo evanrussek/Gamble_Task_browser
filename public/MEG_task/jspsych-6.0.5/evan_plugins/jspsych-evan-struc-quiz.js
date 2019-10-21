@@ -64,6 +64,7 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
     var frame_count_stage;
     var frame_count_diode;
     var data_temp = {};
+    txt_offset = 'quiz_im';
 
     var check_timeout = function(timestamp) {
 
@@ -71,9 +72,9 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
 
         frame_count++;
         // diode specific timeout
-      //  console.log('frame_count_diode: ' + frame_count_diode)
-      //  console.log('frame_count_stage: ' + frame_count_stage)
-      //  console.log('frame_count: '+  frame_count)
+    //    console.log('frame_count_diode: ' + frame_count_diode)
+    //    console.log('frame_count_stage: ' + frame_count_stage)
+    //    console.log('frame_count: '+  frame_count)
         if (frame_count >= frame_count_diode && diode_on) {
             //document.querySelector('#diode').remove();
             remove_diode();
@@ -148,43 +149,52 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
         wait_for_time(pause_time + feedback_time,end_trial)
       }
     }
+    txt_offset = 'quiz_im';
 
     var place_images = function(){
 
-        var txt_offset = 'quiz_im';
+      rafID1 = window.requestAnimationFrame(function() {
+          rafID2 = window.requestAnimationFrame(function(timestamp) {
 
-      // place the diode here
-          // place the money...
-        //  place_img_bkg("info",2*par.w/3 - .8*par.img_bkg_width/2 + par.diode_width, 1.7*par.h/5 - .8*par.img_bkg_height/2, .8*par.img_bkg_width,.8*par.img_bkg_height,par.img_bkg_color,1);
-          place_img(trial.outcome_image, "info", 2*par.w/3 - .8*par.image_width + par.diode_width,  1.7*par.h/5 - .8*par.image_height/2, .8*par.image_width, .8*par.image_height, 1);
+            // place the diode here
+                // place the money...
+              //  place_img_bkg("info",2*par.w/3 - .8*par.img_bkg_width/2 + par.diode_width, 1.7*par.h/5 - .8*par.img_bkg_height/2, .8*par.img_bkg_width,.8*par.img_bkg_height,par.img_bkg_color,1);
+                place_img(trial.outcome_image, "info", 2*par.w/3 - .8*par.image_width + par.diode_width,  1.7*par.h/5 - .8*par.image_height/2, .8*par.image_width, .8*par.image_height, 1);
 
-          var img_bkg_width = par.choice_stim_bkg_width/2;
-          var img_bkg_height = par.choice_stim_bkg_height/2;
-          var choice_img_width = par.choice_stim_width/2;
-          var choice_img_height = par.choice_stim_height/2;
-          // place the slot machine...
-//          place_img_bkg("choice_stim",par.w/3 - img_bkg_height/2 + par.diode_width ,1.7*par.h/5 - img_bkg_height/2, img_bkg_width,img_bkg_height, par.choice_stim_bkg_color, 1);
-          place_img(trial.choice_image, "choice_stim cL", par.w/3 - choice_img_width/2 + par.diode_width, 1.7*par.h/5 - choice_img_height/2, choice_img_width,choice_img_height,1);
+                var img_bkg_width = par.choice_stim_bkg_width/2;
+                var img_bkg_height = par.choice_stim_bkg_height/2;
+                var choice_img_width = par.choice_stim_width/2;
+                var choice_img_height = par.choice_stim_height/2;
+                // place the slot machine...
+      //          place_img_bkg("choice_stim",par.w/3 - img_bkg_height/2 + par.diode_width ,1.7*par.h/5 - img_bkg_height/2, img_bkg_width,img_bkg_height, par.choice_stim_bkg_color, 1);
+                place_img(trial.choice_image, "choice_stim cL", par.w/3 - choice_img_width/2 + par.diode_width, 1.7*par.h/5 - choice_img_height/2, choice_img_width,choice_img_height,1);
+                display_diode();
 
-      //    display_diode();
+                // set up the keypress
+                keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+                    callback_function: handle_response,
+                    valid_responses: ['1', '2', '3', '4'],
+                    rt_method: 'performance', // check this
+                    persist: false,
+                    allow_held_key: false
+                  });
 
-        //  time_onset = window.performance.now();
-        //  data_temp[txt_offset + '_diode_onset'] = time_onset;
-        //  data_temp[txt_offset + '_onset'] = time_onset;
-                      // set the diode_timing global
-        //  diode_on = true
-        //  frame_count_diode = Math.round(par.struc_quiz_diode_time / estimated_frame_duration);
-                      //console.log('frame_count_diode ' + frame_count_diode)
-        //  frame_count_stage = function(){};//Math.round(par.info_time / estimated_frame_duration);
-        //  frame_count = 0;
-        //  next_stage_fun = function(){};
-        //  count_time = true;
 
-          // wait for info time par.info_time
-          //if (count_time == true){
-        //  window.requestAnimationFrame(check_timeout);
-
-        }
+                time_onset = window.performance.now();
+                data_temp[txt_offset + '_diode_onset'] = time_onset;
+                data_temp[txt_offset + '_onset'] = time_onset;
+                            // set the diode_timing global
+                diode_on = true
+                frame_count_diode = Math.round(par.struc_quiz_diode_time / estimated_frame_duration);
+                            //console.log('frame_count_diode ' + frame_count_diode)
+                frame_count_stage = function(){};//Math.round(par.info_time / estimated_frame_duration);
+                frame_count = 0;
+                next_stage_fun = function(){}; // tne next stage func should be about taking too long, but maybe we don't need it...
+                count_time = true;
+                window.requestAnimationFrame(check_timeout);
+        })
+      })
+    }
 
       var place_options = function(){
         // place question
@@ -239,15 +249,6 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
         place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, 2.2*par.h/3, par.text_font_size/3, 1, "White");
 
 
-        // set up the keypress
-        keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-            callback_function: handle_response,
-            valid_responses: ['1', '2', '3', '4'],
-            rt_method: 'performance', // check this
-            persist: false,
-            allow_held_key: false
-          });
-
 
         /// make them respond fast??? ///
         if (trial.limit_time){
@@ -258,10 +259,18 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
       }
 
 
-
   place_options()
-  var iti_time = 500;
-  wait_for_time(iti_time, place_images);
+  //var iti_time = 500; // randomize this...
+  var iti_time = (Math.random() * (700 - 500) ) + 500;
+
+  estimate_frame_rate(function(frame_rate){
+      estimated_frame_duration = frame_rate;
+  //    console.log('frame_rate: ' + estimated_frame_duration)
+      setTimeout(function(){place_images();}, 100);
+  }, iti_time - 100, true);
+
+
+  //wait_for_time(iti_time, place_images);
 
   var response = {
           rt: null,
@@ -277,6 +286,7 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
               jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
             }
             d3.select('svg').remove()
+            data_temp[txt_offset + '_offset'] =  window.performance.now();
 
             var trial_data = {
               "outcome_image": trial.outcome_image,
@@ -288,6 +298,18 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
               "key": response.key
               // need to add timing parameters
             };
+
+
+                      // adding timing data
+            function add_timing_data(vars) {
+                    for (var i = 0; i < vars.length; i++) {
+                        trial_data[vars[i] + '_onset'] = data_temp[vars[i] + '_onset'];
+                        trial_data[vars[i] + '_offset'] = data_temp[vars[i] + '_offset'];
+                              };
+                          };
+                      add_timing_data(['quiz_im', 'quiz_im_diode'])
+                      console.log(trial_data)
+
 
             jsPsych.finishTrial(trial_data);
           } // end end_trial
