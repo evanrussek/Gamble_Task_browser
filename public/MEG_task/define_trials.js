@@ -693,19 +693,27 @@ var pretask = {
 }
 
 /////////// PUT THE TIMELINE TOGETHER
+pre_text_trial1 = build_text_trial("", "Waiting for experimenter", "",true);
+pre_text_trial1.data.block_number = 1;
 
+pre_text_trial2 = build_text_trial("", "Waiting for experimenter", "",true);
+pre_text_trial2.data.block_number = 6;
+
+pre_text_trial3 = build_text_trial("", "Waiting for experimenter", "",true);
+pre_text_trial3.data.block_number = 7;
 
 task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
 loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
 
-
-  timeline = [full_screen];
-  timeline.push(instr1);
+timeline = [full_screen];
+timeline.push(instr1);
+timeline.push(pre_text_trial1);
 
 timeline = timeline.concat(loc_exp)
 timeline.push(pretrain);
 timeline = timeline.concat(model_learning);
 timeline.push(pretask);
+timeline.push(pre_text_trial3);
 timeline = timeline.concat(task2_timeline);
 
   console.log(timeline)

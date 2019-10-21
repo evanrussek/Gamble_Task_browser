@@ -1,3 +1,5 @@
+//diode_width = background_width/10;
+
 var define_parameters = function(exp_stage){
 
   // figure out what should differentiate these...
@@ -88,7 +90,9 @@ var define_parameters = function(exp_stage){
   var background_height = 3*h/4;
 
   var diode_height = background_height/2;
-  var diode_width = background_width/8;
+  var diode_width = background_width/10;
+  //diode_width = background_width/10;
+
 
   var fixation_x = w/2 + diode_width;
   var fixation_y = h/2;
@@ -365,7 +369,7 @@ par = define_parameters("trial");
 var place_diode = function(background_height, background_width, h){
 
   var diode_height = background_height/2;
-  var diode_width = background_width/8;
+  var diode_width = background_width/10;
 
   d3.select("svg")
     .append("rect")
