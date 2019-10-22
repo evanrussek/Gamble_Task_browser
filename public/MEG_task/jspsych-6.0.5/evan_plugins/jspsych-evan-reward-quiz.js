@@ -32,6 +32,10 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
       use_image: {
         type: jsPsych.plugins.parameterType.INT,
         default: undefined
+      },
+      MEG_buttons: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: false
       }
     }
   }
@@ -117,8 +121,19 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
     }
 
     // place money
-    var rew_x = [par.w/5 + par.diode_width, 2*par.w/5 + par.diode_width,
-       3*par.w/5 + par.diode_width, 4*par.w/5 + par.diode_width];
+
+
+    if (trial.MEG_buttons){
+        var rew_x = [par.w/2, 1.2*par.w/2, par.w/2, .8*par.w/2];
+        //24*par.h/40
+        var rew_y = [.95*par.h/2, 1.15*par.h/2, 1.35*par.h/2, 1.15*par.h/2];
+    }else{
+      var rew_x = [par.w/5 + par.diode_width, 2*par.w/5 + par.diode_width,
+         3*par.w/5 + par.diode_width, 4*par.w/5 + par.diode_width];
+         var rew_y = [1.1*par.h/2, 1.1*par.h/2,
+            1.1*par.h/2, 1.1*par.h/2];
+    }
+
     var money_vals = [trial.outcome_val, trial.other_vals[0], trial.other_vals[1], trial.other_vals[2]];
     var myInds = [0,1,2,3];
     var shuffledInds = jsPsych.randomization.repeat(myInds,1);
@@ -135,27 +150,23 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
 
     for (var i = 0; i < 4; i++){
       var k = i+1;
-      place_img_bkg(["bk" + k], box_x[i], box_y, box_width, box_height, par.good_color_vec[1], 0);
+      place_img_bkg(["bk" + k], rew_x[i] - box_width/2, rew_y[i] - box_width/2, box_width, box_height, par.good_color_vec[1], 0);
     }
 
     for (var i = 0; i < 4; i++){
-      place_text(money_vals[shuffledInds[i]], 'Prompt', rew_x[i], par.h/2, par.text_font_size/2, 1, "Yellow");
+      place_text(money_vals[shuffledInds[i]], 'Prompt', rew_x[i], rew_y[i], par.text_font_size/2, 1, "Yellow");
     }
 
     // place key under it
     var key_vals = [1, 2, 3, 4];
 
     for (var i = 0; i < 4; i++){
-      place_text(key_vals[i], 'Prompt', rew_x[i], 22.5*par.h/40, par.text_font_size/3, 1, "White");
+      place_text(key_vals[i], 'Prompt', rew_x[i], 1.05*rew_y[i], par.text_font_size/3, 1, "White");
     }
 
-    place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, 23.5*par.h/40, par.text_font_size/3, 1, "White");
+      place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, rew_y[1], par.text_font_size/3, 1, "White");
 
-    var quiz_on_time = window.performance.now();
-//    display_diode();
-//    diode_on = true;
-//    count_time = true
-
+      var quiz_on_time = window.performance.now();
 
       var handle_response = function(info){
         console.log('response heard')

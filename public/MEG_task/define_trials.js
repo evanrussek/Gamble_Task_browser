@@ -27,7 +27,17 @@ function round10(x)
     return Math.ceil(x/10)*10;
 }
 
-
+var build_text_trial = function(line_1,line_2,line_3, wait_for_exp){
+  var text_trial = {
+    type: 'evan-display-text',
+    line_1: line_1,
+    line_2: line_2,
+    line_3: line_3,
+    wait_for_exp: wait_for_exp,
+    data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
+  }
+  return text_trial;
+}
 
 function rand_gen_rew_quiz_main(loss_trial){
 
@@ -349,7 +359,7 @@ var all_trials = []
 
 var loss_first = 1;
 
-var quiz_p = .2;
+var quiz_p = 1;
 
 
 if (loss_first){
@@ -564,13 +574,25 @@ var make_loc_block = function(block_number){
   return block_trials
 }
 
+loc_pct_bonus = null;
+
 var n_loc_blocks = 5;
 var loc_exp = [];
 for (var i = 0; i < n_loc_blocks; i++){
   var block_num = i + 1;
   var this_loc_block  = make_loc_block(block_num);
-  var final_text_trial = build_text_trial("Great work! ","You've completed " + block_num + " of 5 blocks.", "Let's take a short break",true);
+  var final_text_trial = build_text_trial(" ","You've completed " + block_num + " of 5 blocks.", "Let's take a short break",true);
   final_text_trial.data.block_number = block_num;
+  final_text_trial.line_1 = function(){
+    var this_block_number = block_num;//this.data.block_number;
+    var prop_correct = jsPsych.data.get().filter({trial_type: 'evan-localizer-trial',
+                                                block_number: this_block_number}).select('correct').mean()
+    var pct_correct = Math.round(100*prop_correct);
+    loc_pct_bonus = pct_correct;
+    var str = "You answered " + pct_correct + "% of trials correctly";
+    return str
+  }
+  //final_text_trial.data.block_number = block_num;
   this_loc_block.push(final_text_trial);
   loc_exp = loc_exp.concat(this_loc_block);
 }
@@ -580,7 +602,7 @@ for (var i = 0; i < n_loc_blocks; i++){
 
 //////// IF YOU SCAN THIS .... PROBABLY WON'T THOUGH //////////////////
 
-
+struc_pct_correct = null;
 var make_struc_quiz_block = function(round_number, block_number){
 
   // let's
@@ -625,6 +647,7 @@ var make_struc_quiz_block = function(round_number, block_number){
                       var n_correct = jsPsych.data.get().last(8).filter({correct: 1}).count()
                       var this_text = "You answered " + n_correct +" of the 8 questions correctly.";
                       return this_text;
+                      struc_pct_correct = n_correct/8;
                     },
     line_2: "You've completed " + round_number + " out of 12 rounds.",
     line_3: "",
@@ -657,6 +680,7 @@ for (var i = 0; i < n_rounds; i++){
 	var quiz_trials = make_struc_quiz_block(i + 1, 6);
 	model_learning = model_learning.concat(quiz_trials);
 }
+
 
 add_save_block_data[model_learning[model_learning.length - 2]]
 //////////////////////////////////
@@ -706,6 +730,68 @@ pre_text_trial2.data.block_number = 6;
 
 pre_text_trial3 = build_text_trial("", "Waiting for experimenter", "",true);
 pre_text_trial3.data.block_number = 7;
+const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length
+
+var end_screen = {
+     	type: 'html-button-response',
+         timing_post_trial: 0,
+         choices: ['End Task'],
+     	//on_start: function(){
+        //    var task_data = jsPsych.data.get().json();
+            //db.collection('gambletask').doc('run3_v').collection('subjects').doc(uid).collection('rounds').doc(subjectID.toString()).update({
+            //    task_data: task_data})
+          //  },
+         is_html: true,
+         stimulus: function(){
+           		var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('points_received').values
+           		if (point_vals.length > 0){
+           			var practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
+           			var practice_bonus_trial_points_avg =  Math.round(arrAvg(practice_bonus_trial_points));
+           			var practice_quiz_pct = jsPsych.data.get().filter({trial_type: 'evan-info-quiz'}).select('correct').mean();
+           			var practice_quiz_pct = Math.round(100*practice_quiz_pct);
+           		} else{
+           			var practice_bonus_trial_points_avg= 0
+           			var practice_quiz_pct = 0;
+           		}
+
+         		var test_point_vals = jsPsych.data.get().filterCustom(function(trial){
+         											return ((trial.points_received != null) & (trial.phase == 'TEST'));
+         										}).select('points_received').values
+         		if (test_point_vals.length > 0){
+         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 4)
+         			var test_bonus_trial_points_avg =  Math.round(arrAvg(rand_test_point_vals));
+         			var test_quiz_perf = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').mean()
+         			var test_quiz_pct = Math.round(100*test_quiz_perf);
+         		}else{
+         			var test_quiz_pct = 0;
+         			var test_bonus_trial_points_avg = 0;
+         		}
+
+         		// write this data
+         		var bonus_data = {
+         		//	'practice_quiz_pct': practice_quiz_pct,
+         		//	'practice_bonus_trial_points_avg': practice_bonus_trial_points_avg,
+         			'test_quiz_pct': test_quiz_pct,
+         			'test_bonus_trial_points_avg': test_bonus_trial_points_avg
+         		};
+         		jsPsych.data.write(bonus_data)
+                var task_data = jsPsych.data.get().json();
+                db.collection('gambletask').doc('MEG_1').collection('computers').
+                                  doc(uid).collection('subjects').doc(subjectID).collection('taskdata')
+                                  .doc('end').set({
+                                    bonus_data: bonus_data,
+                                    end_time: new Date().toLocaleTimeString()})
+         		var string = 'You have finished the task. Thank you for your contribution to science! \
+         					For the attention checks  you got ' + test_quiz_pct + ' percent correct. On four randomly selected games, \
+         					the average number of points you collected was '  + test_bonus_trial_points_avg + '. \
+         					 Your bonus will be based on these results.';
+
+         		return string;
+         	},
+        //on_finish: function(){
+        //    window.location = "https://app.prolific.co/submissions/complete?cc=V23QBQM3";
+      //  }
+     }
 
 //task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
 //loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
@@ -726,7 +812,9 @@ console.log(model_learning)
 timeline_main = timeline_main.filter(function(el){return el.data.block_number >= start_block})
 
 timeline = [full_screen];
-timeline = timeline.concat(timeline_main);
+//timeline = timeline.concat(loc_exp.slice(loc_exp.length - 5, loc_exp.length));
+timeline = timeline.concat(task2_timeline);
+timeline.push(end_screen);
 
   console.log(timeline)
   /* start the experiment */

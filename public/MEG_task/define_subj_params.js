@@ -27,7 +27,6 @@ if (start_phase == "LOC"){
       console.log("WRONGE PHASE NAME");
 }
 
-//
 
 var cond_idx = subject_num%12;
 

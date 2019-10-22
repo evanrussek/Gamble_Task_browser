@@ -28,6 +28,10 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
       limit_time: {
         type: jsPsych.plugins.parameterType.FLOAT,
         default: false
+      },
+      MEG_buttons: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: true
       }
     }
   }
@@ -219,9 +223,17 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
                         .attr("stroke", "white");
 
         // place money
-        var prob_x = [par.w/5, 2*par.w/5, 3*par.w/5, 4*par.w/5];
+        if (trial.MEG_buttons){
+          var prob_x = [par.w/2, 1.2*par.w/2, par.w/2, .8*par.w/2];
+          //24*par.h/40
+          var prob_y = [1.2*par.h/2, 1.4*par.h/2, 1.6*par.h/2, 1.4*par.h/2];
+          //var prob_y = []
+        }else{
+          var prob_x = [par.w/5, 2*par.w/5, 3*par.w/5, 4*par.w/5];
+          var prob_y = [24*par.h/40, 24*par.h/40, 24*par.h/40, 24*par.h/40];
+        }
+      //  var prob_x = [par.w/5, 2*par.w/5, 3*par.w/5, 4*par.w/5];
         var prob_vals = [.2, .4, .6, .8];
-
 
         // background boxes
         var box_width = par.w/10;
@@ -232,21 +244,26 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
 
         for (var i = 0; i < 4; i++){
           var k = i+1;
-          place_img_bkg(["bk" + k], box_x[i] + par.diode_width, box_y, box_width, box_height, par.good_color_vec[1], 0);
+          place_img_bkg(["bk" + k], prob_x[i] - box_width/2, prob_y[i] - box_height/2, box_width, box_height, par.good_color_vec[1], 0);
         }
 
         for (var i = 0; i < 4; i++){
-          place_text(100*prob_vals[i] + '%', 'Prompt', prob_x[i] + par.diode_width, 24*par.h/40, par.text_font_size/2, 1, "Yellow");
+          place_text(100*prob_vals[i] + '%', 'Prompt', prob_x[i] + par.diode_width,prob_y[i], par.text_font_size/2, 1, "Yellow");
         }
 
         // place key under it
         var key_vals = [1, 2, 3, 4];
 
         for (var i = 0; i < 4; i++){
-          place_text(key_vals[i], 'Prompt', prob_x[i] + par.diode_width, 2*par.h/3, par.text_font_size/3, 1, "White");
+          place_text(key_vals[i], 'Prompt', prob_x[i] + par.diode_width, 1.05*prob_y[i], par.text_font_size/3, 1, "White");
         }
 
-        place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, 2.2*par.h/3, par.text_font_size/3, 1, "White");
+        if (trial.MEG_buttons){
+          place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, prob_y[1], par.text_font_size/3, 1, "White");
+
+        }else{
+          place_text('Key Press ', 'Prompt', par.w/2 + par.diode_width, 2.2*par.h/3, par.text_font_size/3, 1, "White");
+        }
 
 
 
