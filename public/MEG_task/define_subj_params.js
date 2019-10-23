@@ -1,5 +1,8 @@
 // this could also be a trial // for the scanner, add the date and time, and other info
 
+
+// want a screen that will ask this... (could also break up each time...)
+
 //
 var subject_num = 1; // need to get this from JSPSYCH
 var date = 'aug_19_2019';
@@ -28,16 +31,17 @@ if (start_phase == "LOC"){
 }
 
 
-var cond_idx = subject_num%12;
+// 3 settings for safe value, ... , 2 settings for whether loss is first or not... - so there's 6 settings of the task...
+var cond_idx = subject_num%6;
 
 var both_idx_vec = [[0,0], [0,1], [0,2],
-      [1,0], [1,1], [1,2],
-      [2,0], [2,1], [2,2],
-      [3,0], [3,1], [3,2]];
+                  [1,0], [1,1], [1,2]];
+
+// 2 images can be extreme... //
 
 // define these states from counterbalance / 12 states
-var choice_state_idx = 1;//both_idx_vec[cond_idx][0];
-var outcome_state_idx = 1; //both_idx_vec[cond_idx][1];
+var choice_state_idx = 1;//1both_idx_vec[cond_idx][0]; // don't need
+var outcome_state_idx = 2; //both_idx_vec[cond_idx][1];
 
 var pos_outcome_assigments = [[0, 1, 2], // Scissors is safe
                           [2, 0, 1], // House is safe / keep this for this run...

@@ -816,6 +816,15 @@ timeline = [full_screen];
 timeline = timeline.concat(task2_timeline);
 timeline.push(end_screen);
 
+
+timeline = [full_screen];
+var map_trial = {
+  type: 'evan-display-map',
+  choice_images: choice_images,
+  outcome_images: outcome_images
+};
+timeline.push(map_trial);
+
   console.log(timeline)
   /* start the experiment */
   jsPsych.init({
