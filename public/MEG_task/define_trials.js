@@ -5,17 +5,13 @@ function define_trials(start_block){
 
 // fix trial number and block number for filtering ...
 
-console.log(start_block)
+//console.log(start_block)
 if (typeof start_block == 'undefined'){
   console.log('this is undefined')
   start_block = 1;
 }
 
-console.log(start_block)
-
-
-seed = 'Seed for subject ' + subjectID;
-Math.seedrandom(seed);
+//console.log(start_block)
 
 function round5(x)
 {
@@ -341,8 +337,8 @@ all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,1);
 all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,1);
 // the task is
 
-console.log(all_loss_trials)
-console.log(all_win_trials)
+//console.log(all_loss_trials)
+//console.log(all_win_trials)
 
 
 // 36 trials per block ( 14 win and 14 loss) // block the safe?
@@ -538,7 +534,7 @@ var make_loc_block = function(block_number){
     //var this_im_idx = shuffledInds[]
     var all_names = choice_names.concat(outcome_names);
     all_names.splice(im_idx,1);
-    console.log(all_names)
+//    console.log(all_names)
     if (slot_machine_arr[im_idx] == 1){
       var this_image = choice_images[img_numbers[im_idx] -1];
       var this_image_name = choice_names[img_numbers[im_idx] -1];
@@ -549,7 +545,7 @@ var make_loc_block = function(block_number){
       var this_image_name = outcome_names[img_numbers[im_idx] - 1];
       var this_slot_machine = false;
     }
-    console.log(this_image)
+//    console.log(this_image)
     // remove the other name from all_names and select a random name from the list...
     var this_other_name = jsPsych.randomization.sampleWithReplacement(all_names, 1);
 
@@ -667,15 +663,14 @@ var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG';
 var model_learning = [];
 var n_rounds = 12;
 for (var i = 0; i < n_rounds; i++){
-	var schematic = {
-	    type: 'instructions',
-	    pages: ['<img src= "'+ schematic_slide +  '" alt = "" >'],
-	    show_clickable_nav: false,
-      key_forward: '4',
-      data: {
-        block_number: 6
-      }
-	}
+
+  var schematic = {
+    type: 'evan-display-map',
+    choice_images: choice_images,
+    outcome_images: outcome_images,
+    data: {block_number: 6}
+  };
+
 	model_learning.push(schematic);
 	var quiz_trials = make_struc_quiz_block(i + 1, 6);
 	model_learning = model_learning.concat(quiz_trials);
@@ -685,10 +680,12 @@ for (var i = 0; i < n_rounds; i++){
 add_save_block_data[model_learning[model_learning.length - 2]]
 //////////////////////////////////
 
-var welcome_slide ='Stimuli/MEG_slides/Slide2.JPG';
-var preloc_slide ='Stimuli/MEG_slides/Slide3.JPG';
-var pretrain_slide ='Stimuli/MEG_slides/Slide4.JPG';
-var pretask_slide ='Stimuli/MEG_slides/Slide5.JPG';
+var welcome_slide = instr_slides + '/Slide2.JPG';
+var preloc_slide = instr_slides + '/Slide3.JPG';
+var pretrain_slide = instr_slides + '/Slide4.JPG';
+var pretask_slide = instr_slides + '/Slide5.JPG';
+
+console.log(pretrain_slide)
 
 var instr1 = {
     type: 'instructions',
@@ -807,23 +804,16 @@ timeline_main.push(pretask);
 timeline_main.push(pre_text_trial3);
 timeline_main = timeline_main.concat(task2_timeline);
 
-console.log(model_learning)
+//console.log(model_learning)
 
 timeline_main = timeline_main.filter(function(el){return el.data.block_number >= start_block})
 
 timeline = [full_screen];
 //timeline = timeline.concat(loc_exp.slice(loc_exp.length - 5, loc_exp.length));
-timeline = timeline.concat(task2_timeline);
+timeline = timeline.concat(timeline_main);
 timeline.push(end_screen);
 
 
-timeline = [full_screen];
-var map_trial = {
-  type: 'evan-display-map',
-  choice_images: choice_images,
-  outcome_images: outcome_images
-};
-timeline.push(map_trial);
 
   console.log(timeline)
   /* start the experiment */

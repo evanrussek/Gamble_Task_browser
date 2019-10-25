@@ -1,103 +1,181 @@
 // this could also be a trial // for the scanner, add the date and time, and other info
 
-
+// define subject parameters and set up the db...
 // want a screen that will ask this... (could also break up each time...)
-
 //
-var subject_num = 1; // need to get this from JSPSYCH
-var date = 'aug_19_2019';
-var subjectID = 'subj_1_10_18_2pm'
-var time = '1716';
-var loss_first = false;
+// want to solicit this from the subject... // and to verify that this still works.
+var quest = document.getElementById('experimenter-questionnaire');
+document.body.appendChild(quest);
 
-// phases are loc, learn, task
+var start_task = function(){
+    db = firebase.firestore();
 
-// fix block starting thing ...
-// 5 localizer parts,
-// 1 model learning block ...
-// 8 task blocks,
+    // firebase stuff
+    firebase.firestore().enablePersistence().catch(function(err) {
+        if (err.code == 'failed-precondition') {
+            // Multiple tabs open, persistence can only be enabled
+            // in one tab at a a time.
+        } else if (err.code == 'unimplemented') {
+            // The current browser does not support all of the
+            // features required to enable persistence
+        }
+    });
 
-var start_phase = "LEARN";
-var start_block = 1;
+    firebase.auth().signInAnonymously();
 
-if (start_phase == "LOC"){
-      var exp_block = start_block;
-}else if (start_phase == "LEARN"){
-      var exp_block = 6;
-} else if (start_phase == "MAIN"){
-      var exp_block = start_block + 6;
-} else{
-      console.log("WRONGE PHASE NAME");
+    // User ID
+    var uid;
+
+
+    // When signed in, get the user ID
+    firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      uid = user.uid;
+      // record new date and start time
+      //Date =
+      db.collection('gambletask').doc('MEG_1').collection('computers').
+                    doc(uid).set({
+                        subjectID: subjectID
+                    })
+
+      db.collection('gambletask').doc('MEG_1').collection('computers').
+                    doc(uid).collection('subjects').doc(subjectID).set({
+          subjectID: subjectID
+      })
+
+      // record new date and start time
+      db.collection('gambletask').doc('MEG_1').collection('computers').
+                    doc(uid).collection('subjects').doc(subjectID).collection('taskdata').doc('start').set({
+          subjectID: subjectID,  // this refers to the subject's ID from prolific/
+          date: new Date().toLocaleDateString(),
+          start_time: new Date().toLocaleTimeString()
+      })
+      define_trials(exp_block);
+    }
+    });
+}
+
+var set_other_vars = function(){
+    if (start_phase == "LOC"){
+           exp_block = start_block;
+    }else if (start_phase == "LEARN"){
+           exp_block = 6;
+    } else if (start_phase == "MAIN"){
+           exp_block = start_block + 6;
+    } else{
+          console.log("WRONGE PHASE NAME");
+    }
+
+     subjectID = ('subj_' + subject_num)
+
+     seed = 'Seed for subject ' + subjectID;
+     Math.seedrandom(seed);
+
+    // set condition here...
+    cond_idx = subject_num%24;
+    console.log('condition: ' + cond_idx)
+
+     both_idx_vec = [[0,0], [0,1], [0,2],
+                      [1,0], [1,1], [1,2],
+                      [2,0], [2,1], [2,2],
+                      [3,0], [3,1], [3,2]];
+
+     choice_state_idx = both_idx_vec[cond_idx][0];//1; //1both_idx_vec[cond_idx][0]; // don't need
+     outcome_state_idx = both_idx_vec[cond_idx][1];//1; //both_idx_vec[cond_idx][1];
+
+     loss_first = (subject_num%2 == 1);
+
+     instr_slides = 'Stimuli/MEG_slides_o' + outcome_state_idx;
+
+     var pos_outcome_assigments = [[0, 1, 2], // Scissors is safe
+                               [2, 0, 1], // House is safe / keep this for this run...
+                               [1, 2, 0]]; // Girl is safe
+
+     // outcome_state_idx 0 -- Scissors is safe
+     // outcome_state_idx 1 -- House is safe
+     // outcome_state_idx 2 -- GIRL is safe
+
+
+     var pos_choice_assignments = [[0,1,2,3],
+                               [3,0,1,2],
+                               [2,3,0,1],
+                               [1,2,3,0]];
+
+
+       choice_idx_vec = pos_choice_assignments[choice_state_idx]
+       outcome_idx_vec = pos_outcome_assigments[outcome_state_idx];
+
+       pos_outcome_names = ["GIRL", "HOUSE", "SCISSORS"];
+       pos_choice_names = ["HAND", "PEPPER", "BUTTERFLY", "ZEBRA"];
+
+       pos_outcome_images = ["Stimuli/Evan_Stimuli/Girl.png",
+                         "Stimuli/Evan_Stimuli/House.png",
+                         "Stimuli/Evan_Stimuli/Scissors.png"];
+
+       pos_choice_images = ["Stimuli/Evan_Stimuli/Hand.png",
+                         "Stimuli/Evan_Stimuli/Pepper.png",
+                         "Stimuli/Evan_Stimuli/Butterfly.png",
+                         "Stimuli/Evan_Stimuli/Zebra.png"];
+
+       choice_images = [pos_choice_images[choice_idx_vec[0]],
+                             pos_choice_images[choice_idx_vec[1]],
+                             pos_choice_images[choice_idx_vec[2]],
+                             pos_choice_images[choice_idx_vec[3]]];
+
+
+       choice_names = [pos_choice_names[choice_idx_vec[0]],
+             pos_choice_names[choice_idx_vec[1]],
+             pos_choice_names[choice_idx_vec[2]],
+             pos_choice_names[choice_idx_vec[3]]];
+
+       outcome_images = [pos_outcome_images[outcome_idx_vec[0]],
+                             pos_outcome_images[outcome_idx_vec[1]],
+                             pos_outcome_images[outcome_idx_vec[2]]];
+
+       outcome_names = [pos_outcome_names[outcome_idx_vec[0]],
+             pos_outcome_names[outcome_idx_vec[1]],
+             pos_outcome_names[outcome_idx_vec[2]]];
+
+
+       // this is constant for all subjects (160 trials)
+       all_prob_o1 = [.2, .4, .6, .8];
+       all_win_safe_vals = [20, 40, 60, 80];
+       all_loss_safe_vals = [-20, -40, -60, -80];
+       all_win_amounts = [60, 80, 110];
+       all_loss_amounts = [-60, -80, -110];
+       all_prob_trig = all_prob_o1;
+
+       jsPsych.data.addProperties({subject: subject_num});
+
+       start_task();
+
 }
 
 
-// 3 settings for safe value, ... , 2 settings for whether loss is first or not... - so there's 6 settings of the task...
-var cond_idx = subject_num%6;
 
-var both_idx_vec = [[0,0], [0,1], [0,2],
-                  [1,0], [1,1], [1,2]];
-
-// 2 images can be extreme... //
-
-// define these states from counterbalance / 12 states
-var choice_state_idx = 1;//1both_idx_vec[cond_idx][0]; // don't need
-var outcome_state_idx = 2; //both_idx_vec[cond_idx][1];
-
-var pos_outcome_assigments = [[0, 1, 2], // Scissors is safe
-                          [2, 0, 1], // House is safe / keep this for this run...
-                          [1, 2, 0]]; // Girl is safe
+function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
 
 
-var pos_choice_assignments = [[0,1,2,3],
-                          [3,0,1,2],
-                          [2,3,0,1],
-                          [1,2,3,0]];
+//document.getElementById("submit-button").onclick = start_task;
+var beginning_form = function(researcher_inputs){
+    subject_num = parseInt(researcher_inputs.subjectNumber.value);
+    console.log(subject_num)
+    // var env = researcher_inputs.env.value;
+    start_phase = researcher_inputs.stage.value;
+    console.log(start_phase)
 
-var choice_idx_vec = pos_choice_assignments[choice_state_idx]
-var outcome_idx_vec = pos_outcome_assigments[outcome_state_idx];
+    start_block = researcher_inputs.run.value;
+    console.log(start_block)
 
-var pos_outcome_names = ["GIRL", "HOUSE", "SCISSORS"];
-var pos_choice_names = ["HAND", "PEPPER", "BUTTERFLY", "ZEBRA"];
+    set_other_vars();
 
-var pos_outcome_images = ["Stimuli/Evan_Stimuli/Girl.png",
-                  "Stimuli/Evan_Stimuli/House.png",
-                  "Stimuli/Evan_Stimuli/Scissors.png"];
-
-var pos_choice_images = ["Stimuli/Evan_Stimuli/Hand.png",
-                  "Stimuli/Evan_Stimuli/Pepper.png",
-                  "Stimuli/Evan_Stimuli/Butterfly.png",
-                  "Stimuli/Evan_Stimuli/Zebra.png"];
-
-var choice_images = [pos_choice_images[choice_idx_vec[0]],
-                      pos_choice_images[choice_idx_vec[1]],
-                      pos_choice_images[choice_idx_vec[2]],
-                      pos_choice_images[choice_idx_vec[3]]];
-
-
-var choice_names = [pos_choice_names[choice_idx_vec[0]],
-      pos_choice_names[choice_idx_vec[1]],
-      pos_choice_names[choice_idx_vec[2]],
-      pos_choice_names[choice_idx_vec[3]]];
-
-var outcome_images = [pos_outcome_images[outcome_idx_vec[0]],
-                      pos_outcome_images[outcome_idx_vec[1]],
-                      pos_outcome_images[outcome_idx_vec[2]]];
-
-var outcome_names = [pos_outcome_names[outcome_idx_vec[0]],
-      pos_outcome_names[outcome_idx_vec[1]],
-      pos_outcome_names[outcome_idx_vec[2]]];
-
-
-// this is constant for all subjects (160 trials)
-var all_prob_o1 = [.2, .4, .6, .8];
-var all_win_safe_vals = [20, 40, 60, 80];
-var all_loss_safe_vals = [-20, -40, -60, -80];
-var all_win_amounts = [60, 80, 110];
-var all_loss_amounts = [-60, -80, -110];
-var all_prob_trig = all_prob_o1;
-
-
-
-// 120 trials have equal ... /// - do each one 3 times...
-
-jsPsych.data.addProperties({subject: subject_num, date: date, time: time});
+}

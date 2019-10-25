@@ -47,11 +47,48 @@
       // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
     </script>
+    <div id="experimenter-questionnaire" class="experimenter-questionnaire">
+        <form action="javascript:;" onsubmit="beginning_form(this)">
+            Subject Number:
+            <br>
+            <input type="text" name="subjectNumber">
+            <br><br>
+
+            Stage:
+            <br>
+            <input type="radio" name="stage" value="LOC"> LOC
+            <input type="radio" name="stage" value="LEARN"> LEARN
+            <input type="radio" name="stage" value="TASK"> TASK
+            <br><br>
+
+            <!-- Day of training<br>
+            <input type="radio" name="day" value="1"> 1
+            <input type="radio" name="day" value="2"> 2
+            <br><br> -->
+
+            Run Number (Within The Stage)<br>
+            <input type="radio" name="run" value="1"> 1
+            <input type="radio" name="run" value="2"> 2
+            <input type="radio" name="run" value="3"> 3
+            <input type="radio" name="run" value="4"> 4
+            <input type="radio" name="run" value="5"> 5
+            <input type="radio" name="run" value="6"> 6
+            <input type="radio" name="run" value="7"> 7
+            <input type="radio" name="run" value="8"> 8
+            <br><br>
+
+            <br><br>
+
+
+        <!--    <div id="submit-button"> -->
+              <input id="submit-button" type="submit" value="Submit">
+        <!--        </div> -->
+        </form>
+    </div>
   </body>
   <script type="text/javascript" src="evan_utils.js"></script>
-  <script type="text/javascript" src="define_subj_params.js"></script>
   <script type="text/javascript" src="parameters.js"></script>
-  <script type="text/javascript" src="define_practice_trials.js"></script>
+<!--  <script type="text/javascript" src="define_practice_trials.js"></script> -->
   <script type="text/javascript" src="define_trials.js"></script>
-  <script type="text/javascript" src="setupdb.js"></script>
+  <script type="text/javascript" src="define_subj_params.js"></script>
 </html>

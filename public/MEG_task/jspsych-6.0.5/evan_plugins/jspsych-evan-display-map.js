@@ -54,7 +54,7 @@ jsPsych.plugins["evan-display-map"] = (function() {
     var display_map = function(){
 
       var c_x_ctrs = [par.w/4, 3*par.w/4, par.w/4, 3*par.w/4];
-      var c_y_ctrs = [par.h/8, par.h/8, 4.5*par.h/8, 4.5*par.h/8];
+      var c_y_ctrs = [1.25*par.h/8, 1.25*par.h/8, 4.5*par.h/8, 4.5*par.h/8];
       var bkg_width = par.h/8;
       var bkg_height = par.h/8;
 
