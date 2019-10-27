@@ -35,7 +35,7 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
       },
       MEG_buttons: {
         type: jsPsych.plugins.parameterType.BOOL,
-        default: false
+        default: true
       }
     }
   }

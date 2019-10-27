@@ -140,7 +140,8 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
       // here... add correct / incorrect - it's based on the prob that was chosen...
       chosen_p = prob_vals[parseInt(choice_char)-1];
       var pause_time = 50;
-      var feedback_time = 250;
+      var wrong_time = 350;
+      var feedback_time = 500;
       //console.log(chosen_p)
       //console.log(trial.correct_p)
       if (Math.abs(chosen_p - trial.correct_p) < .0001){
@@ -150,7 +151,10 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
       } else{
         correct = 0;
         wait_for_time(pause_time,function(){place_text('WRONG!', 'Prompt', par.w/2 + par.diode_width, 20*par.h/40, par.text_font_size, 1, "Red")})
-        wait_for_time(pause_time + feedback_time,end_trial)
+        wait_for_time(pause_time+wrong_time,function(){  d3.select('.correct').style('fill', 'green').style("opacity",.7)});
+        wait_for_time(pause_time + wrong_time + feedback_time,end_trial)
+
+        // light up the correct one...
       }
     }
     txt_offset = 'quiz_im';
@@ -182,7 +186,6 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
                     persist: false,
                     allow_held_key: false
                   });
-
 
                 time_onset = window.performance.now();
                 data_temp[txt_offset + '_diode_onset'] = time_onset;
@@ -244,7 +247,11 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
 
         for (var i = 0; i < 4; i++){
           var k = i+1;
-          place_img_bkg(["bk" + k], prob_x[i] - box_width/2, prob_y[i] - box_height/2, box_width, box_height, par.good_color_vec[1], 0);
+          if  (Math.abs(prob_vals[i] - trial.correct_p) < .0001){
+            place_img_bkg(["bk" + k + " correct"], prob_x[i] - box_width/2, prob_y[i] - box_height/2, box_width, box_height, par.good_color_vec[1], 0);
+          }else{
+            place_img_bkg(["bk" + k], prob_x[i] - box_width/2, prob_y[i] - box_height/2, box_width, box_height, par.good_color_vec[1], 0);
+          }
         }
 
         for (var i = 0; i < 4; i++){

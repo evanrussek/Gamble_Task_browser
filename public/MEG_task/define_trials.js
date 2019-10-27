@@ -12,6 +12,11 @@ if (typeof start_block == 'undefined'){
 }
 
 //console.log(start_block)
+function round2(x)
+{
+    return Math.ceil(x/2)*2;
+}
+
 
 function round5(x)
 {
@@ -46,10 +51,10 @@ function rand_gen_rew_quiz_main(loss_trial){
 
   var tv_idx  = Math.round((all_win_amounts.length - 1)*Math.random());
   var safe_idx = Math.round(1*Math.random());
-  var t_val = all_win_amounts[tv_idx]; //+ -5 + Math.round(10*Math.random());
-  var other_val = 0; //Math.round(8*Math.random());
-  var safe_val = all_win_safe_vals[safe_idx];// + - 5 +Math. round(10*Math.random());
-  var lure_val = -50 + round10(100*Math.random())
+  var t_val = round2(all_win_amounts[tv_idx] - 10 + Math.round(20*Math.random()));
+  var other_val = round2(Math.round(8*Math.random()));
+  var safe_val = round2(all_win_safe_vals[safe_idx] - 10 + Math. round(20*Math.random()));
+  var lure_val = round2(-50 + round2(100*Math.random()))
   if (lure_val == t_val){lure_val = lure_val + 5};
   if (lure_val == safe_val){lure_val = lure_val + 5};
 
@@ -200,7 +205,7 @@ function rand_gen_trial(loss_trial){
 
 
 // this generates a trial for the main task...
-var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, safe_val_base){
+var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, safe_val_base, trigger_noise, other_noise, safe_noise){
 
   //if (typeof block_number == "undefined"){
   //  block_number = 0;
@@ -211,28 +216,15 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
 
 
   if (trig_val > 0){
-    var other_noise = 0; //Math.round(5*Math.random());
+//    var other_noise = round2(20*Math.random());
     var gl_type = 'gain';
   } else {
-      var other_noise = 0; //-1*Math.round(5*Math.random());
+  //    var other_noise = -1*round2(20*Math.random());
       var gl_type = 'loss';
   }
 
-
-  if (matched_safe){
-    var safe_val_base = round5(Math.round(prob_trig*trig_val));
-    // set the noise...
-    var safe_noise = 0// Math.round(3*Math.random() - 1.5);
-    var trigger_noise = 0//Math.round(3*Math.random() - 1.5);
-    if (trig_val > 0){
-      var other_noise = 0//Math.round(2*Math.random());
-    }else{
-      var other_noise = 0//-1*Math.round(2*Math.random());
-    }
-  } else{
-    var safe_noise = 0//Math.round(10*Math.random() - 5);
-    var trigger_noise = 0//Math.round(10*Math.random() - 5);
-  }
+  //var safe_noise = round2(30*Math.random() - 15);
+  //var trigger_noise = round2(30*Math.random() - 15);
 
 
   if (o1_trig){
@@ -306,26 +298,62 @@ var add_save_block_data = function(this_trial){
 var win_non_matched_trials = []; // remake the other trials...
 var loss_non_matched_trials = []; // remake the other trials...
 
+
 // win_o1_trig_trials
-for (var rep = 0; rep < 2; rep++){
-  for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
-    for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
-      for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
-        if (all_win_safe_vals[sv_idx] < (all_win_amounts[w_idx] - 10)){
+for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
+  for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
+    for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
+      if (all_win_safe_vals[sv_idx] < (all_win_amounts[w_idx] - 10)){
 
-          var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
-          var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx]);
-          win_non_matched_trials = win_non_matched_trials.concat([nm_w_o1, nm_w_o2]);
+      /// gen test trial... function(o1_trig, prob_trig_idx, trig_val, matched_safe, safe_val_base, trigger_noise, other_noise, safe_noise){
+          var const_add = round2(Math.ceil(25*Math.random()));
+          var tn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var on = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var sn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          if (on < 0){ on = 0}
 
-          var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
-          var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx]);
+          for (var rep = 0; rep < 2; rep++){
+            var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn);
+            win_non_matched_trials.push(nm_w_o1)
+          }
 
-          loss_non_matched_trials = loss_non_matched_trials.concat([nm_l_o1, nm_l_o2]);
+          var const_add = round2(Math.ceil(25*Math.random()));
+          var tn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var on = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var sn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          if (on < 0){ on = 0}
+
+          for (var rep = 0; rep < 2; rep++){
+              var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn)
+              win_non_matched_trials.push(nm_w_o2)
+          }
+
+          var const_add = -1*round2(Math.ceil(25*Math.random()));
+          var tn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var on = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var sn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          if (on > 0){ on = 0}
+
+          for (var rep = 0; rep < 2; rep++){
+              var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
+              loss_non_matched_trials.push(nm_l_o1)
+          }
+
+          var const_add = -1*round2(Math.ceil(25*Math.random()));
+          var tn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var on = const_add + round2(Math.ceil(10*Math.random() - 5));
+          var sn = const_add + round2(Math.ceil(10*Math.random() - 5));
+          if (on > 0){ on = 0}
+
+          for (var rep = 0; rep < 2; rep++){
+              var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
+              loss_non_matched_trials.push(nm_l_o2)
+            }
+
         }
       }
     }
   }
-}
 
 // block the position of things...
 
@@ -355,8 +383,7 @@ var all_trials = []
 
 var loss_first = 1;
 
-var quiz_p = 1;
-
+var quiz_p = .15;
 
 if (loss_first){
   for (var i = 0; i < 4; i++){
@@ -382,7 +409,7 @@ if (loss_first){
 
     // add the loss block
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 6 + 2*i + 1;
+      loss_block[t].data.block_number = 9 + 2*i + 1;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
 
@@ -409,7 +436,7 @@ if (loss_first){
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 6 + 2*i + 2;
+      win_block[t].data.block_number = 9 + 2*i + 2;
     } // save data on the last trial.
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -441,7 +468,7 @@ if (loss_first){
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 6 + 2*i + 1;
+      win_block[t].data.block_number = 9 + 2*i + 1;
     }
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -469,7 +496,7 @@ if (loss_first){
     // add the win block
     loss_block.push(final_text_trial);
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 6 + 2*i + 2;
+      loss_block[t].data.block_number = 9 + 2*i + 2;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
     all_trials = all_trials.concat(loss_block);
@@ -522,7 +549,6 @@ var all_task_images = [];
 var make_loc_block = function(block_number){
 
   var n_reps = 20;
-
   var slot_machine_arr = [1, 1, 1, 1, 0, 0, 0];
   var img_numbers = [1,2,3,4, 1,2,3];
   var theseInds = [0, 1, 2, 3, 4, 5, 6];
@@ -572,22 +598,37 @@ var make_loc_block = function(block_number){
 
 loc_pct_bonus = null;
 
-var n_loc_blocks = 5;
-var loc_exp = [];
-for (var i = 0; i < n_loc_blocks; i++){
-  var block_num = i + 1;
-  var this_loc_block  = make_loc_block(block_num);
-  var final_text_trial = build_text_trial(" ","You've completed " + block_num + " of 5 blocks.", "Let's take a short break",true);
-  final_text_trial.data.block_number = block_num;
-  final_text_trial.line_1 = function(){
-    var this_block_number = block_num;//this.data.block_number;
+
+var add_prop_correct = function(this_trial){
+  console.log(this_trial)
+  console.log(this_trial.data)
+  this_trial.line_1 = function(){
+    console.log(this_trial)
+    console.log(this_trial.data)
     var prop_correct = jsPsych.data.get().filter({trial_type: 'evan-localizer-trial',
-                                                block_number: this_block_number}).select('correct').mean()
+                                                block_number: (this_trial.data.block_number - 1)}).select('correct').mean()
     var pct_correct = Math.round(100*prop_correct);
     loc_pct_bonus = pct_correct;
     var str = "You answered " + pct_correct + "% of trials correctly";
     return str
   }
+}
+
+
+var n_loc_blocks = 5;
+var loc_exp = [];
+for (var i = 0; i < n_loc_blocks; i++){
+  var block_num = i + 1;
+  var this_loc_block  = make_loc_block(block_num);
+  var final_text_trial = {
+    type: 'evan-display-text',
+    data: {phase: 'INFO', block_number: block_num + 1}, // note this shows up in main phase as well so isn't train per se
+    line_1:"",
+    line_2: "You've completed " + block_num + " of 5 blocks.",
+    line_3: "Let's take a short break",
+    wait_for_exp: true
+  }
+  add_prop_correct(final_text_trial);
   //final_text_trial.data.block_number = block_num;
   this_loc_block.push(final_text_trial);
   loc_exp = loc_exp.concat(this_loc_block);
@@ -599,43 +640,46 @@ for (var i = 0; i < n_loc_blocks; i++){
 //////// IF YOU SCAN THIS .... PROBABLY WON'T THOUGH //////////////////
 
 struc_pct_correct = null;
-var make_struc_quiz_block = function(round_number, block_number){
+var make_struc_quiz_block = function(round_number, block_number, limit_time){
 
   // let's
-
-  var shuffled_idx = jsPsych.randomization.shuffle([0,1,2,3,4,5,6,7]);
-  var choice_options = [1,2,3,4,1,2,3,4];
-  var outcome_options = [1,1,1,1,2,2,2,2];
+  //var choice_options = [1,2,3,4,1,2,3,4];
+  //var outcome_options = [1,1,1,1,2,2,2,2];
   var p_vec = [.2, .4, .6, .8];
+  var choice_options = [1,2,3,4];
+  choice_options = jsPsych.randomization.shuffle(choice_options);
 
   var this_round_trials = [];
 
-  for (var i = 0; i < 8; i++){
-    var this_idx = shuffled_idx[i];
-    var this_choice_number = choice_options[this_idx];
-    var this_outcome_number = outcome_options[this_idx];
-    if (this_outcome_number == 1){
-      var correct_p = p_vec[this_choice_number - 1]
-    }else{
-      var correct_p =  1 - p_vec[this_choice_number - 1]
-    }
+  // go through this in order...
+  for (var i = 0; i < 4; i++){
+    //var this_idx = shuffled_idx[i];
+    var this_choice_number = choice_options[i];
+    var cx_number = this_choice_number;
 
-    // make the trial
-    var this_trial = {
-      type: "evan-struc-quiz",
-      choice_image: choice_images[this_choice_number - 1],
-      outcome_image: outcome_images[this_outcome_number - 1],
-      correct_p: correct_p, // 1 - 4
-      limit_time: true,
-      data:{
-        phase: 'TRAIN STRUC QUIZ',
-        choice_number: this_choice_number,
-        outcome_number: this_outcome_number,
-        block_number: block_number
-      } // want a block number here...
+    var quiz_trials = [];
+    for (var qo = 0; qo < 2; qo++){
+      if (qo == 0){ var cp = all_prob_o1[cx_number - 1]}else{
+       var cp = 1 - all_prob_o1[cx_number - 1];
+      }
+      var quiz_trial1 = {
+        type: "evan-struc-quiz",
+        choice_image: choice_images[cx_number - 1],
+        outcome_image: outcome_images[qo],
+        correct_p: cp, // 1 - 4
+        limit_time: limit_time,
+        data:{
+          phase: 'TRAIN STRUC QUIZ',
+          choice_number: cx_number,
+          outcome_number: cx_number,
+          block_number: block_number
+        } // want a block number here...
+     }
+      quiz_trials.push(quiz_trial1)
     }
+    this_round_trials = this_round_trials.concat(jsPsych.randomization.repeat(quiz_trials,1));
     // append this trial to the block
-    this_round_trials.push(this_trial)
+  //  this_round_trials.push(this_trial)
   }
   var feedback_trial = {
     type: 'evan-display-text',
@@ -645,7 +689,7 @@ var make_struc_quiz_block = function(round_number, block_number){
                       return this_text;
                       struc_pct_correct = n_correct/8;
                     },
-    line_2: "You've completed " + round_number + " out of 12 rounds.",
+    line_2: "",
     line_3: "",
     wait_for_press: true,
     data: {phase: 'INFO',
@@ -659,25 +703,194 @@ var make_struc_quiz_block = function(round_number, block_number){
 var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG';
 // this will change based on the task...
 
-// maybe this should be 2 blocks...
-var model_learning = [];
-var n_rounds = 12;
-for (var i = 0; i < n_rounds; i++){
+var build_practice_trial_stg1 = function(choice_number, p_o1, show_prompt, limit_time){
+  // add a prompt ....
+  if (typeof show_prompt == 'undefined'){
+    var show_prompt = true;
+  }
+  if (typeof limit_time == 'undefined'){
+    var limit_time = false;
+  }
 
-  var schematic = {
-    type: 'evan-display-map',
-    choice_images: choice_images,
-    outcome_images: outcome_images,
-    data: {block_number: 6}
-  };
 
-	model_learning.push(schematic);
-	var quiz_trials = make_struc_quiz_block(i + 1, 6);
-	model_learning = model_learning.concat(quiz_trials);
+  var this_trial = {
+    type: 'evan-run-trial',
+    exp_stage: 'practice',
+    first_stage: 2,
+    last_stage:4,
+    show_money_val: false,
+    allow_reject: false,
+    p_o1: p_o1, // this is always the same
+    safe_val: 10,
+    o1_val: 10,
+    o2_val: 10, // because O2 is the trigger
+    ///
+    o1_image: outcome_images[0],
+    o2_image: outcome_images[1],
+    safe_image: outcome_images[2],
+    // this depends on the proability...
+    choice_image: choice_images[choice_number-1],
+    data: {choice_number: choice_number, phase: 'TRAIN OBSERVE'},
+    show_prompt: show_prompt,
+    limit_time: limit_time
+    }
+
+  return this_trial;
+}
+var build_po_vec = function(n_trials, p_o1){
+  var n_o1_trials = n_trials*p_o1;
+  var n_o2_trials = n_trials - n_o1_trials;
+  var a_trials = new Array(n_o1_trials).fill(1);
+  var po_vec = a_trials.concat(new Array(n_o2_trials).fill(0)); // need to shuffle it later
+  return po_vec;
 }
 
+var build_play_machine_round = function(block_number){
 
-add_save_block_data[model_learning[model_learning.length - 2]]
+  /// this will make a round of going through each choice 10 times
+  var this_round_trials = [];
+  c_numb_shuff = jsPsych.randomization.repeat([1,2,3,4],1 );
+  // // build all the passive trials
+   for (var cx_idx = 0; cx_idx < c_numb_shuff.length; cx_idx++){
+     var cx_number = c_numb_shuff[cx_idx];
+     //var prep_text = "You'll now play the " + choice_names[cx_number - 1] + " slot machine.";
+     //var start_block_text2 = "For each game, press 1 to play the machine.";
+     //var start_block_text3 = "Please pay attention!";
+     //this_round_trials.push(build_text_trial(prep_text,start_block_text2,start_block_text3, false));
+     var schematic1 = {
+       type: 'evan-display-map',
+       choice_images: choice_images,
+       outcome_images: outcome_images,
+       data: {block_number: block_number}, // fix the block number,
+       choice_number: cx_number,
+       choice_name: choice_names[cx_number - 1]
+     } // change prompt on the shematic
+     this_round_trials.push(schematic1);
+
+     var cx_trials_o1 = build_po_vec(10,all_prob_o1[cx_number - 1]);// build a_trials
+     var cx_trials_o1 = jsPsych.randomization.repeat(cx_trials_o1,1);
+  //   // build each passive trial
+     for (var t = 0; t < cx_trials_o1.length; t++){
+       this_round_trials.push(build_practice_trial_stg1(cx_number, cx_trials_o1[t]));
+     }
+     // add quiz to it...
+     // make the trial
+     var quiz_trials = [];
+     for (var qo = 0; qo < 2; qo++){
+       if (qo == 0){ var cp = all_prob_o1[cx_number - 1]}else{
+        var cp = 1 - all_prob_o1[cx_number - 1];
+       }
+       var quiz_trial1 = {
+         type: "evan-struc-quiz",
+         choice_image: choice_images[cx_number - 1],
+         outcome_image: outcome_images[qo],
+         correct_p: cp, // 1 - 4
+         limit_time: false,
+         data:{
+           phase: 'TRAIN STRUC QUIZ',
+           choice_number: cx_number,
+           outcome_number: cx_number,
+           block_number: block_number
+         } // want a block number here...
+      }
+       quiz_trials.push(quiz_trial1)
+     }
+     this_round_trials = this_round_trials.concat(jsPsych.randomization.repeat(quiz_trials,1));
+   }
+   for (var i = 0; i < this_round_trials.length; i ++){
+     //this_round_trials[i].data = {};
+     this_round_trials[i].data.block_number = block_number;
+   }
+   return this_round_trials;
+}
+
+// maybe this should be 2 blocks...
+var model_learning = [];
+
+// goes 4 rounds of experience with quizzes.. at the end, do a quiz on each...
+  for (var i = 0; i < 4; i++){
+
+      if (i < 2){
+        var bn = 6;
+      }else{var bn = 7};
+
+      play_trials = build_play_machine_round(bn);
+      model_learning = model_learning.concat(play_trials);
+      model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","Please try your best.","", false))
+      model_learning[model_learning.length-1].data.block_number = bn;
+      model_learning = model_learning.concat(make_struc_quiz_block(i + 1, bn, false));
+      if (i == 1){
+        model_learning.push(build_text_trial("Let's take a short break.","","", true))
+        add_save_block_data(model_learning[model_learning.length - 3])
+        model_learning[model_learning.length-1].data.block_number = bn + 1;
+        //add_save_block_data[model_learning[model_learning.length - 2]]
+      }
+      if (i == 3){
+        model_learning.push(build_text_trial("Let's take a short break.","","", true))
+        add_save_block_data(model_learning[model_learning.length - 3])
+        model_learning[model_learning.length-1].data.block_number = bn + 1;
+      //  add_save_block_data[model_learning[model_learning.length - 2]]
+      }
+      // do a quiz on each after this...
+  }
+
+  // goes through 6 quizzes at any pace...
+    for (var i = 0; i < 5; i++){
+      var bn = 8;
+      var cn_numbers = jsPsych.randomization.repeat([1,2,3,4],1);
+
+      for (var ci = 0; ci<cn_numbers.length; ci++){
+
+        var cx_number = cn_numbers[ci];
+        var schematic_x = {
+          type: 'evan-display-map',
+          choice_images: choice_images,
+          outcome_images: outcome_images,
+          data: {block_number: bn}, // fix the block number,
+          choice_number: cx_number,
+          choice_name: choice_names[cx_number - 1],
+          prompt_text: 'Press 4 to continue.'
+        } // change prompt on the shematic
+        model_learning.push(schematic_x);
+      }
+        model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","Please try your best.","", false))
+        model_learning[model_learning.length-1].data.block_number = bn;
+        var quiz_trials = make_struc_quiz_block(i + 1, bn, false);
+        model_learning = model_learning.concat(quiz_trials);
+    }
+    model_learning.push(build_text_trial("Let's take a short break.","","", true))
+    model_learning[model_learning.length-1].data.block_number = bn + 1;
+    add_save_block_data(model_learning[model_learning.length - 2])
+
+    // go through 5 fast...
+    for (var i = 0; i < 5; i++){
+      var bn = 9;
+      var cn_numbers = jsPsych.randomization.repeat([1,2,3,4],1);
+
+      for (var ci = 0; ci<cn_numbers.length; ci++){
+        var cx_number = cn_numbers[ci];
+        var schematic1 = {
+          type: 'evan-display-map',
+          choice_images: choice_images,
+          outcome_images: outcome_images,
+          data: {block_number: bn}, // fix the block number,
+          choice_number: cx_number,
+          choice_name: choice_names[cx_number - 1],
+          prompt_text: 'Press 4 to continue.'
+        } // change prompt on the shematic
+        model_learning.push(schematic1);
+      }
+        model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","You now must respond quickly (within 3 seconds).","", false))
+        model_learning[model_learning.length-1].data.block_number = bn;
+        var quiz_trials = make_struc_quiz_block(i + 1, bn, true);
+        model_learning = model_learning.concat(quiz_trials);
+    }
+    model_learning.push(build_text_trial("Let's take a short break.","","", true))
+    model_learning[model_learning.length-1].data.block_number = bn + 1;
+    add_save_block_data(model_learning[model_learning.length - 2])
+
+
+//add_save_block_data[model_learning[model_learning.length - 2]]
 //////////////////////////////////
 
 var welcome_slide = instr_slides + '/Slide2.JPG';
@@ -714,7 +927,7 @@ var pretask = {
     show_clickable_nav: false,
     key_forward: '4',
     data: {
-      block_number: 7
+      block_number: 10
     }
 }
 
@@ -796,8 +1009,7 @@ var end_screen = {
 timeline_main = [];
 timeline_main.push(instr1);
 timeline_main.push(pre_text_trial1);
-
-timeline = timeline.concat(loc_exp)
+timeline_main = timeline_main.concat(loc_exp)
 timeline_main.push(pretrain);
 timeline_main = timeline_main.concat(model_learning);
 timeline_main.push(pretask);
@@ -811,9 +1023,10 @@ timeline_main = timeline_main.filter(function(el){return el.data.block_number >=
 timeline = [full_screen];
 //timeline = timeline.concat(loc_exp.slice(loc_exp.length - 5, loc_exp.length));
 timeline = timeline.concat(timeline_main);
+//timeline = timeline.concat(make_struc_quiz_block(1,1));
 timeline.push(end_screen);
 
-
+console.log(loc_exp)
 
   console.log(timeline)
   /* start the experiment */

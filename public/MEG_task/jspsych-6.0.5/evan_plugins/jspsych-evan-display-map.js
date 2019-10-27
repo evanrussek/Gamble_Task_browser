@@ -20,6 +20,18 @@ jsPsych.plugins["evan-display-map"] = (function() {
       full_map: {
         type: jsPsych.plugins.parameterType.BOOL,
         default: true
+      },
+      choice_number: {
+        type: jsPsych.plugins.parameterType.INT,
+        default: 0
+      },
+      choice_name: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: null
+      },
+      prompt_text:{
+        type: jsPsych.plugins.parameterType.STRING,
+        default: null
       }
     }
   }
@@ -55,16 +67,22 @@ jsPsych.plugins["evan-display-map"] = (function() {
 
       var c_x_ctrs = [par.w/4, 3*par.w/4, par.w/4, 3*par.w/4];
       var c_y_ctrs = [1.25*par.h/8, 1.25*par.h/8, 4.5*par.h/8, 4.5*par.h/8];
-      var bkg_width = par.h/8;
-      var bkg_height = par.h/8;
+      var bkg_width = par.h/6;
+      var bkg_height = par.h/6;
 
-      var o_bkg_width = par.h/6;
-      var o_bkg_height = par.h/10;
+      var o_bkg_width = par.h/4;
+      var o_bkg_height = par.h/7;
 
       var p_vals = ['20%', '40%', '60%', '80%'];
 
       // display images
-      for (var i = 0; i < 4; i++){
+      if (trial.choice_number == 0){var i_start = 0;var  i_end = 4}
+      else{var i_start = 0; var i_end = 1;
+            c_x_ctrs = [par.w/2];
+            c_y_ctrs = [par.h/3];
+          }
+
+      for (var i = i_start; i < i_end; i++){
 
         // draw c -> o1 line
         d3.select('svg').append("line")          // attach a line
@@ -85,11 +103,16 @@ jsPsych.plugins["evan-display-map"] = (function() {
             .style('stroke-width', 2);
 
         // place text to o1
-        place_text(p_vals[i], 'reward_val',c_x_ctrs[i] - par.w/16 - par.text_font_size/3, c_y_ctrs[i] + par.h/8, par.text_font_size/3, 1, "white");
-        place_text(p_vals[3 - i], 'reward_val',c_x_ctrs[i] + par.w/16 + par.text_font_size/3, c_y_ctrs[i] + par.h/8, par.text_font_size/3, 1, "white");
+        if (trial.choice_number > 0){
+          var this_i = trial.choice_number - 1;
+        }else{
+          var this_i = i;
+        }
+        place_text(p_vals[this_i], 'reward_val',c_x_ctrs[i] - par.w/16 - par.text_font_size/3, c_y_ctrs[i] + .8*par.h/8, par.text_font_size/2, 1, "white");
+        place_text(p_vals[3 - this_i], 'reward_val',c_x_ctrs[i] + par.w/16 + par.text_font_size/3, c_y_ctrs[i] + .8*par.h/8, par.text_font_size/2, 1, "white");
 
         // choice background
-        place_img_bkg("info",c_x_ctrs[i] - bkg_width/2, c_y_ctrs[i] - bkg_height/2, bkg_width,bkg_height,par.img_bkg_color,1);
+        place_img_bkg("info",c_x_ctrs[i] - bkg_width/2, c_y_ctrs[i] - bkg_height/2, bkg_width,bkg_height,par.choice_stim_bkg_color,1);
 
         // outcome 1 background
         place_img_bkg("info",c_x_ctrs[i] - par.w/8 - o_bkg_width/2,
@@ -99,11 +122,14 @@ jsPsych.plugins["evan-display-map"] = (function() {
          place_img_bkg("info",c_x_ctrs[i] + par.w/8 - o_bkg_width/2,
           c_y_ctrs[i] + par.h/4 - o_bkg_width/2, o_bkg_width,o_bkg_height,par.img_bkg_color,1);
 
-        var choice_img_width = bkg_width*.6;
-        var o_img_width = o_bkg_height*.6;
+        var choice_img_width = bkg_width*.8;
+        var o_img_width = o_bkg_height*.8;
 
         // choice image
-        place_img(trial.choice_images[i],"image",
+        if (trial.choice_number == 0){var this_image = trial.choice_images[i]}
+        else{var this_image = trial.choice_images[trial.choice_number - 1]}
+
+        place_img(this_image,"image",
           c_x_ctrs[i] - choice_img_width/2, c_y_ctrs[i] - choice_img_width/2,
           choice_img_width,choice_img_width,par.img_bkg_color,1);
 
@@ -121,10 +147,25 @@ jsPsych.plugins["evan-display-map"] = (function() {
 
         // set up max response time?
         var txt_y =  par.h  - 2*par.stg_bkg_y/3;
-        place_text('Please study this map.', "prompt", par.w/2 + par.diode_width, par.stg_bkg_y, par.text_font_size/3, 1, "White")
-        place_text('Press 4 to complete a quiz', "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/3, 1, "White")
+        if (trial.choice_number == 0){
+          place_text('Please study this map.', "prompt", par.w/2 + par.diode_width, par.stg_bkg_y, par.text_font_size/3, 1, "White")
+          place_text('Press 4 to continue', "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/3, 1, "White")
+        }else{
+          var txt_y =  par.h  - par.stg_bkg_y;
+          var txt1 = 'Chances that ' + trial.choice_name + ' machine produces either banknote.'
+          place_text(txt1, "prompt", par.w/2 + par.diode_width, par.stg_bkg_y, par.text_font_size/2, 1, "White")
+
+          if (trial.prompt_text == null){
+            var txt2 = 'Press 4 to play the ' + trial.choice_name +' machine';
+          } else{
+            var txt2 = trial.prompt_text;
+          }
+
+          place_text(txt2, "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/2, 1, "White")
+        }
 
       }
+
     }
 
     if (trial.full_map){

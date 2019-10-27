@@ -8,7 +8,7 @@ var define_parameters = function(exp_stage){
 
   // maybe don't
   var randomize_info = false;
-  var randomize_info_y = false;
+  var randomize_info_y = true;
   var randomize_info_x = false;
 
   // diode stuff
@@ -30,15 +30,15 @@ var define_parameters = function(exp_stage){
   var info_pos = 2;
   // for practice... seperate these for practice vs the regular game
   var info_fadein_time = 0;
-  var info_fadeout_time = 300;
+  var info_fadeout_time = 250;
   var choice_fadein_time = 0;
   // for practice, this can go for a while...
 
   if (exp_stage == 'trial'){
     var pre_trial_time = 1500; // this is the ITI
-    var info_time = 2000;
+    var info_time = 2250;
   //  var info_time = 10000000000;
-    var post_info_time = 700;
+    var post_info_time = 1500;
     var max_response_time = 8000;
     var outcome_time = 750;
     var post_choice_time = 700;

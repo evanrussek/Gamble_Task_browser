@@ -62,6 +62,7 @@ var set_other_vars = function(){
            exp_block = 6;
     } else if (start_phase == "MAIN"){
            exp_block = start_block + 6;
+          // console.log()
     } else{
           console.log("WRONGE PHASE NAME");
     }
@@ -167,13 +168,13 @@ function getQueryVariable(variable)
 
 //document.getElementById("submit-button").onclick = start_task;
 var beginning_form = function(researcher_inputs){
-    subject_num = 1; //parseInt(researcher_inputs.subjectNumber.value);
+    subject_num = parseInt(researcher_inputs.subjectNumber.value);
     console.log(subject_num)
     // var env = researcher_inputs.env.value;
-    start_phase = "LEARN";//researcher_inputs.stage.value;
+    start_phase = researcher_inputs.stage.value;
     console.log(start_phase)
 
-    start_block = 1;// researcher_inputs.run.value;
+    start_block = researcher_inputs.run.value;
     console.log(start_block)
 
     set_other_vars();

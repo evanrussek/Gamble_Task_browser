@@ -24,7 +24,7 @@ var start_task = function(){
     firebase.auth().signInAnonymously();
 
     // User ID
-    var uid;
+    //var uid;
 
 
     // When signed in, get the user ID
@@ -59,9 +59,9 @@ var set_other_vars = function(){
     if (start_phase == "LOC"){
            exp_block = start_block;
     }else if (start_phase == "LEARN"){
-           exp_block = 6;
-    } else if (start_phase == "MAIN"){
-           exp_block = start_block + 6;
+           exp_block = start_block + 5;
+    } else if (start_phase == "TASK"){
+           exp_block = start_block + 9;
     } else{
           console.log("WRONGE PHASE NAME");
     }
@@ -72,18 +72,19 @@ var set_other_vars = function(){
      Math.seedrandom(seed);
 
     // set condition here...
-    cond_idx = subject_num%24;
+    cond_idx = subject_num%12;
     console.log('condition: ' + cond_idx)
 
      both_idx_vec = [[0,0], [0,1], [0,2],
                       [1,0], [1,1], [1,2],
                       [2,0], [2,1], [2,2],
-                      [3,0], [3,1], [3,2]];
+                      [3,0], [3,1], [3,2],
+                    ];
 
      choice_state_idx = both_idx_vec[cond_idx][0];//1; //1both_idx_vec[cond_idx][0]; // don't need
      outcome_state_idx = both_idx_vec[cond_idx][1];//1; //both_idx_vec[cond_idx][1];
 
-     loss_first = (subject_num%2 == 1);
+     loss_first = (subject_num%2 == 1); // adjust this...
 
      instr_slides = 'Stimuli/MEG_slides_o' + outcome_state_idx;
 
@@ -146,9 +147,7 @@ var set_other_vars = function(){
        all_prob_trig = all_prob_o1;
 
        jsPsych.data.addProperties({subject: subject_num});
-
        start_task();
-
 }
 
 
@@ -173,7 +172,7 @@ var beginning_form = function(researcher_inputs){
     start_phase = researcher_inputs.stage.value;
     console.log(start_phase)
 
-    start_block = researcher_inputs.run.value;
+    start_block = parseInt(researcher_inputs.run.value);
     console.log(start_block)
 
     set_other_vars();

@@ -8,7 +8,7 @@ var define_parameters = function(exp_stage){
 
   // maybe don't
   var randomize_info = false;
-  var randomize_info_y = false;
+  var randomize_info_y = true;
   var randomize_info_x = false;
 
   // diode stuff
@@ -17,7 +17,7 @@ var define_parameters = function(exp_stage){
   var loc_feedback_time = 50;
 
   var struc_quiz_diode_time = 100;
-  var outcome_diode_time = 500; // this is middle...
+  var outcome_diode_time = 400; // this is middle...
   var info_diode_time = 1000; // this could be 1 second
   var choice_stim_diode_time = 50; // this is flexible, but could potentilaly be fast
   var loc_image_diode_time = 250; // this one 800 msec its on
@@ -30,32 +30,32 @@ var define_parameters = function(exp_stage){
   var info_pos = 2;
   // for practice... seperate these for practice vs the regular game
   var info_fadein_time = 0;
-  var info_fadeout_time = 300;
+  var info_fadeout_time = 250;
   var choice_fadein_time = 0;
   // for practice, this can go for a while...
 
   if (exp_stage == 'trial'){
-    var pre_trial_time = 1250; // this is the ITI
-    var info_time = 3000;
+    var pre_trial_time = 1500; // this is the ITI
+    var info_time = 2250;
   //  var info_time = 10000000000;
-    var post_info_time = 1050;
+    var post_info_time = 1500;
     var max_response_time = 8000;
-    var outcome_time = 700;
-    var post_choice_time = 750;
+    var outcome_time = 750;
+    var post_choice_time = 700;
     var choice_fadeout_time = 300;
     var outcome_fadein_time = 0;
     var outcome_fadeout_time = 300;
   }else{
     // this seems good for now...
-    var pre_trial_time = 450; // this is the ITI
+    var pre_trial_time = 350; // this is the ITI
     var info_time = 2000;
     var post_info_time = 800;
     var max_response_time = 5000;
-    var outcome_time = 600;
-    var post_choice_time = 450;
-    var choice_fadeout_time = 50;
+    var outcome_time = 350;
+    var post_choice_time = 350;
+    var choice_fadeout_time = 0;
     var outcome_fadein_time = 0;
-    var outcome_fadeout_time = 50;
+    var outcome_fadeout_time = 0;
 
  // limiting choice time here.
   }
@@ -195,7 +195,7 @@ var define_parameters = function(exp_stage){
   var choice_stim_y = h/2 - choice_stim_height/2;
 
   var outcome_img_bkg_height = img_bkg_height;
-  var outcome_img_bkg_width = img_bkg_width;
+  var outcome_img_bkg_width = .7*img_bkg_width;
   var outcome_img_bkg_x = w/2 - outcome_img_bkg_width/2 + diode_width;
   var outcome_img_bkg_y = h/2 - outcome_img_bkg_height/2;
 
@@ -204,19 +204,19 @@ var define_parameters = function(exp_stage){
   var outcome_img_x = image_x + diode_width;
   var outcome_img_y = h/2 - outcome_img_width/2;
 
-
+  var f_outcome_img_width = 1.4*image_width;
   var f_outcome_img_bkg_height = 1.4*img_bkg_height;
   var f_outcome_img_bkg_width = 1.4*img_bkg_width;
-  var f_outcome_img_bkg_x = w/2 - f_outcome_img_bkg_width/2 + diode_width;
+  var f_outcome_img_bkg_x = w/2 - 1.8*f_outcome_img_width/2;//f_outcome_img_bkg_width/2 + diode_width;
   var f_outcome_img_bkg_y = h/2 - f_outcome_img_bkg_height/2;
 
-  var f_outcome_img_height = 1.4*image_height;
-  var f_outcome_img_width = 1.4*image_width;
-  var f_outcome_img_x =  w/2 - f_outcome_img_bkg_width/4 - f_outcome_img_width/2 + diode_width;
+  var f_outcome_img_height = 1.6*image_height;
+  var f_outcome_img_width = 1.6*image_width;
+  var f_outcome_img_x =  w/2 - f_outcome_img_width/2;   //- f_outcome_img_bkg_width/4 - f_outcome_img_width/2 + diode_width;
   var f_outcome_img_y = h/2 - f_outcome_img_width/2;
 
 
-  var outcome_text_x = text_x;
+  var outcome_text_x = w/2 +  1.25*f_outcome_img_bkg_width/3;//text_x;
   var outcome_text_y = text_y_vec[1];
   var outcome_text_font_size = text_font_size;
 
