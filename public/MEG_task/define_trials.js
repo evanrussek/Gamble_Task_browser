@@ -381,6 +381,7 @@ var block_size = all_loss_trials.length/(n_blocks/2);
 
 var all_trials = []
 
+//
 var loss_first = 1;
 
 var quiz_p = .15;
