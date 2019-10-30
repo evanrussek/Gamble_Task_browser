@@ -54,15 +54,13 @@ var build_more_like_quiz = function(outcome_number, c1_number, c2_number, correc
   return ml_trial
 }
 
-
-
-var build_text_trial = function(line_1,line_2,line_3, wait_for_press){
+var build_text_trial = function(line_1,line_2,line_3, wait_for_exp){
   var text_trial = {
     type: 'evan-display-text',
     line_1: line_1,
     line_2: line_2,
     line_3: line_3,
-    wait_for_press: wait_for_press,
+    wait_for_exp: wait_for_exp,
     data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
   }
   return text_trial;
@@ -202,13 +200,63 @@ for (var i = 0; i < n_rounds; i++){
 }
 
 
-//practice_round.push(build_text_trial("Great job! You're half way through this part of the task.","","",true));
+var make_struc_quiz_block = function(round_number){
 
+  var shuffled_idx = jsPsych.randomization.shuffle([0,1,2,3,4,5,6,7]);
+  var choice_options = [1,2,3,4,1,2,3,4];
+  var outcome_options = [1,1,1,1,2,2,2,2];
+  var p_vec = [.2, .4, .6, .8];
 
+  var this_round_trials = [];
 
+  for (var i = 0; i < 8; i++){
+    var this_idx = shuffled_idx[i];
+    var this_choice_number = choice_options[this_idx];
+    var this_outcome_number = outcome_options[this_idx];
+    if (this_outcome_number == 1){
+      var correct_p = p_vec[this_choice_number - 1]
+    }else{
+      var correct_p =  1 - p_vec[this_choice_number - 1]
+    }
+
+    // make the trial
+    var this_trial = {
+      type: "evan-struc-quiz",
+      choice_image: choice_images[this_choice_number - 1],
+      outcome_image: outcome_images[this_outcome_number - 1],
+      correct_p: correct_p, // 1 - 4
+      data:{
+        phase: 'TRAIN STRUC QUIZ',
+        choice_number: this_choice_number,
+        outcome_number: this_outcome_number,
+      }
+    }
+    // append this trial to the block
+    this_round_trials.push(this_trial)
+  }
+  var feedback_trial = {
+    type: 'evan-display-text',
+    line_1: function(){
+                      var n_correct = jsPsych.data.get().last(8).filter({correct: 1}).count()
+                      var this_text = "You answered " + n_correct +" of the 8 questions correctly.";
+                      return this_text;
+                    },
+    line_2: "You've completed " + round_number + " out of 12 rounds.",
+    line_3: "",
+    wait_for_press: true,
+    data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
+  }
+  this_round_trials.push(feedback_trial);
+  return this_round_trials;
+}
+
+this_round_trials = make_struc_quiz_block(1);
+
+practice_trials = this_round_trials;
 
 // figure out how long this will take.
 task1_timeline = practice_trials;
+
 
 
 // task1_timeline = [ml_trial];
