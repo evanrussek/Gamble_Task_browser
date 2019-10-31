@@ -96,6 +96,7 @@ var set_other_vars = function(){
      // outcome_state_idx 1 -- House is safe
      // outcome_state_idx 2 -- GIRL is safe
 
+// make end part...
 
      var pos_choice_assignments = [[0,1,2,3],
                                [3,0,1,2],

@@ -41,6 +41,7 @@ var build_text_trial = function(line_1,line_2,line_3, wait_for_exp){
   return text_trial;
 }
 
+
 function rand_gen_rew_quiz_main(loss_trial){
 
   // generate a reward trial as well
@@ -52,10 +53,10 @@ function rand_gen_rew_quiz_main(loss_trial){
 
   var tv_idx  = Math.round((all_win_amounts.length - 1)*Math.random());
   var safe_idx = Math.round(1*Math.random());
-  var t_val = all_win_amounts[tv_idx]; //+ -5 + Math.round(10*Math.random());
-  var other_val = 0; //Math.round(8*Math.random());
-  var safe_val = all_win_safe_vals[safe_idx];// + - 5 +Math. round(10*Math.random());
-  var lure_val = -50 + round10(100*Math.random())
+  var t_val = round2(all_win_amounts[tv_idx] - 10 + Math.round(20*Math.random()));
+  var other_val = round2(Math.round(8*Math.random()));
+  var safe_val = round2(all_win_safe_vals[safe_idx] - 10 + Math. round(20*Math.random()));
+  var lure_val = round2(-50 + round2(100*Math.random()))
   if (lure_val == t_val){lure_val = lure_val + 5};
   if (lure_val == safe_val){lure_val = lure_val + 5};
 
@@ -84,6 +85,7 @@ function rand_gen_rew_quiz_main(loss_trial){
    data:{
      phase:'REW TEST 1',
    },
+
    first_stage: 1,
    last_stage:1,
    show_money_val: true,
@@ -123,7 +125,6 @@ function rand_gen_rew_quiz_main(loss_trial){
 
   return([this_trial, reward_quiz])
 }
-
 
 
 function rand_gen_trial(loss_trial){
@@ -387,12 +388,12 @@ var all_trials = []
 
 var loss_first = 1;
 
-var quiz_p = 0;
+var quiz_p = .2;
 
-
+// should be 4...
 if (loss_first){
   for (var i = 0; i < 1; i++){
-    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "",true);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "",false);
     var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
@@ -420,8 +421,8 @@ if (loss_first){
 
     all_trials = all_trials.concat(loss_block);
     //////////////////////////////////////////////////////////////////
-    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "", false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 2. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","Pay attention to the point values!.",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
     var b = Math.round(win_block.length/3);
@@ -449,7 +450,7 @@ if (loss_first){
 }else{
   for (var i = 0; i < 1; i++){
     /// win
-    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", true);
     var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
@@ -479,7 +480,7 @@ if (loss_first){
     all_trials = all_trials.concat(win_block);
 
     // loss
-    var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", true);
     var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
@@ -724,38 +725,43 @@ var build_more_like_quiz2 = function(choice_number, correct_c){
 }
 
 var make_more_like_block1 = function(){
-  var pairs = [[1, 2], [1, 3], [1,4], [2,3], [2,4], [3,4]];
-  var num_list = [0,1,2,3,4,5];
-  var outcome_numbers_shuff = jsPsych.randomization.shuffle([1,2]);
+//  var pairs = [[1, 2], [1, 3], [1,4], [2,3], [2,4], [3,4]];
   var like_block_trials = [];
-  for (o_block_number = 0; o_block_number < 2; o_block_number++){
-    var this_outcome_number = outcome_numbers_shuff[o_block_number];
-    //console.log('on' + this_outcome_number)
-    var this_o_like_block = [];
-    for (var i = 0; i<6; i++){
-      if (this_outcome_number == 1){
-        var correct_c = 2;
-      } else{
-        var correct_c = 1;
-      }
-      var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
-    //  var this_trial = build_more_like_quiz2(1 , 1);
+  for (var rep_idx = 0; rep_idx < 2; rep_idx++){
 
-      this_o_like_block.push(this_trial);
-
-      // if it's 1 v 2 leading to outcome 1, increase it
-      if (((pairs[i][0] == 1) & (pairs[i][1] == 2)) & (this_outcome_number == 1)){
+    var pairs = [[1, 2], [2,3], [3,4]];
+    var num_list = [0,1,2,3,4,5];
+    var outcome_numbers_shuff = jsPsych.randomization.shuffle([1,2]);
+  //  var like_block_trials = [];
+    for (o_block_number = 0; o_block_number < 2; o_block_number++){
+      var this_outcome_number = outcome_numbers_shuff[o_block_number];
+      //console.log('on' + this_outcome_number)
+      var this_o_like_block = [];
+      for (var i = 0; i<pairs.length; i++){
+        if (this_outcome_number == 1){
+          var correct_c = 2;
+        } else{
+          var correct_c = 1;
+        }
         var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
-        this_o_like_block.push(this_trial);
-      }
+      //  var this_trial = build_more_like_quiz2(1 , 1);
 
-      if (((pairs[i][0] == 3) & (pairs[i][1] == 4)) & (this_outcome_number == 2)){
-        var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
         this_o_like_block.push(this_trial);
-      }
 
+        // if it's 1 v 2 leading to outcome 1, increase it
+    //    if (((pairs[i][0] == 1) & (pairs[i][1] == 2)) & (this_outcome_number == 1)){
+    //      var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
+    //      this_o_like_block.push(this_trial);
+    //    }
+
+    //    if (((pairs[i][0] == 3) & (pairs[i][1] == 4)) & (this_outcome_number == 2)){
+    //      var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
+    //      this_o_like_block.push(this_trial);
+    //    }
+
+      }
+      like_block_trials = like_block_trials.concat(jsPsych.randomization.shuffle(this_o_like_block))
     }
-    like_block_trials = like_block_trials.concat(jsPsych.randomization.shuffle(this_o_like_block))
   }
   return like_block_trials
 }
@@ -877,7 +883,7 @@ function rand_gen_info_quiz(){
   return info_quiz;
 }
 
-
+// fix the data saving...
 
 var build_play_machine_round = function(block_number, round_number){
 
@@ -927,11 +933,11 @@ var build_play_machine_round = function(block_number, round_number){
    var feedback_trial = {
      type: 'evan-display-text',
      line_1: function(){
-                       var n_correct = jsPsych.data.get().last(18).filter({correct: 1}).count()
-                       var this_text = "You answered " + n_correct +" of the 18 questions correctly.";
+                       var n_correct = jsPsych.data.get().last(10).filter({correct: 1}).count()
+                       var this_text = "You answered " + n_correct +" of the 10 questions correctly.";
                        return this_text;
                      },
-     line_2: "You've completed " + round_number + " out of 6 rounds.",
+     line_2: "You've completed " + round_number + " out of 5 rounds.",
      line_3: "",
      wait_for_press: true,
      data: {phase: 'INFO'},
@@ -950,7 +956,8 @@ var build_play_machine_round = function(block_number, round_number){
 var model_learning = [];
 
 // goes 4-6rounds of experience with quizzes.. at the end, do a quiz on each...
-  for (var i = 0; i < 6; i++){
+var n_rounds = 5;
+  for (var i = 0; i < n_rounds; i++){
 
       if (i < 2){
         var bn = 6;
@@ -967,7 +974,7 @@ var model_learning = [];
         model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
       }
-      if (i == 3){
+      if (i == 4){
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
         add_save_block_data(model_learning[model_learning.length - 3])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
@@ -1517,9 +1524,8 @@ var end_screen = {
 // put together the full timeline
  timeline = [];
  timeline.push(full_screen);
- timeline = timeline.concat(instruc_timeline1);
- //timeline = timeline.concat(task1_timeline);
- timeline = timeline.concat(instruc_timeline2);
+ //timeline = timeline.concat(instruc_timeline1); // this includes training...
+ //timeline = timeline.concat(instruc_timeline2);
  timeline = timeline.concat(task2_timeline);
  //timeline = task2_timeline.slice(0,2);
  timeline.push(end_screen);

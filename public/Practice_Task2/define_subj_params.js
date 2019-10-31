@@ -24,7 +24,7 @@ var start_task = function(){
     firebase.auth().signInAnonymously();
 
     // User ID
-    var uid;
+    //var uid;
 
 
     // When signed in, get the user ID
@@ -68,9 +68,9 @@ var set_other_vars = function(){
 //    }
 
 
-     subjectID = ('subj_' + subject_num)
+     subjectID = ('subj_' + subject_num + '_PracticeTask')
 
-     seed = 'Seed for subject aaa' //+ subjectID;
+     seed = 'Seed for subject subjectID';
      Math.seedrandom(seed);
 
     // set condition here...
@@ -169,9 +169,17 @@ function getQueryVariable(variable)
 
 //document.getElementById("submit-button").onclick = start_task;
 var beginning_form = function(researcher_inputs){
-    subject_num = 999;//parseInt(researcher_inputs.subjectNumber.value);
+    ///subject_num = 999;//parseInt(researcher_inputs.subjectNumber.value);
   //  console.log(subject_num)
     // var env = researcher_inputs.env.value;
+
+    if (window.location.search.indexOf('subject_num') > -1) {
+       subject_num = parseInt(getQueryVariable('subject_num'));
+    }
+    else {
+        subject_num = Math.floor(Math.random() * (2000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
+    }
+
     start_phase = 'LOC'; //researcher_inputs.stage.value;
 //    console.log(start_phase)
 
