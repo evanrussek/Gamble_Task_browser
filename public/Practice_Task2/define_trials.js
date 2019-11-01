@@ -388,7 +388,7 @@ var all_trials = []
 
 var loss_first = 1;
 
-var quiz_p = .2;
+var quiz_p = .25;
 
 // should be 4...
 if (loss_first){
@@ -605,7 +605,7 @@ var make_loc_block = function(block_number){
 
 loc_pct_bonus = null;
 
-var n_loc_blocks = 5;
+var n_loc_blocks = 4;
 var loc_exp = [];
 for (var i = 0; i < n_loc_blocks; i++){
   var block_num = i + 1;
@@ -723,6 +723,8 @@ var build_more_like_quiz2 = function(choice_number, correct_c){
   }
   return ml_trial
 }
+
+// see whether including this in the training affects things...
 
 var make_more_like_block1 = function(){
 //  var pairs = [[1, 2], [1, 3], [1,4], [2,3], [2,4], [3,4]];
@@ -937,7 +939,7 @@ var build_play_machine_round = function(block_number, round_number){
                        var this_text = "You answered " + n_correct +" of the 10 questions correctly.";
                        return this_text;
                      },
-     line_2: "You've completed " + round_number + " out of 5 rounds.",
+     line_2: "You've completed " + round_number + " out of 4 rounds.",
      line_3: "",
      wait_for_press: true,
      data: {phase: 'INFO'},
@@ -955,8 +957,9 @@ var build_play_machine_round = function(block_number, round_number){
 
 var model_learning = [];
 
-// goes 4-6rounds of experience with quizzes.. at the end, do a quiz on each...
-var n_rounds = 5;
+
+// does 4 rounds of experience with quizzes.. at the end, do a quiz on each...
+var n_rounds = 4;
   for (var i = 0; i < n_rounds; i++){
 
       if (i < 2){
@@ -974,7 +977,7 @@ var n_rounds = 5;
         model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
       }
-      if (i == 4){
+      if (i == 3){
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
         add_save_block_data(model_learning[model_learning.length - 3])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
@@ -1524,9 +1527,9 @@ var end_screen = {
 // put together the full timeline
  timeline = [];
  timeline.push(full_screen);
- timeline.push(stai_questionairre);
+ //timeline.push(stai_questionairre);
  //timeline.push(masq_questionairre);
- //timeline = timeline.concat(instruc_timeline1); // this includes training...
+ timeline = timeline.concat(instruc_timeline1); // this includes training...
  //timeline = timeline.concat(instruc_timeline2);
  //timeline = timeline.concat(task2_timeline);
  //timeline = task2_timeline.slice(0,2);
