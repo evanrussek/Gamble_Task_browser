@@ -1522,10 +1522,17 @@ var end_screen = {
 //loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
 //full_screen
 // put together the full timeline
+
+var full_screen = {
+  type: 'fullscreen',
+  fullscreen_mode: true
+};
+
+
 timeline = [];
 timeline.push(full_screen);
-timeline = timeline.concat(instruc_timeline1); // this includes training...
-timeline = timeline.concat(instruc_timeline2);
+//timeline = timeline.concat(instruc_timeline1); // this includes training...
+//timeline = timeline.concat(instruc_timeline2);
 timeline = timeline.concat(task2_timeline);
  //timeline = task2_timeline.slice(0,2);
 timeline.push(end_screen);

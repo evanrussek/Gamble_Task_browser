@@ -64,7 +64,7 @@ var define_parameters = function(exp_stage){
 
   var choice_side_fade_time = 250;
   var quiz_pause_resp_time = 150;
-  var quiz_response_time = 4000;
+  var quiz_response_time = 10000;
   var quiz_feedback_time = 350;
   //var post_response_static_time = 200;
 

@@ -1524,11 +1524,13 @@ var end_screen = {
 // put together the full timeline
  timeline = [];
  timeline.push(full_screen);
+ timeline.push(stai_questionairre);
+ //timeline.push(masq_questionairre);
  //timeline = timeline.concat(instruc_timeline1); // this includes training...
  //timeline = timeline.concat(instruc_timeline2);
- timeline = timeline.concat(task2_timeline);
+ //timeline = timeline.concat(task2_timeline);
  //timeline = task2_timeline.slice(0,2);
- timeline.push(end_screen);
+ //timeline.push(end_screen);
 
  var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13.JPG';
 
@@ -1546,7 +1548,7 @@ var end_screen = {
      }
  }
 
- timeline.push(final_screen);
+ //timeline.push(final_screen);
 
 
      var all_task_images = [];
