@@ -1008,6 +1008,8 @@ var preloc_slide = instr_slides + '/Slide3.JPG';
 var pretrain_slide = instr_slides + '/Slide4.JPG';
 var pretask_slide = instr_slides + '/Slide5.JPG';
 
+var all_slides = [welcome_slide, preloc_slide, pretrain_slide, pretask_slide];
+
 console.log(pretrain_slide)
 
 var instr1 = {
@@ -1078,21 +1080,28 @@ var end_screen = {
          											return ((trial.points_received != null) & (trial.phase == 'TEST'));
          										}).select('points_received').values
          		if (test_point_vals.length > 0){
-         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 4)
+         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 8)
          			var test_bonus_trial_points_avg =  Math.round(arrAvg(rand_test_point_vals));
-         			var test_quiz_perf = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').mean()
-         			var test_quiz_pct = Math.round(100*test_quiz_perf);
+         			var test_quiz_correct = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').sum()
+              var test_quiz_count = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').count()
+         			var test_quiz_incorrect = test_quiz_count - test_quiz_correct;
          		}else{
          			var test_quiz_pct = 0;
          			var test_bonus_trial_points_avg = 0;
+              var test_quiz_incorrect = 0
          		}
+
+            var bonus = (20*(test_bonus_trial_points_avg + 100)/200) - 0.25*test_quiz_incorrect;
+
+            console.log('bonus: ' + bonus)
 
          		// write this data
          		var bonus_data = {
          		//	'practice_quiz_pct': practice_quiz_pct,
          		//	'practice_bonus_trial_points_avg': practice_bonus_trial_points_avg,
-         			'test_quiz_pct': test_quiz_pct,
-         			'test_bonus_trial_points_avg': test_bonus_trial_points_avg
+         			'test_quiz_incorrect': test_quiz_incorrect,
+         			'test_bonus_trial_points_avg': test_bonus_trial_points_avg,
+              'bonus': bonus
          		};
          		jsPsych.data.write(bonus_data)
                 var task_data = jsPsych.data.get().json();
@@ -1101,10 +1110,10 @@ var end_screen = {
                                   .doc('end').set({
                                     bonus_data: bonus_data,
                                     end_time: new Date().toLocaleTimeString()})
-         		var string = 'You have finished the task. Thank you for your contribution to science! \
-         					For the attention checks  you got ' + test_quiz_pct + ' percent correct. On four randomly selected games, \
-         					the average number of points you collected was '  + test_bonus_trial_points_avg + '. \
-         					 Your bonus will be based on these results.';
+         		var string = 'You have finished the task. \
+         				   On the randomly selected games, \
+         					the average number of points you collected was '  + test_bonus_trial_points_avg + '.	For the attention checks you got ' + test_quiz_incorrect + ' incorrect. \
+         					 The bonus will be ' + bonus + '.';
 
          		return string;
          	},
@@ -1139,7 +1148,10 @@ timeline.push(end_screen);
 //timeline = [];
 //timeline = timeline.concat(make_more_like_block1());
 //timeline = timeline.concat(make_more_like_block2());
-
+var all_task_images = [];
+all_task_images = all_task_images.concat(pos_outcome_images);
+all_task_images = all_task_images.concat(pos_choice_images);
+all_task_images = all_task_images.concat(all_slides);
 
 console.log(loc_exp)
 
@@ -1147,7 +1159,8 @@ console.log(loc_exp)
   /* start the experiment */
   jsPsych.init({
    timeline: timeline,
-   show_preload_progress_bar: false,
+   preload_images: all_task_images,
+   show_preload_progress_bar: true,
    on_finish: function() {
      jsPsych.data.get().localSave('csv','evan_practice_new.csv');
   }

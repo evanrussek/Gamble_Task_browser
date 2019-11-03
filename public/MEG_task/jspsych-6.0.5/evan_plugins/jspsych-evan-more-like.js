@@ -158,6 +158,7 @@ plugin.trial = function(display_element, trial) {
         .attr("height", par.h).style("fill", par.svg_color).style("opacity",.7);
   ////////////////////////////////////////
 
+  place_diode(par.background_height, par.background_width, par.h);
 
     var place_question1 = function(){
       // place question

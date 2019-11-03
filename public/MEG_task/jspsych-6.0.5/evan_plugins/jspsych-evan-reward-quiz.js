@@ -116,7 +116,7 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
       console.log(trial.outcome_name)
       var txt_q = 'How many points is this banknote worth?';
       place_text(txt_q, 'Prompt', q_text_x, q_text_y, par.text_font_size/2, 1, "White");
-      place_text(trial.outcome_name, 'Prompt', q_text_x, 1.7*par.h/5, 2*par.text_font_size/3, 1, "Green");
+      place_text(trial.outcome_name, 'Prompt', q_text_x, 1.7*par.h/5, 1.5*par.text_font_size/2, 1, "Green");
 
     }
 
@@ -154,7 +154,7 @@ jsPsych.plugins["evan-reward-quiz"] = (function() {
     }
 
     for (var i = 0; i < 4; i++){
-      place_text(money_vals[shuffledInds[i]], 'Prompt', rew_x[i], rew_y[i], par.text_font_size/2, 1, "Yellow");
+      place_text(money_vals[shuffledInds[i]], 'Prompt', rew_x[i], rew_y[i], 1.5*par.text_font_size/2, 1, "Yellow");
     }
 
     // place key under it

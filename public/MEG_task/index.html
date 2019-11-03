@@ -2,8 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Task</title>
-    <script type = "text/javascript" src = "index.js"></script>
+    <title>My experiment</title>
     <script src="jspsych-6.0.5/jspsych.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-html-keyboard-response.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-html-button-response.js"></script>
@@ -14,59 +13,83 @@
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-run-trial.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-instructions.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-info-quiz.js"></script>
-    <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-quiz.js"></script>
-    <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-two-stim-choice.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-more-like.js"></script>
+    <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-two-stim-choice.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-display-text.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-struc-quiz.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-reward-quiz.js"></script>
+    <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-localizer-trial.js"></script>
+    <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-display-map.js"></script>
     <link href="jspsych-6.0.5/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link rel='stylesheet' type='text/css' href='default_style.css'>
     <link rel='stylesheet' type='text/css' href='style.css'>
     <script type="text/javascript" src="jspsych-6.0.5/d3.min.js"></script>
+    <script type="text/javascript" src="jspsych-6.0.5/seedrandom.js"></script>
   </head>
   <body>
-    <div class="form" id="mainSection">
-            <header class="form__header" id="header"><h2 id="header_title" class="form__title"></h2></header>
-            <section class="mainInstructions" id="consent"></section>
-      </div>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-auth.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#config-web-app -->
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBSusJWFpvWbsyYy9aJhzhCr98B1mlHkVs",
+        authDomain: "gambletask.firebaseapp.com",
+        databaseURL: "https://gambletask.firebaseio.com",
+        projectId: "gambletask",
+        storageBucket: "gambletask.appspot.com",
+        messagingSenderId: "1081114470761",
+        appId: "1:1081114470761:web:7ff7b75c873f0580"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    <div id="experimenter-questionnaire" class="experimenter-questionnaire">
+        <form action="javascript:;" onsubmit="beginning_form(this)">
+            Subject Number:
+            <br>
+            <input type="text" name="subjectNumber">
+            <br><br>
+
+            Stage:
+            <br>
+            <input type="radio" name="stage" value="LOC"> LOC
+            <input type="radio" name="stage" value="LEARN"> LEARN
+            <input type="radio" name="stage" value="TASK"> TASK
+            <br><br>
+
+            <!-- Day of training<br>
+            <input type="radio" name="day" value="1"> 1
+            <input type="radio" name="day" value="2"> 2
+            <br><br> -->
+
+            Run Number (Within The Stage)<br>
+            <input type="radio" name="run" value="1"> 1
+            <input type="radio" name="run" value="2"> 2
+            <input type="radio" name="run" value="3"> 3
+            <input type="radio" name="run" value="4"> 4
+            <input type="radio" name="run" value="5"> 5
+            <input type="radio" name="run" value="6"> 6
+            <input type="radio" name="run" value="7"> 7
+            <input type="radio" name="run" value="8"> 8
+            <br><br>
+
+            <br><br>
+
+
+        <!--    <div id="submit-button"> -->
+              <input id="submit-button" type="submit" value="Submit">
+        <!--        </div> -->
+        </form>
+    </div>
   </body>
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-<!--  <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase.js"></script> -->
-  <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-auth.js"></script>
-
-
-
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-       https://firebase.google.com/docs/web/setup#config-web-app -->
-
-  <script>
-    // Your web app's Firebase configuration
-    var firebaseConfig = {
-      apiKey: "AIzaSyBSusJWFpvWbsyYy9aJhzhCr98B1mlHkVs",
-      authDomain: "gambletask.firebaseapp.com",
-      databaseURL: "https://gambletask.firebaseio.com",
-      projectId: "gambletask",
-      storageBucket: "gambletask.appspot.com",
-      messagingSenderId: "1081114470761",
-      appId: "1:1081114470761:web:7ff7b75c873f0580"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-  </script>
-
-
   <script type="text/javascript" src="evan_utils.js"></script>
-  <script type="text/javascript" src="define_subj_params.js"></script>
   <script type="text/javascript" src="parameters.js"></script>
-  <script type="text/javascript" src="define_practice_trials.js"></script>
+<!--  <script type="text/javascript" src="define_practice_trials.js"></script> -->
   <script type="text/javascript" src="define_trials.js"></script>
-  <script type="text/javascript" src="define_instruction_trials.js"></script>
-  <script type="text/javascript" src="index.js"></script>
-  <script src="https://browser.sentry-cdn.com/4.4.1/bundle.min.js" crossorigin="anonymous"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-
+  <script type="text/javascript" src="define_subj_params.js"></script>
 </html>

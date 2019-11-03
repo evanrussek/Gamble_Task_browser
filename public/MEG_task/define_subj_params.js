@@ -66,7 +66,7 @@ var set_other_vars = function(){
           console.log("WRONGE PHASE NAME");
     }
 
-     subjectID = ('subj_' + subject_num)
+     subjectID = ('subj_MEG_' + subject_num)
 
      seed = 'Seed for subject ' + subjectID;
      Math.seedrandom(seed);
