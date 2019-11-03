@@ -61,7 +61,7 @@ var set_other_vars = function(){
     }else if (start_phase == "LEARN"){
            exp_block = start_block + 5;
     } else if (start_phase == "TASK"){
-           exp_block = start_block + 9;
+           exp_block = start_block + 7;
     } else{
           console.log("WRONGE PHASE NAME");
     }
@@ -141,13 +141,13 @@ var set_other_vars = function(){
 
        // this is constant for all subjects (160 trials)
        all_prob_o1 = [.2, .4, .6, .8];
-       all_win_safe_vals = [20, 40, 60, 80];
-       all_loss_safe_vals = [-20, -40, -60, -80];
-       all_win_amounts = [60, 80, 110];
-       all_loss_amounts = [-60, -80, -110];
+       all_win_safe_vals = [20, 32, 44, 56];
+       all_loss_safe_vals = [-20, -32, -44, -56];
+       all_win_amounts = [47.5, 60, 75];
+       all_loss_amounts = [-47.5, -60, -75];
        all_prob_trig = all_prob_o1;
 
-       jsPsych.data.addProperties({subject: subject_num});
+       jsPsych.data.addProperties({subject: subject_num, choice_names: choice_names, outcome_names: outcome_names, loss_first: loss_first});
        start_task();
 }
 

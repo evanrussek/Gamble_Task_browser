@@ -382,14 +382,15 @@ var block_size = all_loss_trials.length/(n_blocks/2);
 var all_trials = []
 
 //
-var loss_first = 1;
+//var loss_first = 1;
 
-var quiz_p = .15;
+// var loss_first = 0;
+var quiz_p = .2;
 
 if (loss_first){
   for (var i = 0; i < 4; i++){
     var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "",true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8. Games in this block will all have negative points","Collecting more of these will make your bonus smaller.","Remember the attention checks and to stay still.",true);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -410,14 +411,14 @@ if (loss_first){
 
     // add the loss block
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 9 + 2*i + 1;
+      loss_block[t].data.block_number = 7 + 2*i + 1;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
 
     all_trials = all_trials.concat(loss_block);
     //////////////////////////////////////////////////////////////////
     var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","Remember the attention checks and to stay still.",true);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
     var b = Math.round(win_block.length/3);
@@ -437,7 +438,7 @@ if (loss_first){
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 9 + 2*i + 2;
+      win_block[t].data.block_number = 7 + 2*i + 2;
     } // save data on the last trial.
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -446,9 +447,9 @@ if (loss_first){
   for (var i = 0; i < 4; i++){
     /// win
     var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.", "Remember the attention checks and to stay still.",true);
     var win_block = [intro_text_trial];
-    win_block = loss_block.concat(all_win_trials.splice(0,block_size));
+    win_block = win_block.concat(all_win_trials.splice(0,block_size));
 
     var b = Math.round(win_block.length/3);
     //win_block.splice(b,0,build_text_trial("Great work!.","Let's take a 5 second break.","",false))
@@ -469,14 +470,14 @@ if (loss_first){
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 9 + 2*i + 1;
+      win_block[t].data.block_number = 7 + 2*i + 1;
     }
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
 
     // loss
     var final_text_trial = build_text_trial("Great work! ", "Let's take a short break", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8. Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.","Remember the attention checks and to stay still.", true);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -497,7 +498,7 @@ if (loss_first){
     // add the win block
     loss_block.push(final_text_trial);
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 9 + 2*i + 2;
+      loss_block[t].data.block_number = 7 + 2*i + 2;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
     all_trials = all_trials.concat(loss_block);
@@ -641,46 +642,44 @@ for (var i = 0; i < n_loc_blocks; i++){
 //////// IF YOU SCAN THIS .... PROBABLY WON'T THOUGH //////////////////
 
 struc_pct_correct = null;
-var make_struc_quiz_block = function(round_number, block_number, limit_time){
+var make_struc_quiz_block = function(round_number, block_number, limit_time){ // need to alter this so that time and keyboard
 
   // let's
-  //var choice_options = [1,2,3,4,1,2,3,4];
-  //var outcome_options = [1,1,1,1,2,2,2,2];
+
+  var shuffled_idx = jsPsych.randomization.shuffle([0,1,2,3,4,5,6,7]);
+  var choice_options = [1,2,3,4,1,2,3,4];
+  var outcome_options = [1,1,1,1,2,2,2,2];
   var p_vec = [.2, .4, .6, .8];
-  var choice_options = [1,2,3,4];
-  choice_options = jsPsych.randomization.shuffle(choice_options);
 
   var this_round_trials = [];
 
-  // go through this in order...
-  for (var i = 0; i < 4; i++){
-    //var this_idx = shuffled_idx[i];
-    var this_choice_number = choice_options[i];
-    var cx_number = this_choice_number;
-
-    var quiz_trials = [];
-    for (var qo = 0; qo < 2; qo++){
-      if (qo == 0){ var cp = all_prob_o1[cx_number - 1]}else{
-       var cp = 1 - all_prob_o1[cx_number - 1];
-      }
-      var quiz_trial1 = {
-        type: "evan-struc-quiz",
-        choice_image: choice_images[cx_number - 1],
-        outcome_image: outcome_images[qo],
-        correct_p: cp, // 1 - 4
-        limit_time: limit_time,
-        data:{
-          phase: 'TRAIN STRUC QUIZ',
-          choice_number: cx_number,
-          outcome_number: cx_number,
-          block_number: block_number
-        } // want a block number here...
-     }
-      quiz_trials.push(quiz_trial1)
+  for (var i = 0; i < 8; i++){
+    var this_idx = shuffled_idx[i];
+    var this_choice_number = choice_options[this_idx];
+    var this_outcome_number = outcome_options[this_idx];
+    if (this_outcome_number == 1){
+      var correct_p = p_vec[this_choice_number - 1]
+    }else{
+      var correct_p =  1 - p_vec[this_choice_number - 1]
     }
-    this_round_trials = this_round_trials.concat(jsPsych.randomization.repeat(quiz_trials,1));
+
+    // make the trial
+    var this_trial = {
+      type: "evan-struc-quiz",
+      choice_image: choice_images[this_choice_number - 1],
+      outcome_image: outcome_images[this_outcome_number - 1],
+      correct_p: correct_p, // 1 - 4
+      limit_time: limit_time,
+      MEG_buttons: false,
+      data:{
+        phase: 'TRAIN STRUC QUIZ',
+        choice_number: this_choice_number,
+        outcome_number: this_outcome_number,
+        block_number: block_number
+      } // want a block number here...
+    }
     // append this trial to the block
-  //  this_round_trials.push(this_trial)
+    this_round_trials.push(this_trial)
   }
   var feedback_trial = {
     type: 'evan-display-text',
@@ -690,19 +689,125 @@ var make_struc_quiz_block = function(round_number, block_number, limit_time){
                       return this_text;
                       struc_pct_correct = n_correct/8;
                     },
-    line_2: "",
+    line_2: "You've completed " + round_number + " out of 14 rounds.",
     line_3: "",
     wait_for_press: true,
     data: {phase: 'INFO',
           block_number: block_number} // note this shows up in main phase as well so isn't train per se
   }
-  this_round_trials.push(feedback_trial);
+  this_round_trials.push(outcome_image_arr_trial);
   return this_round_trials;
 }
 
 
-var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG';
 // this will change based on the task...
+var build_more_like_quiz = function(outcome_number, c1_number, c2_number, correct_c){
+  var ml_trial = {
+    type: "evan-more-like",
+    outcome_image: outcome_images[outcome_number - 1],
+    c1_image: choice_images[c1_number - 1],
+    c2_image: choice_images[c2_number - 1],
+    correct_c: correct_c,
+    q_type: 1,
+    data:{
+      phase: 'TRAIN ML QUIZ',
+      c1_number: c1_number,
+      c2_number: c2_number,
+      outcome_number: outcome_number
+    }
+  }
+  return ml_trial
+}
+
+// this will change based on the task...
+var build_more_like_quiz2 = function(choice_number, correct_c){
+  var ml_trial = {
+    type: "evan-more-like",
+    choice_image: choice_images[choice_number - 1],
+    o1_image: outcome_images[0],
+    o2_image: outcome_images[1],
+    correct_c: correct_c,
+    q_type: 2,
+    data:{
+      phase: 'TRAIN ML QUIZ',
+      choice_number: choice_number,
+    }
+  }
+  return ml_trial
+}
+
+// see whether including this in the training affects things...
+
+var make_more_like_block1 = function(){
+//  var pairs = [[1, 2], [1, 3], [1,4], [2,3], [2,4], [3,4]];
+  var like_block_trials = [];
+  for (var rep_idx = 0; rep_idx < 2; rep_idx++){
+
+    var pairs = [[1, 2], [2,3], [3,4]];
+    var num_list = [0,1,2,3,4,5];
+    var outcome_numbers_shuff = jsPsych.randomization.shuffle([1,2]);
+  //  var like_block_trials = [];
+    for (o_block_number = 0; o_block_number < 2; o_block_number++){
+      var this_outcome_number = outcome_numbers_shuff[o_block_number];
+      //console.log('on' + this_outcome_number)
+      var this_o_like_block = [];
+      for (var i = 0; i<pairs.length; i++){
+        if (this_outcome_number == 1){
+          var correct_c = 2;
+        } else{
+          var correct_c = 1;
+        }
+        var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
+      //  var this_trial = build_more_like_quiz2(1 , 1);
+
+        this_o_like_block.push(this_trial);
+
+        // if it's 1 v 2 leading to outcome 1, increase it
+    //    if (((pairs[i][0] == 1) & (pairs[i][1] == 2)) & (this_outcome_number == 1)){
+    //      var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
+    //      this_o_like_block.push(this_trial);
+    //    }
+
+    //    if (((pairs[i][0] == 3) & (pairs[i][1] == 4)) & (this_outcome_number == 2)){
+    //      var this_trial = build_more_like_quiz(this_outcome_number, pairs[i][0], pairs[i][1], correct_c);
+    //      this_o_like_block.push(this_trial);
+    //    }
+
+      }
+      like_block_trials = like_block_trials.concat(jsPsych.randomization.shuffle(this_o_like_block))
+    }
+  }
+  return like_block_trials
+}
+
+var make_more_like_block2 = function(){
+  var c_nums = [1,2,3,4];
+  var c_nums = jsPsych.randomization.shuffle(c_nums);
+  var like_block_trials = [];
+  for (c_idx = 0; c_idx < 4; c_idx++){
+    var this_c_num = c_nums[c_idx];
+    //console.log('on' + this_outcome_number)
+      if (this_c_num < 3){
+        var correct_c = 2;
+      } else{
+        var correct_c = 1;
+      }
+     var this_trial = build_more_like_quiz2(this_c_num , correct_c);
+
+      like_block_trials.push(this_trial);
+    }
+  return like_block_trials
+}
+
+
+var build_po_vec = function(n_trials, p_o1){
+  var n_o1_trials = n_trials*p_o1;
+  var n_o2_trials = n_trials - n_o1_trials;
+  var a_trials = new Array(n_o1_trials).fill(1);
+  var po_vec = a_trials.concat(new Array(n_o2_trials).fill(0)); // need to shuffle it later
+  return po_vec;
+}
+
 
 var build_practice_trial_stg1 = function(choice_number, p_o1, show_prompt, limit_time){
   // add a prompt ....
@@ -738,21 +843,69 @@ var build_practice_trial_stg1 = function(choice_number, p_o1, show_prompt, limit
 
   return this_trial;
 }
-var build_po_vec = function(n_trials, p_o1){
-  var n_o1_trials = n_trials*p_o1;
-  var n_o2_trials = n_trials - n_o1_trials;
-  var a_trials = new Array(n_o1_trials).fill(1);
-  var po_vec = a_trials.concat(new Array(n_o2_trials).fill(0)); // need to shuffle it later
-  return po_vec;
+
+///
+
+function rand_gen_info_quiz(){
+
+  if (Math.random() < .5){
+    // quiz on outcome // need to access last outcome
+    var info_quiz = {
+      type: 'evan-info-quiz',
+      correct_image: function(){
+        var data = jsPsych.data.get().last(1).values()[0];
+        return outcome_images[data.outcome_reached-1];
+      },
+      other_images:  function(){var data = jsPsych.data.get().last(1).values()[0]; var rm_idx = data.outcome_reached-1;
+                      var cp_oi = [...outcome_images]; cp_oi.splice(rm_idx,1); return cp_oi; },
+      correct_name: function(){
+        var data = jsPsych.data.get().last(1).values()[0];
+        return outcome_names[data.outcome_reached-1];
+      },
+      other_names: function(){var data = jsPsych.data.get().last(1).values()[0]; var rm_idx = data.outcome_reached-1;
+                      var cp_on = [...outcome_names]; cp_on.splice(rm_idx,1); return cp_on; },
+
+      use_image: (Math.random() < .5),
+      use_outcome: true,
+      data: {}
+    }
+  }else{
+    var info_quiz = {
+    // do it for choice
+    type: 'evan-info-quiz',
+    correct_image: function(){
+      var data = jsPsych.data.get().last(1).values()[0];
+      return choice_images[data.choice_number-1];
+    },
+    other_images:  function(){var data = jsPsych.data.get().last(1).values()[0]; var rm_idx = data.choice_number-1;
+                     var cp_oi =JSON.parse( JSON.stringify( choice_images ) );
+                      cp_oi.splice(rm_idx,1); return cp_oi; },
+    correct_name: function(){
+      var data = jsPsych.data.get().last(1).values()[0];
+      return choice_names[data.choice_number-1];
+    },
+    other_names: function(){var data = jsPsych.data.get().last(1).values()[0]; var rm_idx = data.choice_number-1;
+                  var cp_on =JSON.parse( JSON.stringify( choice_names ) );
+                     cp_on.splice(rm_idx,1); return cp_on; },
+
+    use_image: (Math.random() < .5), // random iamge or text
+    use_outcome: false,
+    data: {}
+
+  }
+  }
+  return info_quiz;
 }
 
-var build_play_machine_round = function(block_number){
+// fix the data saving...
+
+var build_play_machine_round = function(block_number, round_number){
 
   /// this will make a round of going through each choice 10 times
   var this_round_trials = [];
   c_numb_shuff = jsPsych.randomization.repeat([1,2,3,4],1 );
   // // build all the passive trials
-   for (var cx_idx = 0; cx_idx < c_numb_shuff.length; cx_idx++){
+   for (var cx_idx = 0; cx_idx < 4; cx_idx++){
      var cx_number = c_numb_shuff[cx_idx];
      //var prep_text = "You'll now play the " + choice_names[cx_number - 1] + " slot machine.";
      //var start_block_text2 = "For each game, press 1 to play the machine.";
@@ -773,31 +926,40 @@ var build_play_machine_round = function(block_number){
   //   // build each passive trial
      for (var t = 0; t < cx_trials_o1.length; t++){
        this_round_trials.push(build_practice_trial_stg1(cx_number, cx_trials_o1[t]));
-     }
-     // add quiz to it...
-     // make the trial
-     var quiz_trials = [];
-     for (var qo = 0; qo < 2; qo++){
-       if (qo == 0){ var cp = all_prob_o1[cx_number - 1]}else{
-        var cp = 1 - all_prob_o1[cx_number - 1];
+       if (Math.random() < .2){
+         this_round_trials.push(rand_gen_info_quiz())
        }
-       var quiz_trial1 = {
-         type: "evan-struc-quiz",
-         choice_image: choice_images[cx_number - 1],
-         outcome_image: outcome_images[qo],
-         correct_p: cp, // 1 - 4
-         limit_time: false,
-         data:{
-           phase: 'TRAIN STRUC QUIZ',
-           choice_number: cx_number,
-           outcome_number: cx_number,
-           block_number: block_number
-         } // want a block number here...
-      }
-       quiz_trials.push(quiz_trial1)
+       this_round_trials[this_round_trials.length - 1].data.block_number = block_number;
      }
-     this_round_trials = this_round_trials.concat(jsPsych.randomization.repeat(quiz_trials,1));
+
+    // this_round_trials = this_round_trials.concat(jsPsych.randomization.repeat(quiz_trials,1));
    }
+
+   // build the choice quiz trials
+   this_round_trials.push(build_text_trial("You will now be quized on what you've learned.","Please try your best.","", false))
+   like_quiz_block2 = make_more_like_block2();
+   this_round_trials = this_round_trials.concat(like_quiz_block2);
+   like_quiz_block1 = make_more_like_block1();
+   like_quiz_block1 = jsPsych.randomization.repeat(like_quiz_block1,1);
+   this_round_trials = this_round_trials.concat(like_quiz_block1);
+   // get the last 6 trials.
+
+   var feedback_trial = {
+     type: 'evan-display-text',
+     line_1: function(){
+                       var n_correct = jsPsych.data.get().last(16).filter({correct: 1}).count()
+                       var this_text = "You answered " + n_correct +" of the 16 questions correctly.";
+                       return this_text;
+                     },
+     line_2: "You've completed " + round_number + " out of 4 rounds.",
+     line_3: "",
+     wait_for_press: true,
+     data: {phase: 'INFO'},
+     wait_for_exp: false // note this shows up in main phase as well so isn't train per se
+   }
+
+   this_round_trials.push(feedback_trial)
+
    for (var i = 0; i < this_round_trials.length; i ++){
      //this_round_trials[i].data = {};
      this_round_trials[i].data.block_number = block_number;
@@ -807,19 +969,22 @@ var build_play_machine_round = function(block_number){
 
 // maybe this should be 2 blocks...
 var model_learning = [];
+model_learning.push(build_text_trial("Waiting for experimenter to start.","","", true))
+model_learning[model_learning.length-1].data.block_number = 6;
 
-// goes 4 rounds of experience with quizzes.. at the end, do a quiz on each...
-  for (var i = 0; i < 4; i++){
+// does 4 rounds of experience with quizzes.. at the end, do a quiz on each...
+var n_rounds = 4;
+  for (var i = 0; i < n_rounds; i++){
 
       if (i < 2){
         var bn = 6;
       }else{var bn = 7};
 
-      play_trials = build_play_machine_round(bn);
+      play_trials = build_play_machine_round(bn, i+1);
       model_learning = model_learning.concat(play_trials);
-      model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","Please try your best.","", false))
+    //  model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","Please try your best.","", false))
       model_learning[model_learning.length-1].data.block_number = bn;
-      model_learning = model_learning.concat(make_struc_quiz_block(i + 1, bn, false));
+//      model_learning = model_learning.concat(make_struc_quiz_block(i + 1, bn, false));
       if (i == 1){
         model_learning.push(build_text_trial("Let's take a short break.","","", true))
         add_save_block_data(model_learning[model_learning.length - 3])
@@ -834,62 +999,6 @@ var model_learning = [];
       }
       // do a quiz on each after this...
   }
-
-  // goes through 6 quizzes at any pace...
-    for (var i = 0; i < 5; i++){
-      var bn = 8;
-      var cn_numbers = jsPsych.randomization.repeat([1,2,3,4],1);
-
-      for (var ci = 0; ci<cn_numbers.length; ci++){
-
-        var cx_number = cn_numbers[ci];
-        var schematic_x = {
-          type: 'evan-display-map',
-          choice_images: choice_images,
-          outcome_images: outcome_images,
-          data: {block_number: bn}, // fix the block number,
-          choice_number: cx_number,
-          choice_name: choice_names[cx_number - 1],
-          prompt_text: 'Press 4 to continue.'
-        } // change prompt on the shematic
-        model_learning.push(schematic_x);
-      }
-        model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","Please try your best.","", false))
-        model_learning[model_learning.length-1].data.block_number = bn;
-        var quiz_trials = make_struc_quiz_block(i + 1, bn, false);
-        model_learning = model_learning.concat(quiz_trials);
-    }
-    model_learning.push(build_text_trial("Let's take a short break.","","", true))
-    model_learning[model_learning.length-1].data.block_number = bn + 1;
-    add_save_block_data(model_learning[model_learning.length - 2])
-
-    // go through 5 fast...
-    for (var i = 0; i < 5; i++){
-      var bn = 9;
-      var cn_numbers = jsPsych.randomization.repeat([1,2,3,4],1);
-
-      for (var ci = 0; ci<cn_numbers.length; ci++){
-        var cx_number = cn_numbers[ci];
-        var schematic1 = {
-          type: 'evan-display-map',
-          choice_images: choice_images,
-          outcome_images: outcome_images,
-          data: {block_number: bn}, // fix the block number,
-          choice_number: cx_number,
-          choice_name: choice_names[cx_number - 1],
-          prompt_text: 'Press 4 to continue.'
-        } // change prompt on the shematic
-        model_learning.push(schematic1);
-      }
-        model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","You now must respond quickly (within 3 seconds).","", false))
-        model_learning[model_learning.length-1].data.block_number = bn;
-        var quiz_trials = make_struc_quiz_block(i + 1, bn, true);
-        model_learning = model_learning.concat(quiz_trials);
-    }
-    model_learning.push(build_text_trial("Let's take a short break.","","", true))
-    model_learning[model_learning.length-1].data.block_number = bn + 1;
-    add_save_block_data(model_learning[model_learning.length - 2])
-
 
 //add_save_block_data[model_learning[model_learning.length - 2]]
 //////////////////////////////////
@@ -1026,6 +1135,11 @@ timeline = [full_screen];
 timeline = timeline.concat(timeline_main);
 //timeline = timeline.concat(make_struc_quiz_block(1,1));
 timeline.push(end_screen);
+
+//timeline = [];
+//timeline = timeline.concat(make_more_like_block1());
+//timeline = timeline.concat(make_more_like_block2());
+
 
 console.log(loc_exp)
 

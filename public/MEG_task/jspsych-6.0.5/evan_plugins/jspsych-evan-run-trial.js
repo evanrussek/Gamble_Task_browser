@@ -393,7 +393,9 @@ jsPsych.plugins["evan-run-trial"] = (function() {
           window.cancelAnimationFrame(rafID1); // cancel the info animation frame
           window.cancelAnimationFrame(rafID2);
           if (trial.last_stage < 2){var next_stage_number = 4} else{var next_stage_number = 2};
-          wait_for_time(par.post_info_time,function(){trial_master(next_stage_number)});
+          // want to put the wait in the last one?
+          //wait_for_time(par.post_info_time,function(){trial_master(next_stage_number)});
+          trial_master(next_stage_number);
         }
       }
 
@@ -470,20 +472,51 @@ jsPsych.plugins["evan-run-trial"] = (function() {
      // end display trial info
 
     var remove_trial_info = function(){
-      // this runs for info fadeout time...
-      this_next_fun = function(){
-         stage_1_master(3);
-      }
+        window.cancelAnimationFrame(rafID1); // cancel the info animation frame
+        window.cancelAnimationFrame(rafID2);
+      //d3.select('.info_bkg').transition().style("opacity",1).duration(par.info_fadein_time);
+      rafID1 = window.requestAnimationFrame(function() {
+          rafID2 = window.requestAnimationFrame(function(timestamp) {
 
-      d3.select('.info_bkg').transition().style("opacity",0)
-        .duration(par.info_fadeout_time);
+                // this runs for info fadeout time...
+              //  this_next_fun = function(){
+              //     stage_1_master(3);
+              //  }
 
-      // remove info
-      d3.selectAll('.info').call(setupMT).transition()
-        .style("opacity",0).duration(par.info_fadeout_time)
-        .on('end', this_MT);
+                d3.select('.info_bkg').transition().style("opacity",0)
+                  .duration(par.info_fadeout_time);
 
-      data_temp[txt_offset + '_offset'] = time_onset;
+                // remove info
+                d3.selectAll('.info').call(setupMT).transition()
+                  .style("opacity",0).duration(par.info_fadeout_time)
+                  //.on('end', this_MT);
+
+                time_onset = window.performance.now();
+
+                data_temp[txt_offset + '_offset'] = time_onset;
+
+                display_diode();
+
+                txt_offset = 'trial_info_fadeout';
+                time_onset = window.performance.now();
+                data_temp[txt_offset + '_diode_onset'] = time_onset;
+                data_temp[txt_offset + '_onset'] = time_onset;
+                diode_on = true
+                // this should be the
+                frame_count_diode = Math.round(par.info_fadeout_diode_time / estimated_frame_duration);
+                //console.log('frame_count_diode ' + frame_count_diode)
+                frame_count_stage = Math.round((par.info_fadeout_time + par.post_info_time) / estimated_frame_duration);
+                frame_count = 0;
+                next_stage_fun = function(){stage_1_master(3)};
+                count_time = true;
+
+                // wait for info time par.info_time
+                //if (count_time == true){
+                window.requestAnimationFrame(check_timeout);
+
+
+            })
+          })
 
     } // end remove trial info
 
@@ -745,9 +778,9 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         };
     };
 
-    add_timing_data(['trial_info', 'trial_choice_stim', 'trial_feedback',
+    add_timing_data(['trial_info','trial_info_fadeout', 'trial_choice_stim', 'trial_feedback',
                       'trial_info_diode', 'trial_choice_stim_diode',
-                    'trial_feedback_diode'])
+                    'trial_feedback_diode', 'trial_info_fadeout_diode'])
     console.log(trial_data)
 
     jsPsych.finishTrial(trial_data);

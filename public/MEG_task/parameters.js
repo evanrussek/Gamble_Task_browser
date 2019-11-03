@@ -21,6 +21,7 @@ var define_parameters = function(exp_stage){
   var info_diode_time = 1000; // this could be 1 second
   var choice_stim_diode_time = 50; // this is flexible, but could potentilaly be fast
   var loc_image_diode_time = 250; // this one 800 msec its on
+  var info_fadeout_diode_time = 250;
 
   var loc_image_time = 800;
   var loc_image_fade_time = 200;
@@ -35,16 +36,16 @@ var define_parameters = function(exp_stage){
   // for practice, this can go for a while...
 
   if (exp_stage == 'trial'){
-    var pre_trial_time = 1500; // this is the ITI
-    var info_time = 2250;
+    var pre_trial_time = 1250; // this is the ITI
+    var info_time = 2500;
   //  var info_time = 10000000000;
-    var post_info_time = 1500;
+    var post_info_time = 1250;
     var max_response_time = 8000;
-    var outcome_time = 750;
-    var post_choice_time = 700;
-    var choice_fadeout_time = 300;
+    var outcome_time = 500;
+    var post_choice_time = 1250;
+    var choice_fadeout_time = 250;
     var outcome_fadein_time = 0;
-    var outcome_fadeout_time = 300;
+    var outcome_fadeout_time = 250;
   }else{
     // this seems good for now...
     var pre_trial_time = 350; // this is the ITI
@@ -64,7 +65,7 @@ var define_parameters = function(exp_stage){
 
   var choice_side_fade_time = 250;
   var quiz_pause_resp_time = 150;
-  var quiz_response_time = 4000;
+  var quiz_response_time = 8000;
   var quiz_feedback_time = 350;
   //var post_response_static_time = 200;
 
@@ -229,6 +230,7 @@ var define_parameters = function(exp_stage){
     loc_max_response_time: loc_max_response_time,
     loc_image_fade_time: loc_image_fade_time,
     loc_image_diode_time: loc_image_diode_time,
+    info_fadeout_diode_time: info_fadeout_diode_time,
     loc_image_time: loc_image_time,
     loc_pre_trial_time: loc_pre_trial_time,
     outcome_diode_time: outcome_diode_time,

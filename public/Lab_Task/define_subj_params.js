@@ -133,8 +133,6 @@ var set_other_vars = function(){
                           "Stimuli/Evan_Stimuli/Zebra.png"];
 
 
-
-
        choice_images = [pos_choice_images[choice_idx_vec[0]],
                              pos_choice_images[choice_idx_vec[1]],
                              pos_choice_images[choice_idx_vec[2]],
@@ -157,10 +155,10 @@ var set_other_vars = function(){
 
        // this is constant for all subjects (160 trials)
        all_prob_o1 = [.2, .4, .6, .8];
-       all_win_safe_vals = [15, 30, 45, 60];
-       all_loss_safe_vals = [-15, -30, -45, -60];
-       all_win_amounts = [44, 63, 88];
-       all_loss_amounts = [-44, -63, -88];
+       all_win_safe_vals = [20, 32, 44, 56];
+       all_loss_safe_vals = [-20, -32, -44, -56];
+       all_win_amounts = [47.5, 60, 75];
+       all_loss_amounts = [-47.5, -60, -75];
        all_prob_trig = all_prob_o1;
 
        jsPsych.data.addProperties({subject: subject_num});

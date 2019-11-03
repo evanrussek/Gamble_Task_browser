@@ -101,7 +101,6 @@ jsPsych.plugins["evan-struc-quiz"] = (function() {
 
 
     //function ()
-
     par = define_parameters('trial');
 
     // create svg - stimulus background // need to define this here so other funcs can use it
