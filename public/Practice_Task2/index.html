@@ -8,6 +8,7 @@
     <script src="jspsych-6.0.5/plugins/jspsych-html-button-response.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-image-keyboard-response.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-survey-multi-choice.js"></script>
+    <script src="jspsych-6.0.5/plugins/jspsych-survey-text.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-instructions.js"></script>
     <script src="jspsych-6.0.5/plugins/jspsych-fullscreen.js"></script>
     <script src="jspsych-6.0.5/evan_plugins/jspsych-evan-run-trial.js"></script>
@@ -28,6 +29,10 @@
     <script type="text/javascript" src="jspsych-6.0.5/seedrandom.js"></script>
   </head>
   <body>
+      <div class="form" id="mainSection">
+              <header class="form__header" id="header"><h2 id="header_title" class="form__title"></h2></header>
+              <section class="mainInstructions" id="consent"></section>
+        </div>
     <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.4.0/firebase-auth.js"></script>
@@ -56,5 +61,7 @@
 <!--  <script type="text/javascript" src="define_practice_trials.js"></script> -->
   <script type="text/javascript" src="define_subj_params.js"></script>
   <script type="text/javascript" src="define_trials.js"></script>
+  <script src="https://browser.sentry-cdn.com/4.4.1/bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <!--  <script type="text/javascript" src="define_instruction_trials.js"></script> -->
 </html>

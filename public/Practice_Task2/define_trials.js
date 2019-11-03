@@ -1,8 +1,15 @@
+
 // this should be a function to be called by setupdb.js
 function define_trials(start_block){
 
 // this start block thing has to be changed for naming and filtering...
+// https://gambletask.firebaseapp.com/Practice_Task2/?subject_num=9899
 
+// consent form...
+
+
+
+var instr_file_end = '.jpg';
 // fix trial number and block number for filtering ...
 
 //console.log(start_block)
@@ -142,9 +149,9 @@ function rand_gen_trial(loss_trial){
 
   var tv_idx  = Math.round((all_win_amounts.length - 1)*Math.random());
   var safe_idx = Math.round(1*Math.random());
-  var t_val = all_win_amounts[tv_idx]; //+ -5 + Math.round(10*Math.random());
-  var other_val = 0; //Math.round(8*Math.random());
-  var safe_val = all_win_safe_vals[safe_idx];// + - 5 +Math. round(10*Math.random());
+  var t_val = all_win_amounts[tv_idx] + -5 + Math.round(10*Math.random());
+  var other_val = Math.round(8*Math.random());
+  var safe_val = all_win_safe_vals[safe_idx] + - 5 +Math. round(10*Math.random());
   var lure_val = -50 + round10(100*Math.random())
   if (lure_val == t_val){lure_val = lure_val + 5};
 
@@ -155,7 +162,6 @@ function rand_gen_trial(loss_trial){
   var these_outcome_vals = [o1_val, o2_val, safe_val];
   var these_outcome_names = [outcome_names[0], outcome_names[1], outcome_names[2]];
   var these_outcome_imgs = [outcome_images[0], outcome_images[1], outcome_images[2]];
-
 
   var outcome_idx = Math.round(2*Math.random());
   var this_outcome_val = these_outcome_vals[outcome_idx];
@@ -386,15 +392,15 @@ var block_size = all_loss_trials.length/(n_blocks/2);
 
 var all_trials = []
 
-var loss_first = 1;
+var loss_first = 0;
 
-var quiz_p = .25;
+var quiz_p = .25; // this is important...
 
 // should be 4...
-if (loss_first){
+if (loss_first){ // 1 loss block and 1 gain block...
   for (var i = 0; i < 1; i++){
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "",false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 2.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -450,8 +456,8 @@ if (loss_first){
 }else{
   for (var i = 0; i < 1; i++){
     /// win
-    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 2.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
 
@@ -480,8 +486,8 @@ if (loss_first){
     all_trials = all_trials.concat(win_block);
 
     // loss
-    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 2.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -935,8 +941,8 @@ var build_play_machine_round = function(block_number, round_number){
    var feedback_trial = {
      type: 'evan-display-text',
      line_1: function(){
-                       var n_correct = jsPsych.data.get().last(10).filter({correct: 1}).count()
-                       var this_text = "You answered " + n_correct +" of the 10 questions correctly.";
+                       var n_correct = jsPsych.data.get().last(16).filter({correct: 1}).count()
+                       var this_text = "You answered " + n_correct +" of the 16 questions correctly.";
                        return this_text;
                      },
      line_2: "You've completed " + round_number + " out of 4 rounds.",
@@ -990,16 +996,14 @@ var n_rounds = 4;
 //////////////////////////////////PLAYING THE SLOT MACHINE IN THE INTRO
 
 
-
-
 //////////////////////////////////////////// Instructions
 
   // for two-stim choice add parameter for whether to limit choice time.
-  var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide1.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide2.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide3.JPG'];
+  var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide01' + instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide02' + instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide03' + instr_file_end];
 
-  var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG'
+  var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide04' + instr_file_end;
 
   //var outcome_state_idx = both_idx_vec[cond_idx][1];
 
@@ -1179,12 +1183,12 @@ var n_rounds = 4;
   // add a prompt to the feedback screen?
 
   instruc2_timeline_w_trials = [];
-  var instruction_pages_2a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide5.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide6.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide7.JPG',
-  														'Stimuli/uws_instr_slides_ver2_jpg/Slide8.JPG']
-  var instruction_pages_2b = ['Stimuli/uws_instr_slides_ver2_jpg/Slide10.JPG'];
-  var instruction_pages_2c = ["Stimuli/uws_instr_slides_ver2_jpg/Slide12.JPG"];
+  var instruction_pages_2a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide05'+instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide06' + instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide07' + instr_file_end,
+  														'Stimuli/uws_instr_slides_ver2_jpg/Slide08' + instr_file_end]
+  var instruction_pages_2b = ['Stimuli/uws_instr_slides_ver2_jpg/Slide10'+instr_file_end];
+  var instruction_pages_2c = ["Stimuli/uws_instr_slides_ver2_jpg/Slide12"+instr_file_end];
 
   var pages2a = [];
   for (var i = 0; i < instruction_pages_2a.length; i++){
@@ -1220,15 +1224,15 @@ var n_rounds = 4;
   // want some practice trials where the person just reports the point value of one of the bank notes.
 
   instruc2_timeline_w_trials.push(instruction_pages2a);
-  var n_info_practice = 8;
+  var n_info_practice = 15; // 15 times...
   for (i = 0; i < n_info_practice; i ++){
-  	instruc2_timeline_w_trials = instruc2_timeline_w_trials.concat(rand_gen_rew_quiz_main());
+  	instruc2_timeline_w_trials = instruc2_timeline_w_trials.concat(rand_gen_rew_quiz_main(Math.random() < .5));
   }
 
   instruc2_timeline_w_trials.push(instruction_pages2b);
   var n_trial_practice = 6;
   for (i = 0; i < n_trial_practice; i ++){
-  	instruc2_timeline_w_trials.push(rand_gen_trial());
+  	instruc2_timeline_w_trials.push(rand_gen_trial(Math.random() < .5));
   }
 
   instruc2_timeline_w_trials.push(instruction_pages2c);
@@ -1262,12 +1266,13 @@ var n_rounds = 4;
   var options6b = ["Yes", "No", "I do not know."];
   var correct6b = 1;
 
-  var options7b = ["The total number of points collected as well as answers to attention check questions.",
+  var options7b = ["The total number of points collected. Wrong attention check answers each subtract 25p from bonus.",
   				"It is random",
-  				"Average number of points collected on four randomly selected games as well as answers to attention check questions.",
+  				"Average number of points collected on a randomly selected game from each round. Wrong attention check answers each subtract 25p from bonus.",
   				"Just total number of points collected.",
   				"Just answers to attention check questions.",
   				"I do not know."];
+
   var correct7b = 2;
 
   var options8b = ["If collected on a selected game, banknotes with positive point values will increase the bonus. \
@@ -1368,7 +1373,7 @@ var n_rounds = 4;
   		//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   	    choices: ['Begin the second task!'],
   	    is_html: true,
-  	    stimulus: 'You passed the quiz! Great work. This task will take about 40 minutes. Press the button to begin.'
+  	    stimulus: 'You passed the quiz! Great work. Press the button to begin.'
   	}
 
 
@@ -1411,10 +1416,10 @@ var n_rounds = 4;
 
 //////////////////////////////////
 
-var welcome_slide = instr_slides + '/Slide2.JPG';
-var preloc_slide = instr_slides + '/Slide3.JPG';
-var pretrain_slide = instr_slides + '/Slide4.JPG';
-var pretask_slide = instr_slides + '/Slide5.JPG';
+var welcome_slide = instr_slides + '/Slide2'+instr_file_end;
+var preloc_slide = instr_slides + '/Slide3'+instr_file_end;
+var pretrain_slide = instr_slides + '/Slide4'+instr_file_end;
+var pretask_slide = instr_slides + '/Slide5'+instr_file_end;
 
 console.log(pretrain_slide)
 
@@ -1525,17 +1530,47 @@ var end_screen = {
 //loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
 //full_screen
 // put together the full timeline
+
  timeline = [];
  timeline.push(full_screen);
- //timeline.push(stai_questionairre);
- //timeline.push(masq_questionairre);
+
  timeline = timeline.concat(instruc_timeline1); // this includes training...
- //timeline = timeline.concat(instruc_timeline2);
- //timeline = timeline.concat(task2_timeline);
+ timeline = timeline.concat(instruc_timeline2);
+ timeline = timeline.concat(task2_timeline);
+
+ var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide14'+instr_file_end;
+
+
  //timeline = task2_timeline.slice(0,2);
  //timeline.push(end_screen);
 
- var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13.JPG';
+// re-do the rewards...
+var q_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide14'+instr_file_end;
+
+var q_screen = {
+    type: 'instructions',
+    pages: ['<img src= "'+ q_slide +  '" alt = "" >'],
+    show_clickable_nav: true,
+    key_forward: '4',
+    data: {
+      block_number: 1
+    }
+}
+
+ timeline.push(q_screen);
+
+
+ timeline.push(age_question);
+ timeline.push(sex_question);
+ add_save_block_data(stai_questionairre);
+ timeline.push(stai_questionairre);
+ add_save_block_data(masq_questionairre);
+ timeline.push(masq_questionairre);
+ add_save_block_data(psqw_questionairre);
+ timeline.push(psqw_questionairre);
+
+
+ var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13'+instr_file_end;
 
  console.log(pretrain_slide)
 
@@ -1551,7 +1586,7 @@ var end_screen = {
      }
  }
 
- //timeline.push(final_screen);
+ timeline.push(final_screen);
 
 
      var all_task_images = [];
@@ -1575,7 +1610,7 @@ console.log(timeline)
    preload_images: all_task_images,
    show_preload_progress_bar: false,
    on_finish: function() {
-     jsPsych.data.get().localSave('csv','evan_practice_new.csv');
+     //jsPsych.data.get().localSave('csv','evan_practice_new.csv');
   }
 });
 

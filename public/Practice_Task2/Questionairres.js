@@ -1,4 +1,20 @@
-var masq_Qs = ['Felt cheerful',
+var age_question = {
+  type: 'survey-text',
+  questions: [
+    {prompt: "How many years old are you?"}
+  ],
+  data:{block_number: 'Q', Q_name: 'age'}
+};
+
+var sex_question = {
+  type: 'evan-quiz',
+  questions: [
+    {prompt: "What is your sex?", options: ['male', 'female', 'other']}
+  ],
+  data:{block_number: 'Q', Q_name: 'sex'}
+};
+
+var masq_Qs =  ['Felt cheerful',
                 'Felt very happy',
                 'Felt optimistic',
                 'Felt really bored',
@@ -34,7 +50,7 @@ var masq_questionairre = {
     type: "evan-quiz",
     preamble: ["<p align='center'> " + masq_preamble + "</p>"],
     questions: masq_questions,
-    data: {Q_name: 'MASQ'}
+    data: {Q_name: 'MASQ', block_number: 'Q'} // what block is this?
 }
 
 // next...
@@ -55,7 +71,7 @@ var psqw_Qs = ['If I do not have enough time to do everything, I do not worry ab
             'I worry all the time.',
             'I worry about projects until they are all done.'];
 
-var psqw_preamble = "Rate each of the following statements on a scale of 1 (“not at all typical of me”) to 5 (“very typical of me”). Please do not leave any items blank.";
+var psqw_preamble = "Rate each of the following statements on a scale of 1 (not at all typical of me) to 5 (very typical of me). Please do not leave any items blank.";
 
 var psqw_options = ['1' , '2', '3', '4', '5', 'Prefer to not answer'];
 
@@ -64,16 +80,16 @@ for (var i = 0; i < psqw_Qs.length; i ++){
     var this_q = {prompt: psqw_Qs[i], options: psqw_options, required: true};
     psqw_questions.push(this_q);
 }
+
 var psqw_questionairre = {
     type: "evan-quiz",
     preamble: ["<p align='center'> " + psqw_preamble + "</p>"],
     questions: psqw_questions,
-    data: {Q_name: 'PSQW'},
+    data: {Q_name: 'PSQW', block_number: 'Q'},
     on_finish: function(){
         jsPsych.data.displayData()
     }
 }
-
 
 var stai_Qs = ['I feel pleasant',
 'I feel nervous and restless',
@@ -83,7 +99,7 @@ var stai_Qs = ['I feel pleasant',
 'I feel rested',
 'I am calm, cool, and collected.',
 'I feel that difficulties are piling up so that I cannot overcome them',
-'I worry too much over something that really doesn’t matter',
+'I worry too much over something that really does not matter',
 'I am happy',
 'I have disturbing thoughts',
 'I lack self-confidence',
@@ -96,9 +112,9 @@ var stai_Qs = ['I feel pleasant',
 'I am a steady person',
 'I get in a state of tension or turmoil as I think over my recent concerns and interests'];
 
-var stai_preamble = 'A number of statements which people have used to describe themselves are given below. Read each statement and then blacken in the appropriate circle to the right of the statement to indicate you generally feel.';
+var stai_preamble = 'A number of statements which people have used to describe themselves are given below. Read each statement and then select in the appropriate circle below the statement to indicate you generally feel.';
 
-var stai_options = ['Almost Never', 'Sometimes', 'Often', 'Almost Always'];
+var stai_options = ['Almost Never', 'Sometimes', 'Often', 'Almost Always', 'Prefer to not answer'];
 
 var stai_questions = [];
 for (var i = 0; i < psqw_Qs.length; i ++){
@@ -109,7 +125,7 @@ var stai_questionairre = {
     type: "evan-quiz",
     preamble: ["<p align='center'> " + stai_preamble + "</p>"],
     questions: stai_questions,
-    data: {Q_name: 'PSQW'},
+    data: {Q_name: 'PSQW', block_number: 'Q'},
     on_finish: function(){
         jsPsych.data.displayData()
     }
