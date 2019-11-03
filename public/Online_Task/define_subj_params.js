@@ -6,7 +6,6 @@
 // want to solicit this from the subject... // and to verify that this still works.
 //var quest = document.getElementById('experimenter-questionnaire');
 //document.body.appendChild(quest);
-
 // Consent form
 var check_consent = function (elem) {
   if ($('#consent_checkbox1').is(':checked') && $('#consent_checkbox2').is(':checked') &&
@@ -88,7 +87,7 @@ var set_other_vars = function(){
 //    }
 
 
-     subjectID = ('subj_' + subject_num + '_PracticeTask')
+     subjectID = ('subj_' + subject_num + '_LabTask')
 
      seed = 'Seed for subject subjectID';
      Math.seedrandom(seed);
@@ -103,7 +102,7 @@ var set_other_vars = function(){
                       [3,0], [3,1], [3,2]];
 
      choice_state_idx = 0;//both_idx_vec[cond_idx][0];//1; //1both_idx_vec[cond_idx][0]; // don't need
-     outcome_state_idx = 0; // both_idx_vec[cond_idx][1];//1; //both_idx_vec[cond_idx][1];
+     outcome_state_idx = 1; // both_idx_vec[cond_idx][1];//1; //both_idx_vec[cond_idx][1];
 
      loss_first = (subject_num%2 == 1);
 
@@ -127,17 +126,31 @@ var set_other_vars = function(){
        choice_idx_vec = pos_choice_assignments[choice_state_idx]
        outcome_idx_vec = pos_outcome_assigments[outcome_state_idx];
 
-       pos_outcome_names = ["BALL", "BANANA", "UMBRELLA"];
-       pos_choice_names = ["BICYCLE", "CAR", "ELEPHANT", "SNEAKERS"];
+//       pos_outcome_names = ["BALL", "BANANA", "UMBRELLA"];
+//       pos_choice_names = ["BICYCLE", "CAR", "ELEPHANT", "SNEAKERS"];
 
-       pos_outcome_images = ["Stimuli/MEG_practice_stimuli/Ball.png",
-                         "Stimuli/MEG_practice_stimuli/Banana.png",
-                         "Stimuli/MEG_practice_stimuli/Umbrella.png"];
+//       pos_outcome_images = ["Stimuli/MEG_practice_stimuli/Ball.png",
+//                         "Stimuli/MEG_practice_stimuli/Banana.png",
+//                         "Stimuli/MEG_practice_stimuli/Umbrella.png"];
 
-       pos_choice_images = ["Stimuli/MEG_practice_stimuli/Bicycle.png",
-                         "Stimuli/MEG_practice_stimuli/Car.png",
-                         "Stimuli/MEG_practice_stimuli/Elephant.png",
-                         "Stimuli/MEG_practice_stimuli/Sneakers.png"];
+//       pos_choice_images = ["Stimuli/MEG_practice_stimuli/Bicycle.png",
+//                         "Stimuli/MEG_practice_stimuli/Car.png",
+//                         "Stimuli/MEG_practice_stimuli/Elephant.png",
+//                         "Stimuli/MEG_practice_stimuli/Sneakers.png"];
+
+
+        pos_outcome_names = ["GIRL", "HOUSE", "SCISSORS"];
+        pos_choice_names = ["HAND", "PEPPER", "BUTTERFLY", "ZEBRA"];
+
+        pos_outcome_images = ["Stimuli/Evan_Stimuli/Girl.png",
+                          "Stimuli/Evan_Stimuli/House.png",
+                          "Stimuli/Evan_Stimuli/Scissors.png"];
+
+        pos_choice_images = ["Stimuli/Evan_Stimuli/Hand.png",
+                          "Stimuli/Evan_Stimuli/Pepper.png",
+                          "Stimuli/Evan_Stimuli/Butterfly.png",
+                          "Stimuli/Evan_Stimuli/Zebra.png"];
+
 
        choice_images = [pos_choice_images[choice_idx_vec[0]],
                              pos_choice_images[choice_idx_vec[1]],
@@ -161,15 +174,16 @@ var set_other_vars = function(){
 
        // this is constant for all subjects (160 trials)
        all_prob_o1 = [.2, .4, .6, .8];
-       all_win_safe_vals = [15, 30, 45, 60];
-       all_loss_safe_vals = [-15, -30, -45, -60];
-       all_win_amounts = [45, 60, 75];
-       all_loss_amounts = [-45, -60, -75];
+       all_win_safe_vals = [20, 32, 44, 56];
+       all_loss_safe_vals = [-20, -32, -44, -56];
+       all_win_amounts = [47.5, 60, 75];
+       all_loss_amounts = [-47.5, -60, -75];
        all_prob_trig = all_prob_o1;
 
        jsPsych.data.addProperties({subject: subject_num});
 
        start_task();
+
 }
 
 
@@ -185,17 +199,18 @@ function getQueryVariable(variable)
        return(false);
 }
 
+
 //document.getElementById("submit-button").onclick = start_task;
 var beginning_form = function(researcher_inputs){
     ///subject_num = 999;//parseInt(researcher_inputs.subjectNumber.value);
   //  console.log(subject_num)
     // var env = researcher_inputs.env.value;
 
-    if (window.location.search.indexOf('subject_num') > -1) { // this should be something related to prolific... 
+    if (window.location.search.indexOf('subject_num') > -1) {
        subject_num = parseInt(getQueryVariable('subject_num'));
     }
     else {
-        subject_num = 9898;//Math.floor(Math.random() * (2000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
+        subject_num = Math.floor(Math.random() * (2000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
     }
 
     start_phase = 'LOC'; //researcher_inputs.stage.value;
@@ -207,7 +222,6 @@ var beginning_form = function(researcher_inputs){
     set_other_vars();
 }
 
-//beginning_form();
 
 document.getElementById('header_title').innerHTML = "Welcome";
 document.getElementById('consent').innerHTML = "        <p><b>Who is conducting this research study?</b><p>\n" +
@@ -237,7 +251,7 @@ document.getElementById('consent').innerHTML = "        <p><b>Who is conducting 
     "\n" +
     "        <p><b>What will happen to me if I take part?</b><p>\n" +
     "        <p>\n" +
-    "            You will play one or more online computer games, which will last approximately 60 minutes..\n" +
+    "            You will play one or more online computer games, which will last approximately 90 minutes..\n" +
     "            Remember, you are free to withdraw at any time without giving a reason.\n" +
     "        </p>\n" +
     "\n" +
