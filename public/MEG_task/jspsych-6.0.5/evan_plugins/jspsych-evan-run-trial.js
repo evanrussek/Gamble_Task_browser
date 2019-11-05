@@ -97,7 +97,6 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
     var par = define_parameters(trial.exp_stage);
 
-
     // you should randomize the y...
     if (par.randomize_info_y){
       var stim_pos_y = 1 + Math.round(Math.random());

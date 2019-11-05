@@ -381,6 +381,8 @@ var block_size = all_loss_trials.length/(n_blocks/2);
 
 var all_trials = []
 
+// 11 wrong...
+
 //
 //var loss_first = 1;
 
@@ -878,14 +880,16 @@ function rand_gen_info_quiz(){
       return choice_images[data.choice_number-1];
     },
     other_images:  function(){var data = jsPsych.data.get().last(1).values()[0]; var rm_idx = data.choice_number-1;
-                     var cp_oi =JSON.parse( JSON.stringify( choice_images ) );
+                     var cp_oi =  [...choice_images];
+                    // JSON.parse( JSON.stringify( choice_images ) );
                       cp_oi.splice(rm_idx,1); return cp_oi; },
     correct_name: function(){
       var data = jsPsych.data.get().last(1).values()[0];
       return choice_names[data.choice_number-1];
     },
     other_names: function(){var data = jsPsych.data.get().last(1).values()[0]; var rm_idx = data.choice_number-1;
-                  var cp_on =JSON.parse( JSON.stringify( choice_names ) );
+                  var cp_on = [... choice_names];
+            //      JSON.parse( JSON.stringify( choice_names ) );
                      cp_on.splice(rm_idx,1); return cp_on; },
 
     use_image: (Math.random() < .5), // random iamge or text

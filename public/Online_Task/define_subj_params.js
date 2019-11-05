@@ -23,7 +23,7 @@ var check_consent = function (elem) {
   }
 };
 
-
+doc_name = 'MEG_online';
 
 
 var start_task = function(){
@@ -52,18 +52,18 @@ var start_task = function(){
       uid = user.uid;
       // record new date and start time
       //Date =
-      db.collection('gambletask').doc('MEG_1').collection('computers').
+      db.collection('gambletask').doc(doc_name).collection('computers').
                     doc(uid).set({
                         subjectID: subjectID
                     })
 
-      db.collection('gambletask').doc('MEG_1').collection('computers').
+      db.collection('gambletask').doc(doc_name).collection('computers').
                     doc(uid).collection('subjects').doc(subjectID).set({
           subjectID: subjectID
       })
 
       // record new date and start time
-      db.collection('gambletask').doc('MEG_1').collection('computers').
+      db.collection('gambletask').doc(doc_name).collection('computers').
                     doc(uid).collection('subjects').doc(subjectID).collection('taskdata').doc('start').set({
           subjectID: subjectID,  // this refers to the subject's ID from prolific/
           date: new Date().toLocaleDateString(),
@@ -87,9 +87,10 @@ var set_other_vars = function(){
 //    }
 
 
-     subjectID = ('subj_' + subject_num + '_LabTask')
+// did you alter this in the meg?
+//     subjectID = ('subj_' + subject_num + '_LabTask')
 
-     seed = 'Seed for subject subjectID';
+     seed = 'Seed for subject subjectID : ' + subjectID;
      Math.seedrandom(seed);
 
     // set condition here...
@@ -206,12 +207,23 @@ var beginning_form = function(researcher_inputs){
   //  console.log(subject_num)
     // var env = researcher_inputs.env.value;
 
-    if (window.location.search.indexOf('subject_num') > -1) {
-       subject_num = parseInt(getQueryVariable('subject_num'));
+    if (window.location.search.indexOf('PROLIFIC_PID') > -1) {
+         subjectID = getQueryVariable('PROLIFIC_PID');
     }
     else {
-        subject_num = Math.floor(Math.random() * (2000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
+        subjectID = Math.floor(Math.random() * (2000000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
     }
+    subjectID = subjectID.toString();
+
+    //if (window.location.search.indexOf('subject_num') > -1) {
+     //  subject_num = parseInt(getQueryVariable('subject_num'));
+//    }
+//    else {
+    // this will be the subject number.. / also grab the prolific ID for bonusing...
+        subject_num = Math.floor(Math.random() * (2000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
+//    }
+
+
 
     start_phase = 'LOC'; //researcher_inputs.stage.value;
 //    console.log(start_phase)

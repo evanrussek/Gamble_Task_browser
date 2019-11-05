@@ -35,7 +35,7 @@ var build_text_trial = function(line_1,line_2,line_3, wait_for_exp){
     line_1: line_1,
     line_2: line_2,
     line_3: line_3,
-    wait_for_exp: wait_for_exp,
+    wait_for_exp: false,//wait_for_exp,
     data: {phase: 'INFO'} // note this shows up in main phase as well so isn't train per se
   }
   return text_trial;
@@ -290,7 +290,7 @@ var add_save_block_data = function(this_trial){
   this_trial.on_finish = function(){
     var this_block_data = jsPsych.data.get().filter({block_number: this.data.block_number}).json()
     console.log('saving this block')
-    db.collection('gambletask').doc('MEG_1').collection('computers').
+    db.collection('gambletask').doc(doc_name).collection('computers').
                   doc(uid).collection('subjects').doc(subjectID).collection('taskdata')
                   .doc('block_' + this.data.block_number.toString()).set({
       block_data: this_block_data
@@ -326,10 +326,10 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on < 0){ on = 0}
 
-        //  for (var rep = 0; rep < 2; rep++){
-        //      var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn)
-        //      win_non_matched_trials.push(nm_w_o2)
-        //  }
+          for (var rep = 0; rep < 2; rep++){
+              var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn)
+              win_non_matched_trials.push(nm_w_o2)
+          }
 
           var const_add = -1*round2(Math.ceil(20*Math.random()));
           var tn = const_add + round2(Math.ceil(8*Math.random() - 4));
@@ -348,10 +348,10 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on > 0){ on = 0}
 
-        //  for (var rep = 0; rep < 2; rep++){
-        //      var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
-        //      loss_non_matched_trials.push(nm_l_o2)
-        //    }
+          for (var rep = 0; rep < 2; rep++){
+              var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
+              loss_non_matched_trials.push(nm_l_o2)
+            }
 
         }
       }
@@ -396,7 +396,7 @@ var quiz_p = .20;
 if (loss_first){
   for (var i = 0; i < 4; i++){
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "",false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 4.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8. Games in this block will all have negative points","Collecting more of these will make your bonus smaller.","Remember the attention checks.",false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -424,7 +424,7 @@ if (loss_first){
     all_trials = all_trials.concat(loss_block);
     //////////////////////////////////////////////////////////////////
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "", false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 4. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","Pay attention to the point values!.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","Remember the attention checks.",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
     var b = Math.round(win_block.length/3);
@@ -452,8 +452,8 @@ if (loss_first){
 }else{
   for (var i = 0; i < 4; i++){
     /// win
-    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 4.","The next set of games will all have positive points.","Collecting more of these will make your bonus larger.",false);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.", "Remember the attention checks.",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
 
@@ -482,8 +482,8 @@ if (loss_first){
     all_trials = all_trials.concat(win_block);
 
     // loss
-    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", true);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 4.","Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.",false);
+    var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8. Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.","Remember the attention checks.", false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -1217,7 +1217,7 @@ var n_rounds = 4;
   }
 
   instruc2_timeline_w_trials.push(instruction_pages2b);
-  var n_trial_practice = 6;
+  var n_trial_practice = 5;
   for (i = 0; i < n_trial_practice; i ++){
   	instruc2_timeline_w_trials.push(rand_gen_trial((Math.random() < .5)));
   }
@@ -1253,9 +1253,9 @@ var n_rounds = 4;
   var options6b = ["Yes", "No", "I do not know."];
   var correct6b = 1;
 
-  var options7b = ["The total number of points collected. Wrong attention check answers each subtract 25p from bonus.",
+  var options7b = ["The total number of points collected. Wrong attention check answers on a randomly selected block each subtract 25p from bonus.",
   				"It is random",
-  				"Average number of points collected on a randomly selected game from each round. Wrong attention check answers each subtract 25p from bonus.",
+  				"Average number of points collected on a randomly selected game from each round. Wrong attention check answers on a randomly selected block each subtract 25p from bonus.",
   				"Just total number of points collected.",
   				"Just answers to attention check questions.",
   				"I do not know."];
@@ -1464,7 +1464,7 @@ var end_screen = {
          stimulus: function(){
            		var point_vals = jsPsych.data.get().filter({phase: 'TRAIN CHOICE'}).select('points_received').values
            		if (point_vals.length > 0){
-           			var practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 4)
+           			var practice_bonus_trial_points = jsPsych.randomization.sampleWithoutReplacement(point_vals, 12)
            			var practice_bonus_trial_points_avg =  Math.round(arrAvg(practice_bonus_trial_points));
            			var practice_quiz_pct = jsPsych.data.get().filter({trial_type: 'evan-info-quiz'}).select('correct').mean();
            			var practice_quiz_pct = Math.round(100*practice_quiz_pct);
@@ -1477,10 +1477,10 @@ var end_screen = {
          											return ((trial.points_received != null) & (trial.phase == 'TEST'));
          										}).select('points_received').values
          		if (test_point_vals.length > 0){
-         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 8)
+         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 8);
          			var test_bonus_trial_points_avg =  Math.round(arrAvg(rand_test_point_vals));
-         			var test_quiz_correct = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').sum()
-              var test_quiz_count = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').count()
+         			var test_quiz_correct = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz', block_number: 14}).select('correct').sum()
+              var test_quiz_count = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz', block_number: 14}).select('correct').count()
          			var test_quiz_incorrect = test_quiz_count - test_quiz_correct;
          		}else{
          			var test_quiz_pct = 0;
@@ -1488,6 +1488,7 @@ var end_screen = {
               var test_quiz_incorrect = 0
          		}
 
+            // do it for the last one...
             var bonus = (4*(test_bonus_trial_points_avg + 100)/200) - 0.25*test_quiz_incorrect;
 
             console.log('bonus: ' + bonus)
@@ -1497,11 +1498,12 @@ var end_screen = {
          		//	'practice_quiz_pct': practice_quiz_pct,
          		//	'practice_bonus_trial_points_avg': practice_bonus_trial_points_avg,
          			'test_quiz_incorrect': test_quiz_incorrect,
-         			'test_bonus_trial_points_avg': test_bonus_trial_points_avg
+         			'test_bonus_trial_points_avg': test_bonus_trial_points_avg,
+              'bonus': bonus
          		};
          		jsPsych.data.write(bonus_data)
                 var task_data = jsPsych.data.get().json();
-                db.collection('gambletask').doc('MEG_1').collection('computers').
+                db.collection('gambletask').doc(doc_name).collection('computers').
                                   doc(uid).collection('subjects').doc(subjectID).collection('taskdata')
                                   .doc('end').set({
                                     bonus_data: bonus_data,
@@ -1530,15 +1532,17 @@ var full_screen = {
 
 timeline = [];
 timeline.push(full_screen);
-//timeline = timeline.concat(instruc_timeline1); // this includes training...
-//timeline = timeline.concat(instruc_timeline2);
+timeline = timeline.concat(instruc_timeline1); // this includes training...
+timeline = timeline.concat(instruc_timeline2);
 timeline = timeline.concat(task2_timeline);
- //timeline = task2_timeline.slice(0,2);
+//timeline = timeline.concat(task2_timeline.slice(0,2));
 timeline.push(end_screen);
 
+
+console.log(task2_timeline)
  var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13.JPG';
 
- console.log(pretrain_slide)
+ //console.log(pretrain_slide)
 
  //timeline = [];
   //timeline.push(full_screen);
@@ -1579,9 +1583,10 @@ console.log(task2_timeline)
   jsPsych.init({
    timeline: timeline,
    preload_images: all_task_images,
-   show_preload_progress_bar: false,
+   show_preload_progress_bar: true,
    on_finish: function() {
-     jsPsych.data.get().localSave('csv','evan_practice_new.csv');
+     console.log('done!')
+  //   jsPsych.data.get().localSave('csv','evan_practice_new.csv');
   }
 });
 
