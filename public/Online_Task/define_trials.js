@@ -968,7 +968,7 @@ var n_rounds = 4;
         model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
       }
-      if (i == 4){
+      if (i == 3){ // this never saved
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
         add_save_block_data(model_learning[model_learning.length - 3])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
