@@ -191,7 +191,7 @@ var beginning_form = function(researcher_inputs){
   //  console.log(subject_num)
     // var env = researcher_inputs.env.value;
 
-    if (window.location.search.indexOf('subject_num') > -1) { // this should be something related to prolific... 
+    if (window.location.search.indexOf('subject_num') > -1) { // this should be something related to prolific...
        subject_num = parseInt(getQueryVariable('subject_num'));
     }
     else {
@@ -210,12 +210,13 @@ var beginning_form = function(researcher_inputs){
 //beginning_form();
 
 document.getElementById('header_title').innerHTML = "Welcome";
-document.getElementById('consent').innerHTML = "        <p><b>Who is conducting this research study?</b><p>\n" +
+document.getElementById('consent').innerHTML = "   <p><b>Who is conducting this research study?</b><p>\n" +
     "        <p>\n" +
-    "        This research is being conducted by the Wellcome Centre for Human Neuroimaging and the Max Planck UCL Centre\n" +
-    "        for Computational Psychiatry and Ageing Research. The lead researcher(s) for this project is\n" +
+
+    "        This research is being conducted by the Division of Psychiatry and the Max Planck UCL Centre for Computational Psychiatry\n" +
+    "        and Ageing Research at University College London, London, UK. The lead researcher(s) for this project is\n" +
     "        <a href=\"mailto:e.russek@ucl.ac.uk\">Dr Evan Russek</a>. This study has been approved by the UCL Research Ethics Committee\n" +
-    "        (project ID number 9929/003) and funded by the Wellcome Trust.\n" +
+    "        (project ID number 16639/001) and is funded by the Max Planck Society and the Welcomme Trust.\n" +
     "        </p>\n" +
     "\n" +
     "        <p><b>What is the purpose of this study?</b><p>\n" +
@@ -237,7 +238,7 @@ document.getElementById('consent').innerHTML = "        <p><b>Who is conducting 
     "\n" +
     "        <p><b>What will happen to me if I take part?</b><p>\n" +
     "        <p>\n" +
-    "            You will play one or more online computer games, which will last approximately 60 minutes..\n" +
+    "            You will play one or more online computer games and answer some survey questionairres which will last approximately 60 minutes.\n" +
     "            Remember, you are free to withdraw at any time without giving a reason.\n" +
     "        </p>\n" +
     "\n" +
@@ -257,12 +258,12 @@ document.getElementById('consent').innerHTML = "        <p><b>Who is conducting 
     "        If you wish to complain or have any concerns about any aspect of the way you have been approached or treated\n" +
     "        by members of staff, then the research UCL complaints mechanisms are available to you. In the first instance,\n" +
     "        please talk to the <a href=\"mailto:e.russek@ucl.ac.uk\">researcher</a> or the chief investigator\n" +
-    "        (<a href=\"mailto:q.huys@ucl.ac.uk\">Professor Quentin Huys</a>) about your\n" +
+    "        (<a href=\"mailto:q.huys@ucl.ac.uk\">Dr Quentin Huys</a>) about your\n" +
     "        complaint. If you feel that the complaint has not been resolved satisfactorily, please contact the chair of\n" +
     "        the <a href=\"mailto:ethics@ucl.ac.uk\">UCL Research Ethics Committee</a>.\n" +
     "\n" +
     "        If you are concerned about how your personal data are being processed please contact the data controller\n" +
-    "        who is <a href=\"mailto:protection@ucl.ac.uk\">UCL</a>.\n" +
+    "        who is <a href=\"mailto:data-protection@ucl.ac.uk\">UCL</a>.\n" +
     "        If you remain unsatisfied, you may wish to contact the Information Commissioner Office (ICO).\n" +
     "        Contact details, and details of data subject rights, are available on the\n" +
     "        <a href=\"https://ico.org.uk/for-organisations/data-protection-reform/overview-of-the-gdpr/individuals-rights\">ICO website</a>.\n" +
@@ -270,12 +271,17 @@ document.getElementById('consent').innerHTML = "        <p><b>Who is conducting 
     "\n" +
     "        <p><b>What about my data?</b><p>\n" +
     "        <p>\n" +
-    "            To help future research and make the best use of the research data you have given us (such as answers\n" +
+    "        This local privacy notice sets out the information that applies to this particular study. Further information on how UCL uses participant information can be found in our general privacy notice: \n \n " +
+    "        For participants in research studies, click <a href=\"https://www.ucl.ac.uk/legal-services/privacy/ucl-general-research-participant-privacy-notice\">here</a>    \n \n   " +
+    "        The information that is required to be provided to participants under data protection legislation (GDPR and DPA 2018) is provided across both the local and general privacy notices. \n" +
+
+    "        To help future research and make the best use of the research data you have given us (such as answers" +
     "        to questionnaires) we may keep your research data indefinitely and share these.  The data we collect will\n" +
-    "        be shared and held as follows:<br>" +
-    "            In publications, your data will be anonymised, so you cannot be identified.<br>" +
-    "            tIn public databases, your data will be anonymised<br>" +
+    "        be shared and held as follows:<br> \n" +
+    "        In publications, your data will be anonymised, so you cannot be identified. <br> \n" +
+    "        In public databases, your data will be anonymised (your personal details will be removed and a code used e.g. 00001232, instead of your User ID) <br>" +
     "\n" +
+    "         Personal data is any information that could be used to identify you, such as your User ID.  When we collect your data, your User ID will be replaced with a non-identifiable random ID number. No personally identifying data will be stored \n" +
     "        If there are any queries or concerns please do not hesitate to contact <a href=\"mailto:e.russek@ucl.ac.uk\">Dr Evan Russek</a>.\n" +
     "        </p>\n" +
     "\n" +

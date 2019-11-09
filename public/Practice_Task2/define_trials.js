@@ -9,7 +9,7 @@ function define_trials(start_block){
 
 
 
-var instr_file_end = '.jpg';
+var instr_file_end = '.JPG';
 // fix trial number and block number for filtering ...
 
 //console.log(start_block)
@@ -153,7 +153,8 @@ function rand_gen_trial(loss_trial){
   var other_val = Math.round(8*Math.random());
   var safe_val = all_win_safe_vals[safe_idx] + - 5 +Math. round(10*Math.random());
   var lure_val = -50 + round10(100*Math.random())
-  if (lure_val == t_val){lure_val = lure_val + 5};
+  if (lure_val == t_val){lure_val = lure_val + 12};
+  if (lure_val == other_val){lure_val = lure_val + 12};
 
   if (loss_trial){t_val = -1*t_val; safe_val = -1*safe_val; other_val = -1*other_val};
   if (Math.random() < .5){o1_val = t_val, o2_val = other_val}
@@ -237,7 +238,7 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
 
   if (o1_trig){
     // o1 is the trigger, o2 is 0
-    var o1_val_base = round5(trig_val);
+    var o1_val_base = trig_val;
     var o1_val = o1_val_base + trigger_noise;
     var o2_val_base = 0;
     var o2_val = o2_val_base + other_noise;
@@ -247,7 +248,7 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
     // o2 is the trigger, o1 is 0
     var o1_val_base = 0;
     var o1_val = o1_val_base + other_noise;
-    var o2_val_base = round5(trig_val);
+    var o2_val_base = trig_val;
     var o2_val = o2_val_base + trigger_noise;
     var p_o1 = 1 - prob_trig;
     var choice_number = 1 + (3 - prob_trig_idx);
@@ -421,7 +422,7 @@ if (loss_first){ // 1 loss block and 1 gain block...
 
     // add the loss block
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 6 + 2*i + 1;
+      loss_block[t].data.block_number = 7 + 2*i + 1;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
 
@@ -448,7 +449,7 @@ if (loss_first){ // 1 loss block and 1 gain block...
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 6 + 2*i + 2;
+      win_block[t].data.block_number = 7 + 2*i + 2;
     } // save data on the last trial.
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -480,7 +481,7 @@ if (loss_first){ // 1 loss block and 1 gain block...
     win_block.push(final_text_trial);
     // add the win block
     for (var t = 0; t < win_block.length; t++){
-      win_block[t].data.block_number = 6 + 2*i + 1;
+      win_block[t].data.block_number = 7 + 2*i + 1;
     }
     add_save_block_data(win_block[win_block.length - 2])
     all_trials = all_trials.concat(win_block);
@@ -508,7 +509,7 @@ if (loss_first){ // 1 loss block and 1 gain block...
     // add the win block
     loss_block.push(final_text_trial);
     for (var t = 0; t < loss_block.length; t++){
-      loss_block[t].data.block_number = 6 + 2*i + 2;
+      loss_block[t].data.block_number = 7 + 2*i + 2;
     }
     add_save_block_data(loss_block[loss_block.length - 2])
     all_trials = all_trials.concat(loss_block);
@@ -979,13 +980,13 @@ var n_rounds = 4;
 //      model_learning = model_learning.concat(make_struc_quiz_block(i + 1, bn, false));
       if (i == 1){
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
-        add_save_block_data(model_learning[model_learning.length - 3])
+        add_save_block_data(model_learning[model_learning.length - 2])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
       }
       if (i == 3){
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
-        add_save_block_data(model_learning[model_learning.length - 3])
+        add_save_block_data(model_learning[model_learning.length - 2])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
       //  add_save_block_data[model_learning[model_learning.length - 2]]
       }
@@ -999,11 +1000,11 @@ var n_rounds = 4;
 //////////////////////////////////////////// Instructions
 
   // for two-stim choice add parameter for whether to limit choice time.
-  var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide01' + instr_file_end,
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide02' + instr_file_end,
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide03' + instr_file_end];
+  var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide1' + instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide2' + instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide3' + instr_file_end];
 
-  var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide04' + instr_file_end;
+  var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4' + instr_file_end;
 
   //var outcome_state_idx = both_idx_vec[cond_idx][1];
 
@@ -1183,10 +1184,10 @@ var n_rounds = 4;
   // add a prompt to the feedback screen?
 
   instruc2_timeline_w_trials = [];
-  var instruction_pages_2a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide05'+instr_file_end,
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide06' + instr_file_end,
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide07' + instr_file_end,
-  														'Stimuli/uws_instr_slides_ver2_jpg/Slide08' + instr_file_end]
+  var instruction_pages_2a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide5'+instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide6' + instr_file_end,
+                              'Stimuli/uws_instr_slides_ver2_jpg/Slide7' + instr_file_end,
+  														'Stimuli/uws_instr_slides_ver2_jpg/Slide8' + instr_file_end]
   var instruction_pages_2b = ['Stimuli/uws_instr_slides_ver2_jpg/Slide10'+instr_file_end];
   var instruction_pages_2c = ["Stimuli/uws_instr_slides_ver2_jpg/Slide12"+instr_file_end];
 
@@ -1266,9 +1267,9 @@ var n_rounds = 4;
   var options6b = ["Yes", "No", "I do not know."];
   var correct6b = 1;
 
-  var options7b = ["The total number of points collected. Wrong attention check answers each subtract 25p from bonus.",
+  var options7b = ["The total number of points collected. Wrong attention check answers on a randomly selected round each subtract 50p from bonus.",
   				"It is random",
-  				"Average number of points collected on a randomly selected game from each round. Wrong attention check answers each subtract 25p from bonus.",
+  				"Average number of points collected on a randomly selected game from each round. Wrong attention check answers on a randomly selected round each subtract 50p from bonus.",
   				"Just total number of points collected.",
   				"Just answers to attention check questions.",
   				"I do not know."];
@@ -1371,7 +1372,7 @@ var n_rounds = 4;
   		type: 'html-button-response',
   	    timing_post_trial: 0,
   		//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
-  	    choices: ['Begin the second task!'],
+  	    choices: ['Begin the task!'],
   	    is_html: true,
   	    stimulus: 'You passed the quiz! Great work. Press the button to begin.'
   	}
@@ -1380,7 +1381,6 @@ var n_rounds = 4;
   //instruc2_timeline_w_trials = [];
   instruc2_timeline_w_trials.push(instruction2_check);
   instruc2_timeline_w_trials.push(conditional_splash2);
-
   var intro2loop = [];
   intro2loop.push(instruction_pages2a);
   intro2loop.push(instruction_pages2b);
@@ -1553,21 +1553,25 @@ var q_screen = {
     show_clickable_nav: true,
     key_forward: '4',
     data: {
-      block_number: 1
+      block_number: 'Q'
     }
 }
 
+//timeline = [];
  timeline.push(q_screen);
-
-
  timeline.push(age_question);
  timeline.push(sex_question);
+ add_save_block_data(neo_questionairre);
+ timeline.push(neo_questionairre);
+ add_save_block_data(bis_questionairre);
+ timeline.push(bis_questionairre);
  add_save_block_data(stai_questionairre);
  timeline.push(stai_questionairre);
  add_save_block_data(masq_questionairre);
  timeline.push(masq_questionairre);
  add_save_block_data(psqw_questionairre);
  timeline.push(psqw_questionairre);
+ //timeline = [];
 
 
  var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13'+instr_file_end;
@@ -1582,7 +1586,7 @@ var q_screen = {
      show_clickable_nav: false,
      key_forward: '4',
      data: {
-       block_number: 1
+       block_number: 'Q'
      }
  }
 
