@@ -55,8 +55,8 @@ function rand_gen_rew_quiz_main(loss_trial){
   var other_val = round2(Math.round(8*Math.random()));
   var safe_val = round2(all_win_safe_vals[safe_idx] - 10 + Math. round(20*Math.random()));
   var lure_val = round2(-50 + round2(100*Math.random()))
-  if (lure_val == t_val){lure_val = lure_val + 5};
-  if (lure_val == safe_val){lure_val = lure_val + 5};
+  if (lure_val == t_val){lure_val = lure_val + 12};
+  if (lure_val == safe_val){lure_val = lure_val + 13};
 
   if (loss_trial){t_val = -1*t_val; safe_val = -1*safe_val; other_val = -1*other_val};
   if (Math.random() < .5){o1_val = t_val, o2_val = other_val}
@@ -229,18 +229,18 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
 
   if (o1_trig){
     // o1 is the trigger, o2 is 0
-    var o1_val_base = round5(trig_val);
-    var o1_val = o1_val_base + trigger_noise;
+    var o1_val_base = trig_val;
+    var o1_val = round2(o1_val_base + trigger_noise);
     var o2_val_base = 0;
-    var o2_val = o2_val_base + other_noise;
+    var o2_val = round2(o2_val_base + other_noise);
     var p_o1 = prob_trig;
     var choice_number = 1 + prob_trig_idx; //
   } else{
     // o2 is the trigger, o1 is 0
     var o1_val_base = 0;
-    var o1_val = o1_val_base + other_noise;
-    var o2_val_base = round5(trig_val);
-    var o2_val = o2_val_base + trigger_noise;
+    var o1_val = round2(o1_val_base + other_noise);
+    var o2_val_base = trig_val;
+    var o2_val = round2(o2_val_base + trigger_noise);
     var p_o1 = 1 - prob_trig;
     var choice_number = 1 + (3 - prob_trig_idx);
   }
@@ -251,14 +251,14 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
       data: {
         // these define the trial in the frame useful for analysis
         safe_val_base: safe_val_base, // not the actual val
-        safe_val_actual: safe_val_base + safe_noise,
+        safe_val_actual: round2(safe_val_base + safe_noise),
         p_trigger: prob_trig, // here o2 is the trigger
         trigger_val_base: trig_val,
-        trigger_val_actual: trig_val + trigger_noise,
+        trigger_val_actual: round2(trig_val + trigger_noise),
         o1_trigger: o1_trig,
-        safe_noise: safe_noise,
+        safe_noise: round2(safe_noise),
         trigger_noise: trigger_noise,
-        other_noise: other_noise,
+        other_noise: round2(other_noise),
         phase:'TEST',
         matched_safe: matched_safe,
         gl_type: gl_type,
@@ -271,7 +271,7 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
       show_money_val: true,
       allow_reject: true,
       p_o1: p_o1, // this is always the same
-      safe_val: safe_val_base + safe_noise,
+      safe_val: round2(safe_val_base + safe_noise),
       o1_val: o1_val,
       o2_val: o2_val, // because O2 is the trigger
       o1_image: outcome_images[0],
@@ -619,7 +619,7 @@ var add_prop_correct = function(this_trial){
 }
 
 
-var n_loc_blocks = 5;
+var n_loc_blocks = 3;
 var loc_exp = [];
 for (var i = 0; i < n_loc_blocks; i++){
   var block_num = i + 1;
@@ -628,7 +628,7 @@ for (var i = 0; i < n_loc_blocks; i++){
     type: 'evan-display-text',
     data: {phase: 'INFO', block_number: block_num + 1}, // note this shows up in main phase as well so isn't train per se
     line_1:"",
-    line_2: "You've completed " + block_num + " of 5 blocks.",
+    line_2: "You've completed " + block_num + " of 3 blocks.",
     line_3: "Let's take a short break",
     wait_for_exp: true
   }
@@ -991,13 +991,13 @@ var n_rounds = 4;
 //      model_learning = model_learning.concat(make_struc_quiz_block(i + 1, bn, false));
       if (i == 1){
         model_learning.push(build_text_trial("Let's take a short break.","","", true))
-        add_save_block_data(model_learning[model_learning.length - 3])
+        add_save_block_data(model_learning[model_learning.length - 2])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
       }
       if (i == 3){
         model_learning.push(build_text_trial("Let's take a short break.","","", true))
-        add_save_block_data(model_learning[model_learning.length - 3])
+        add_save_block_data(model_learning[model_learning.length - 2])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
       //  add_save_block_data[model_learning[model_learning.length - 2]]
       }
@@ -1084,10 +1084,10 @@ var end_screen = {
          											return ((trial.points_received != null) & (trial.phase == 'TEST'));
          										}).select('points_received').values
          		if (test_point_vals.length > 0){
-         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 8)
+         			var rand_test_point_vals = jsPsych.randomization.sampleWithoutReplacement(test_point_vals, 10)
          			var test_bonus_trial_points_avg =  Math.round(arrAvg(rand_test_point_vals));
-         			var test_quiz_correct = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').sum()
-              var test_quiz_count = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz'}).select('correct').count()
+         			var test_quiz_correct = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz', block_number: 15}).select('correct').sum()
+              var test_quiz_count = jsPsych.data.get().filter({trial_type: 'evan-reward-quiz', block_number: 15}).select('correct').count()
          			var test_quiz_incorrect = test_quiz_count - test_quiz_correct;
          		}else{
          			var test_quiz_pct = 0;
@@ -1095,7 +1095,7 @@ var end_screen = {
               var test_quiz_incorrect = 0
          		}
 
-            var bonus = (20*(test_bonus_trial_points_avg + 100)/200) - 0.25*test_quiz_incorrect;
+            var bonus = (20*(test_bonus_trial_points_avg + 100)/200) - 0.5*test_quiz_incorrect;
 
             console.log('bonus: ' + bonus)
 
@@ -1116,7 +1116,7 @@ var end_screen = {
                                     end_time: new Date().toLocaleTimeString()})
          		var string = 'You have finished the task. \
          				   On the randomly selected games, \
-         					the average number of points you collected was '  + test_bonus_trial_points_avg + '.	For the attention checks you got ' + test_quiz_incorrect + ' incorrect. \
+         					the average number of points you collected was '  + test_bonus_trial_points_avg + '.	For the attention checks, on a randomly selected round, you got ' + test_quiz_incorrect + ' incorrect. \
          					 The bonus will be ' + bonus + '.';
 
          		return string;
@@ -1146,6 +1146,8 @@ timeline_main = timeline_main.filter(function(el){return el.data.block_number >=
 timeline = [full_screen];
 //timeline = timeline.concat(loc_exp.slice(loc_exp.length - 5, loc_exp.length));
 timeline = timeline.concat(timeline_main);
+//timeline = [];
+//timeline = timeline.concat(task2_timeline.slice(task2_timeline.length-8,task2_timeline.length - 1));
 //timeline = timeline.concat(make_struc_quiz_block(1,1));
 timeline.push(end_screen);
 

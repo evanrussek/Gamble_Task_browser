@@ -23,7 +23,7 @@ var check_consent = function (elem) {
   }
 };
 
-doc_name = 'MEG_online';
+doc_name = 'MEG_online2';
 
 
 var start_task = function(){
