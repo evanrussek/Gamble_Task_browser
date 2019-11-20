@@ -220,13 +220,13 @@ jsPsych.plugins["evan-localizer-trial"] = (function() {
       correct = 1;
       wait_for_time(par.loc_pause_resp_time,function(){
         place_text('CORRECT!', 'Prompt', par.w/2 + par.diode_width, 29*par.h/40, par.text_font_size, 1, "Red")
-        var feedback_time = window.performance.now();})
+        feedback_time = window.performance.now();})
       wait_for_time(par.loc_pause_resp_time + par.loc_feedback_time,end_trial)
     } else{
       correct = 0;
       wait_for_time(par.loc_pause_resp_time,function(){
         place_text('WRONG!', 'Prompt', par.w/2 + par.diode_width, 29*par.h/40, par.text_font_size, 1, "Red")
-        var feedback_time = window.performance.now();
+        feedback_time = window.performance.now();
       })
       wait_for_time(par.quiz_pause_resp_time + par.quiz_feedback_time,end_trial)
     }

@@ -932,8 +932,8 @@ var build_play_machine_round = function(block_number, round_number){
 
    // build the choice quiz trials
    this_round_trials.push(build_text_trial("You will now be quized on what you've learned.","Please try your best.","", false))
-   like_quiz_block2 = make_more_like_block2();
-   this_round_trials = this_round_trials.concat(like_quiz_block2);
+   //like_quiz_block2 = make_more_like_block2();
+   //this_round_trials = this_round_trials.concat(like_quiz_block2);
    like_quiz_block1 = make_more_like_block1();
    like_quiz_block1 = jsPsych.randomization.repeat(like_quiz_block1,1);
    this_round_trials = this_round_trials.concat(like_quiz_block1);
@@ -942,8 +942,8 @@ var build_play_machine_round = function(block_number, round_number){
    var feedback_trial = {
      type: 'evan-display-text',
      line_1: function(){
-                       var n_correct = jsPsych.data.get().last(16).filter({correct: 1}).count()
-                       var this_text = "You answered " + n_correct +" of the 16 questions correctly.";
+                       var n_correct = jsPsych.data.get().last(12).filter({correct: 1}).count()
+                       var this_text = "You answered " + n_correct +" of the 12 questions correctly.";
                        return this_text;
                      },
      line_2: "You've completed " + round_number + " out of 4 rounds.",
