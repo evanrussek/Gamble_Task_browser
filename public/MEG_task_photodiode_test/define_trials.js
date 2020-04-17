@@ -579,15 +579,40 @@ var make_loc_block = function(block_number){
     // remove the other name from all_names and select a random name from the list...
     var this_other_name = jsPsych.randomization.sampleWithReplacement(all_names, 1);
 
-    var loc_trial = {
-      type: 'evan-localizer-trial',
-      image: this_image,
-      image_name: this_image_name,
-      other_name: this_other_name,
-      slot_machine: this_slot_machine,
-      data: {
-        img_number: img_numbers[im_idx],
-        block_number: block_number
+  if (block_number == 1){
+      var loc_trial = {
+        type: 'evan-localizer-trial',
+        image: this_image,
+        image_name: this_image_name,
+        other_name: this_other_name,
+        slot_machine: this_slot_machine,
+        data: {
+          img_number: img_numbers[im_idx],
+          block_number: block_number
+        }
+      }
+    }else if (block_number == 2){
+      var loc_trial = {
+        type: 'evan-localizer-trial2',
+        image: this_image,
+        image_name: this_image_name,
+        other_name: this_other_name,
+        slot_machine: this_slot_machine,
+        data: {
+          img_number: img_numbers[im_idx],
+          block_number: block_number
+        }
+      }} else{
+        var loc_trial = {
+          type: 'evan-localizer-trial3',
+          image: this_image,
+          image_name: this_image_name,
+          other_name: this_other_name,
+          slot_machine: this_slot_machine,
+          data: {
+            img_number: img_numbers[im_idx],
+            block_number: block_number
+          }
       }
     }
     block_trials.push(loc_trial);
