@@ -77,7 +77,7 @@ jsPsych.plugins["evan-display-text"] = (function() {
     if (trial.wait_for_exp){
       var valid_responses = ['c'];
     }else{
-      var valid_responses = ['4'];
+      var valid_responses = ['c'];
     }
 
     if (trial.wait_for_press){
@@ -86,7 +86,7 @@ jsPsych.plugins["evan-display-text"] = (function() {
       if (trial.wait_for_exp){
         var prompt = 'Waiting for experimenter to continue.'
       }else{
-        var prompt = 'Press 4 to continue.'
+        var prompt = 'Press c to continue.'
       }
       place_text(prompt, "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/2, 1, "White")
 

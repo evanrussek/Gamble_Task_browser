@@ -206,6 +206,89 @@ function rand_gen_trial(loss_trial){
 }
 
 
+function rand_gen_recognition_trial(loss_trial){
+
+  // generate a reward trial as well
+  // set each outcome reward
+  //
+
+  // generate a reward trial as well
+  // set each outcome reward
+  //
+  if (typeof loss_trial == undefined){
+    loss_trial = Math.random() < .5;
+  }
+
+  var tv_idx  = Math.round((all_win_amounts.length - 1)*Math.random());
+  var safe_idx = Math.round(1*Math.random());
+  var t_val = all_win_amounts[tv_idx]; //+ -5 + Math.round(10*Math.random());
+  var other_val = 0; //Math.round(8*Math.random());
+  var safe_val = all_win_safe_vals[safe_idx];// + - 5 +Math. round(10*Math.random());
+  var lure_val = -50 + round10(100*Math.random())
+  if (lure_val == t_val){lure_val = lure_val + 5};
+
+  if (loss_trial){t_val = -1*t_val; safe_val = -1*safe_val; other_val = -1*other_val};
+  if (Math.random() < .5){o1_val = t_val, o2_val = other_val}
+  else{o1_val = other_val, o2_val = t_val}
+
+  var these_outcome_vals = [o1_val, o2_val, safe_val];
+  var these_outcome_names = [outcome_names[0], outcome_names[1], outcome_names[2]];
+  var these_outcome_imgs = [outcome_images[0], outcome_images[1], outcome_images[2]];
+
+
+  var outcome_idx = Math.round(2*Math.random());
+  var this_outcome_val = these_outcome_vals[outcome_idx];
+  var this_outcome_img = these_outcome_imgs[outcome_idx];
+  var this_outcome_text = these_outcome_names[outcome_idx];
+
+  var all_other_vals = [o1_val, o2_val].concat([safe_val, lure_val]);
+  all_other_vals.splice(outcome_idx,1);
+
+ var use_image = (Math.random() < .5);
+ var choice_number = 1 + Math.round(3*Math.random());
+
+ var this_recognition_number = 1 + Math.round(2*Math.random());
+ var this_recognition_position = Math.round(2*Math.random());
+
+ this_trial = {
+   type: 'evan-run-trial',
+
+   data:{
+     phase:'REW TEST 1',
+   },
+   first_stage: 1,
+   last_stage:4,
+   show_money_val: true,
+   allow_reject: true,
+   // these define the trial in the frame useful for analysis
+   safe_val_base: all_win_safe_vals[sv_idx], // not the actual val
+   p_trigger: all_prob_o1[p_idx], // here p_o1 corresponds to the trigger prob
+   trigger_val: all_win_amounts[tv_idx], // win trial
+   o1_trigger: null,
+   safe_noise: null,
+   trigger_noise: null,
+   other_noise: null,
+   /// define it in terms useful for actually running the trial
+   /// which stimulus do we want?
+   p_o1: all_prob_o1[choice_number - 1],
+   safe_val: safe_val,
+   o1_val: o1_val, // because O1 is the trigger
+   o2_val: o2_val,
+   o1_image: outcome_images[0], // set per subject, using subject number -- need to counterbalance this...
+   o2_image: outcome_images[1], //
+   safe_image: outcome_images[2],
+   // this depends on the proability...
+   choice_image: choice_images[choice_number - 1], // each choice image corresponds to a probability for o1
+   show_prompt: true,
+   recognition_number: this_recognition_number,
+   recognition_position:this_recognition_position,// outcome_names[this_recognition_number-1][0].toLowerCase()
+   recognition_feedback: true
+ }
+
+  return(this_trial)
+}
+
+// run
 // this generates a trial for the main task...
 var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, safe_val_base, trigger_noise, other_noise, safe_noise){
 
@@ -247,9 +330,9 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
     var choice_number = 1 + (3 - prob_trig_idx);
   }
 
+  //this_recognition_number = 1;
   this_trial = {
       type: 'evan-run-trial',
-
       data: {
         // these define the trial in the frame useful for analysis
         safe_val_base: safe_val_base, // not the actual val
@@ -279,7 +362,9 @@ var gen_test_trial = function(o1_trig, prob_trig_idx, trig_val, matched_safe, sa
       o1_image: outcome_images[0],
       o2_image: outcome_images[1],
       safe_image: outcome_images[2],
-      choice_image: choice_images[choice_number - 1]
+      choice_image: choice_images[choice_number - 1],
+      recognition_number: 0, // 0 means no recognition, 1 is O1, 2 is O2, 3 is OS
+      recognition_position:0// outcome_names[this_recognition_number-1][0].toLowerCase()
     }
     return this_trial;
 }
@@ -302,7 +387,7 @@ var loss_non_matched_trials = []; // remake the other trials...
 
 //
 
-// win_o1_trig_trials
+// just do 1 rep of each trial...
 for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
   for (var w_idx = 0; w_idx < all_win_amounts.length; w_idx++){
     for (var p_idx = 0; p_idx < all_prob_trig.length; p_idx++){
@@ -315,7 +400,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on < 0){ on = 0}
 
-          for (var rep = 0; rep < 2; rep++){
+          for (var rep = 0; rep < 1; rep++){
             var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn);
             win_non_matched_trials.push(nm_w_o1)
           }
@@ -326,7 +411,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on < 0){ on = 0}
 
-          for (var rep = 0; rep < 2; rep++){
+          for (var rep = 0; rep < 1; rep++){
               var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn)
               win_non_matched_trials.push(nm_w_o2)
           }
@@ -337,7 +422,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on > 0){ on = 0}
 
-          for (var rep = 0; rep < 2; rep++){
+          for (var rep = 0; rep < 1; rep++){
               var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
               loss_non_matched_trials.push(nm_l_o1)
           }
@@ -348,7 +433,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on > 0){ on = 0}
 
-          for (var rep = 0; rep < 2; rep++){
+          for (var rep = 0; rep < 1; rep++){
               var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
               loss_non_matched_trials.push(nm_l_o2)
             }
@@ -359,16 +444,44 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
   }
 
 
-
 // block the position of things...
 
 //all_loss_trials = loss_matched_trials.concat(loss_non_matched_trials);
 //all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 
 // need to actually copy these,
-all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,1);
-all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,1);
+all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,2); // repeat each trial 2 times...
+all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,2);
 // the task is
+
+// make the first third of trials recognition trials
+n_recognition_trials_round = Math.round(all_loss_trials.length/3);
+n_recognition_trials_round = Math.round(all_loss_trials.length/2);
+n_recognition_each_outcome = Math.round(n_recognition_trials_round/3); // then for each of these, we want to evenly vary the recognition position
+
+for (var i = 0; i < all_loss_trials.length; i++){
+  if (i < n_recognition_each_outcome){
+    var this_recognition_number = 1;
+  }else if((i >= n_recognition_each_outcome) & (i < 2*n_recognition_each_outcome)){
+    var this_recognition_number = 2;
+  }else if((i >= 2*n_recognition_each_outcome) & (i < 3*n_recognition_each_outcome)){
+    var this_recognition_number = 3;
+  }else{
+    var this_recognition_number = 0;
+  }
+  if (this_recognition_number > 0){
+    all_loss_trials[i].recognition_number = this_recognition_number;
+    all_win_trials[i].recognition_number = this_recognition_number;
+
+    all_loss_trials[i].recognition_position = i%3; // should be 0, 1 or 2
+    all_win_trials[i].recognition_position = i%3;
+  }
+}
+
+// shuffle again
+all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
+all_win_trials = jsPsych.randomization.repeat(all_win_trials,1);
+
 
 //console.log(all_loss_trials)
 //console.log(all_win_trials)
@@ -379,7 +492,7 @@ all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,1);
 // now, let's get it so that we start from a certain point...
 
 // block size . ---
-var n_blocks = 8;
+var n_blocks = 4;
 
 // 4 win blocks and 4 loss blocks... // 2 and 2
 var block_size = all_loss_trials.length/(n_blocks/2);
@@ -388,15 +501,15 @@ var all_trials = []
 
 // var loss_first = 1;
 
-var quiz_p = .20;
+var quiz_p = 0; // want 4 blocks...
 
 // do half the task...
 
 // should be 4...
 if (loss_first){
-  for (var i = 0; i < 4; i++){
+  for (var i = 0; i < n_blocks/2; i++){
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "",false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8. Games in this block will all have negative points","Collecting more of these will make your bonus smaller.","Remember the attention checks.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 4. Games in this block will all have negative points","Collecting more of these will make your bonus smaller.","Respond as fast as you can on the dot probe checks!.",false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -424,7 +537,7 @@ if (loss_first){
     all_trials = all_trials.concat(loss_block);
     //////////////////////////////////////////////////////////////////
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest.", "", false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","Remember the attention checks.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 4. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.","Respond as fast as you can on dot probes!",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
     var b = Math.round(win_block.length/3);
@@ -450,10 +563,10 @@ if (loss_first){
     all_trials = all_trials.concat(win_block);
   }
 }else{
-  for (var i = 0; i < 4; i++){
+  for (var i = 0; i < n_blocks/2; i++){
     /// win
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 8. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.", "Remember the attention checks.",false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 1) + " of 4. The next set of games will all have positive points.","Collecting more of these will make your bonus larger.", "Respond as fast as you can on the dot probes!",false);
     var win_block = [intro_text_trial];
     win_block = win_block.concat(all_win_trials.splice(0,block_size));
 
@@ -483,7 +596,7 @@ if (loss_first){
 
     // loss
     var final_text_trial = build_text_trial("Great work! ", "Feel free to take a short rest", "", false);
-    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 8. Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.","Remember the attention checks.", false);
+    var intro_text_trial = build_text_trial("Starting block " + (2*i + 2) + " of 4. Games in this block will all have negative points.","Collecting more of these will make your bonus smaller.","Respond as fast as you can on the dot probes!", false);
     var loss_block = [intro_text_trial];
     loss_block = loss_block.concat(all_loss_trials.splice(0,block_size));
     var c = Math.round(loss_block.length/3);
@@ -906,7 +1019,7 @@ var build_play_machine_round = function(block_number, round_number){
   //   // build each passive trial
      for (var t = 0; t < cx_trials_o1.length; t++){
        this_round_trials.push(build_practice_trial_stg1(cx_number, cx_trials_o1[t]));
-       if (Math.random() < .2){
+       if (Math.random() < .1){
          this_round_trials.push(rand_gen_info_quiz())
        }
        this_round_trials[this_round_trials.length - 1].data.block_number = block_number;
@@ -931,7 +1044,7 @@ var build_play_machine_round = function(block_number, round_number){
                        var this_text = "You answered " + n_correct +" of the 12 questions correctly.";
                        return this_text;
                      },
-     line_2: "You've completed " + round_number + " out of 4 rounds.",
+     line_2: "You've completed " + round_number + " out of 2 rounds.",
      line_3: "",
      wait_for_press: true,
      data: {phase: 'INFO'},
@@ -949,8 +1062,8 @@ var build_play_machine_round = function(block_number, round_number){
 
 var model_learning = [];
 
-// goes 4-6rounds of experience with quizzes.. at the end, do a quiz on each...
-var n_rounds = 4;
+// goes 2 rounds of experiences...
+var n_rounds = 2;
   for (var i = 0; i < n_rounds; i++){
 
       if (i < 2){
@@ -981,34 +1094,42 @@ var n_rounds = 4;
 //////////////////////////////////PLAYING THE SLOT MACHINE IN THE INTRO
 
 
-
-
 //////////////////////////////////////////// Instructions
 
-  // for two-stim choice add parameter for whether to limit choice time.
-  var instruction_pages_1a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide1.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide2.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide3.JPG'];
+//var instruc_folder = 'Stimuli/uws_instr_slides_ver2_jpg_house_safe';
 
-  var schematic_slide ='Stimuli/uws_instr_slides_ver2_jpg/Slide4.JPG'
+  // go through 3 slides and then practice
+var instruction_pages_1aa= [instruc_folder + '/Slide1.jpeg',
+                            instruc_folder + '/Slide12.jpeg']
 
-  //var outcome_state_idx = both_idx_vec[cond_idx][1];
+  // go through 3 slides and then practice
+var instruction_pages_1ab = [instruc_folder + '/Slide2.jpeg',
+                            instruc_folder + '/Slide3.jpeg']
 
-  //var pos_outcome_assigments = [[0, 1, 2],
-  //                                [2, 0, 1],
-  //                                [1, 2, 0]];
 
-  var pages1a = [];
-  for (var i = 0; i < instruction_pages_1a.length; i++){
-      pages1a.push('<img src= "'+ instruction_pages_1a[i] +  '" alt = "" >')
+  var pages1aa = [];
+  for (var i = 0; i < instruction_pages_1aa.length; i++){
+      pages1aa.push('<img src= "'+ instruction_pages_1aa[i] +  '" alt = "" >')
   }
 
-
-  var instruction_pages1a = {
+  var instruction_pages1aa = {
       type: 'instructions',
-      pages: pages1a,
+      pages: pages1aa,
       show_clickable_nav: true
   }
+
+  var pages1ab = [];
+  for (var i = 0; i < instruction_pages_1ab.length; i++){
+      pages1ab.push('<img src= "'+ instruction_pages_1ab[i] +  '" alt = "" >')
+  }
+
+  var instruction_pages1ab = {
+      type: 'instructions',
+      pages: pages1ab,
+      show_clickable_nav: true
+  }
+
+//
 
   //instruc1a_trials.splice(2,0,rand_gen_info_quiz());
 
@@ -1111,37 +1232,21 @@ var n_rounds = 4;
     }
   }
 
-  // 4 rounds of map with quiz...
+  // 2 rounds of map with quiz...
 
   var intro_w_trials = [];
-  intro_w_trials.push(instruction_pages1a);
+  intro_w_trials.push(instruction_pages1aa);
 
+  // push the bis questionnaire
+  intro_w_trials.push(age_question);
+  intro_w_trials.push(sex_question);
+  add_save_block_data(bis_questionairre);
+  intro_w_trials.push(bis_questionairre);
+  intro_w_trials.push(instruction_pages1ab);
   intro_w_trials = intro_w_trials.concat(model_learning)
 
-  //var n_rounds = 12;
-  //for (var i = 0; i < n_rounds; i++){
-  //  var schematic = {
-  //    type: 'evan-display-map',
-  //    choice_images: choice_images,
-  //    outcome_images: outcome_images,
-  //    data: {block_number: 6} // fix the block number
-  //  }
-//  	intro_w_trials.push(schematic);
-//    play_trials = build_play_machine_round();
-//    console.log('play trials')
-//    console.log(play_trials)
-//    intro_w_trials = intro_w_trials.concat(play_trials);
-
-    // push some play the machine trials onto it here...
-
-//  	var quiz_trials = make_struc_quiz_block(i + 1);
-//  	intro_w_trials = intro_w_trials.concat(quiz_trials);
-//  }
-
-  //intro_w_trials = intro_w_trials.concat(instruc1a_trials);
-
   var introloop = [];
-  introloop.push(instruction_pages1a);
+  introloop.push(instruction_pages1ab);
   introloop.push(instruction_check);
   introloop.push(conditional_splash1);
   /* finally, add the entirety of this introductory section to a loop node ... */
@@ -1170,12 +1275,27 @@ var n_rounds = 4;
   // add a prompt to the feedback screen?
 
   instruc2_timeline_w_trials = [];
-  var instruction_pages_2a = ['Stimuli/uws_instr_slides_ver2_jpg/Slide5.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide6.JPG',
-                              'Stimuli/uws_instr_slides_ver2_jpg/Slide7.JPG',
-  														'Stimuli/uws_instr_slides_ver2_jpg/Slide8.JPG']
-  var instruction_pages_2b = ['Stimuli/uws_instr_slides_ver2_jpg/Slide10.JPG'];
-  var instruction_pages_2c = ["Stimuli/uws_instr_slides_ver2_jpg/Slide12.JPG"];
+
+  // go through 3 slides and then practice
+var instruction_pages_1a = [instruc_folder + '/Slide1.jpeg',
+                            instruc_folder + '/Slide2.jpeg',
+                            instruc_folder + '/Slide3.jpeg']
+
+// next is 4 - 8
+
+  var instruction_pages_2a =  [instruc_folder + '/Slide4.jpeg',
+                               instruc_folder + '/Slide5.jpeg',
+                               instruc_folder + '/Slide6.jpeg',
+                               instruc_folder + '/Slide7.jpeg',
+                               instruc_folder + '/Slide8.jpeg']
+
+// then practice some real trials...
+
+var instruction_pages_2b = [instruc_folder+'/Slide10.jpeg'];
+
+  // then practice some recognition trials.
+
+var instruction_pages_2c = [instruc_folder+"/Slide11.jpeg"];
 
   var pages2a = [];
   for (var i = 0; i < instruction_pages_2a.length; i++){
@@ -1212,16 +1332,20 @@ var n_rounds = 4;
 
   instruc2_timeline_w_trials.push(instruction_pages2a);
   var n_info_practice = 8;
-  for (i = 0; i < n_info_practice; i ++){
-  	instruc2_timeline_w_trials = instruc2_timeline_w_trials.concat(rand_gen_rew_quiz_main((Math.random() < .5)));
-  }
+  //for (i = 0; i < n_info_practice; i ++){
+  //	instruc2_timeline_w_trials = instruc2_timeline_w_trials.concat(rand_gen_rew_quiz_main((Math.random() < .5)));
+  //}
 
-  instruc2_timeline_w_trials.push(instruction_pages2b);
+  // these are task trials...
   var n_trial_practice = 5;
   for (i = 0; i < n_trial_practice; i ++){
   	instruc2_timeline_w_trials.push(rand_gen_trial((Math.random() < .5)));
   }
 
+  instruc2_timeline_w_trials.push(instruction_pages2b);
+  for (i = 0; i < n_trial_practice; i ++){
+  	instruc2_timeline_w_trials.push(rand_gen_recognition_trial((Math.random() < .5)));
+  }
   instruc2_timeline_w_trials.push(instruction_pages2c);
 
 
@@ -1253,11 +1377,10 @@ var n_rounds = 4;
   var options6b = ["Yes", "No", "I do not know."];
   var correct6b = 1;
 
-  var options7b = ["The total number of points collected. Wrong attention check answers on a randomly selected block each subtract 25p from bonus.",
+  var options7b = ["Just the speed of the image recognition questions.",
   				"It is random",
-  				"Average number of points collected on a randomly selected game from each round. Wrong attention check answers on a randomly selected block each subtract 25p from bonus.",
-  				"Just total number of points collected.",
-  				"Just answers to attention check questions.",
+  				"Average number of points collected on a randomly selected game from each round as well as speed and accuracy of image recognition questions.",
+  				"Just the number of points collected.",
   				"I do not know."];
   var correct7b = 2;
 
@@ -1359,7 +1482,7 @@ var n_rounds = 4;
   		//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   	    choices: ['Begin the task!'],
   	    is_html: true,
-  	    stimulus: 'You passed the quiz! Great work. The rest of the task will take about 60 minutes. Press the button to begin.'
+  	    stimulus: 'You passed the quiz! Great work. The rest of the task will take about 25 minutes. Press the button to begin.'
   	}
 
 
@@ -1402,53 +1525,6 @@ var n_rounds = 4;
 
 //////////////////////////////////
 
-var welcome_slide = instr_slides + '/Slide2.JPG';
-var preloc_slide = instr_slides + '/Slide3.JPG';
-var pretrain_slide = instr_slides + '/Slide4.JPG';
-var pretask_slide = instr_slides + '/Slide5.JPG';
-
-console.log(pretrain_slide)
-
-var instr1 = {
-    type: 'instructions',
-    pages: ['<img src= "'+ welcome_slide +  '" alt = "" >',
-            '<img src= "'+ preloc_slide +  '" alt = "" >'],
-    show_clickable_nav: false,
-    key_forward: '4',
-    data: {
-      block_number: 1
-    }
-}
-
-var pretrain = {
-    type: 'instructions',
-    pages: ['<img src= "'+ pretrain_slide +  '" alt = "" >'],
-    show_clickable_nav: false,
-    key_forward: '4',
-    data: {
-      block_number: 6
-    }
-}
-
-var pretask = {
-    type: 'instructions',
-    pages: ['<img src= "'+ pretask_slide +  '" alt = "" >'],
-    show_clickable_nav: false,
-    key_forward: '4',
-    data: {
-      block_number: 7
-    }
-}
-
-/////////// PUT THE TIMELINE TOGETHER
-pre_text_trial1 = build_text_trial("", "Waiting for experimenter", "",true);
-pre_text_trial1.data.block_number = 1;
-
-pre_text_trial2 = build_text_trial("", "Waiting for experimenter", "",true);
-pre_text_trial2.data.block_number = 6;
-
-pre_text_trial3 = build_text_trial("", "Waiting for experimenter", "",true);
-pre_text_trial3.data.block_number = 7;
 const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length
 
 var end_screen = {
@@ -1519,21 +1595,21 @@ var end_screen = {
         }
      }
 
-//task2_timeline = task2_timeline.filter(function(el){return el.data.block_number >= start_block})
-//loc_exp = loc_exp.filter(function(el){return el.data.block_number >= start_block})
-//full_screen
-// put together the full timeline
-
 var full_screen = {
   type: 'fullscreen',
   fullscreen_mode: true
 };
 
 
+
+
+
 timeline = [];
 timeline.push(full_screen);
-timeline = timeline.concat(instruc_timeline1); // this includes training...
-timeline = timeline.concat(instruc_timeline2);
+//timeline = timeline.concat(instruc_timeline1); // this includes training...
+//timeline = timeline.concat(instruc_timeline2);
+// timeline = [];
+//timeline.push(full_screen);
 timeline = timeline.concat(task2_timeline);
 //timeline = timeline.concat(task2_timeline.slice(0,2));
 timeline.push(end_screen);
@@ -1568,7 +1644,6 @@ console.log(task2_timeline)
      all_task_images = all_task_images.concat(pos_outcome_images);
      all_task_images = all_task_images.concat(pos_choice_images);
      all_task_images = all_task_images.concat(instruction_pages_1a);
-     all_task_images = all_task_images.concat(schematic_slide);
      all_task_images = all_task_images.concat(instruction_pages_2a);
      all_task_images = all_task_images.concat(instruction_pages_2b);
      all_task_images = all_task_images.concat(instruction_pages_2c);

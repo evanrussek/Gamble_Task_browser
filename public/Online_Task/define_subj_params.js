@@ -8,6 +8,8 @@
 //document.body.appendChild(quest);
 // Consent form
 var check_consent = function (elem) {
+    //beginning_form();
+
   if ($('#consent_checkbox1').is(':checked') && $('#consent_checkbox2').is(':checked') &&
       $('#consent_checkbox3').is(':checked') && $('#consent_checkbox4').is(':checked') &&
       $('#consent_checkbox5').is(':checked') && $('#consent_checkbox6').is(':checked') &&
@@ -23,7 +25,7 @@ var check_consent = function (elem) {
   }
 };
 
-doc_name = 'MEG_online2';
+doc_name = 'MEG_online_recognition';
 
 
 var start_task = function(){
@@ -90,12 +92,12 @@ var set_other_vars = function(){
 // did you alter this in the meg?
 //     subjectID = ('subj_' + subject_num + '_LabTask')
 
-     seed = 'Seed for subject subjectID : ' + subjectID;
-     Math.seedrandom(seed);
+     // seed = 'Seed for subject subjectID : ' + subjectID;
+     // Math.seedrandom(seed);
 
     // set condition here...
-    cond_idx = subject_num%24;
-    console.log('condition: ' + cond_idx)
+    //cond_idx = subject_num%24;
+    console.log('condition: ' + condition_num)
 
      both_idx_vec = [[0,0], [0,1], [0,2],
                       [1,0], [1,1], [1,2],
@@ -103,11 +105,13 @@ var set_other_vars = function(){
                       [3,0], [3,1], [3,2]];
 
      choice_state_idx = 0;//both_idx_vec[cond_idx][0];//1; //1both_idx_vec[cond_idx][0]; // don't need
-     outcome_state_idx = 1; // both_idx_vec[cond_idx][1];//1; //both_idx_vec[cond_idx][1];
+     // outcome_state_idx = 1; // both_idx_vec[cond_idx][1];//1; //both_idx_vec[cond_idx][1];
 
-     loss_first = (subject_num%2 == 1);
+     loss_first = Math.random()<.5;//(subject_num%2 == 1);
 
-     instr_slides = 'Stimuli/MEG_slides_o' + outcome_state_idx;
+     instruc_folder = 'Stimuli/uws_instr_slides_ver2_jpg_o'+ condition_num;
+
+     // instr_slides = 'Stimuli/MEG_slides_o' + condition_num; // set condition_num  to 0, 1 or 2.
 
      var pos_outcome_assigments = [[0, 1, 2], // Scissors is safe
                                [2, 0, 1], // House is safe / keep this for this run...
@@ -125,7 +129,7 @@ var set_other_vars = function(){
 
 
        choice_idx_vec = pos_choice_assignments[choice_state_idx]
-       outcome_idx_vec = pos_outcome_assigments[outcome_state_idx];
+       outcome_idx_vec = pos_outcome_assigments[condition_num];
 
 //       pos_outcome_names = ["BALL", "BANANA", "UMBRELLA"];
 //       pos_choice_names = ["BICYCLE", "CAR", "ELEPHANT", "SNEAKERS"];
@@ -215,6 +219,12 @@ var beginning_form = function(researcher_inputs){
     }
     subjectID = subjectID.toString();
 
+    if (window.location.search.indexOf('condition_num') > -1) { // this should be something related to prolific...
+       condition_num = parseInt(getQueryVariable('condition_num'));
+    }
+    else {
+        condition_num = 0;//Math.floor(Math.random() * (2000 - 0 + 1)) + 0; // if no prolific ID, generate random ID (for testing)
+    }
     //if (window.location.search.indexOf('subject_num') > -1) {
      //  subject_num = parseInt(getQueryVariable('subject_num'));
 //    }

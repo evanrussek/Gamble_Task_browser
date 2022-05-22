@@ -78,13 +78,17 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         type: jsPsych.plugins.parameterType.BOOL,
         default: false
       },
-      recognition_number:{
+      recognition_number:{ // o1 or o2 or os
         type: jsPsych.plugins.parameterType.INT,
         default: 0
       },
-      recognition_correct_key:{
-        type: jsPsych.plugins.parameterType.STRING,
-        default: ""
+      recognition_position:{ // how to position these (counterbalance this...)
+        type: jsPsych.plugins.parameterType.INT,
+        default: 0
+      },
+      recognition_feedback:{
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: false
       }
     }
   }
@@ -92,7 +96,33 @@ jsPsych.plugins["evan-run-trial"] = (function() {
   plugin.trial = function(display_element, trial) {
 
 
-    var outcome_images = [trial.o1_image, trial.o2_image, trial.safe_image];
+    var outcome_images = [trial.o1_image, trial.o2_image, trial.safe_image]; // split it by the position?
+
+    var probe_image_idx = trial.recognition_number - 1;
+    var probe_setting = [0,0,0];
+    probe_setting[probe_image_idx] = 1;
+
+    // what's the position
+    var all_recognition_pos = [[0,1,2], [1,2,0], [2,0,1]];
+
+    console.log(trial)
+
+    var recognition_image_positions = all_recognition_pos[trial.recognition_position];// [0,1,2]
+
+    if (Math.random()<.5){
+      var probe_loc = "left"; // use this for keys
+      var recognition_correct_key = 'leftarrow';
+    }else{
+      var probe_loc = "right";
+      var recognition_correct_key = 'rightarrow';
+    }
+
+    console.log(outcome_images)
+    console.log(recognition_image_positions)
+    // use this...
+    var recognition_images = [outcome_images[recognition_image_positions[0]], outcome_images[recognition_image_positions[1]], outcome_images[recognition_image_positions[2]]];
+    var position_probe = [probe_setting[recognition_image_positions[0]], probe_setting[recognition_image_positions[1]], probe_setting[recognition_image_positions[2]]];
+
     var outcome_vals = [trial.o1_val, trial.o2_val, trial.safe_val];
     var recognition_trial = trial.recognition_number > 0;
 
@@ -101,14 +131,14 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     var stim_pos_y = trial.stim_pos_y;
     var stim_pos_x = 1; /// change this?
 
-    var recognition_choice_stim_time = 800;
+    var recognition_choice_stim_time = 800; // this is also a minimum response time...
 
     //par = define_parameters('trial', trial.o1_image, trial.o2_image,
     //          trial.safe_image, trial.o1_val, trial.o2_val, trial.safe_val);
 
     var par = define_parameters(trial.exp_stage);
 
-    var recognition_responses = ['h', 's', 'g']
+    var recognition_responses = ['rightarrow', 'leftarrow']
     // you should randomize the y...
     if (par.randomize_info_y){
       var stim_pos_y = 1 + Math.round(Math.random());
@@ -241,8 +271,125 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
 
     var place_recognition_image = function(opacity){
-      place_img(outcome_images[trial.recognition_number-1], "recognition_image", par.fixation_x - .75*par.f_outcome_img_width, par.fixation_y - .75*par.f_outcome_img_height,
-                    par.f_outcome_img_width*1.5, par.f_outcome_img_height*1.5,opacity);
+
+      var opacity = 0
+
+      // use different posittions -
+      // place every image specific background and every image on top of it
+      if (stim_pos_y == 1){ // x/y
+        var this_pos = [0, 1];
+      } else{
+        var this_pos = [1, 0];
+      };
+
+      if (stim_pos_x == 1){
+        var this_pos_x = [0, 0, 2];
+      } else{
+         var this_pos_x = [2, 2, 0];
+      }
+
+      if (probe_loc == "left"){
+        var text = '<'
+        //var p_x = r_imx[i] + r_img_width/4;
+      }else{
+        //var p_x = r_imx[i] + 3*r_img_width/4;
+        var text = '>'
+      }
+
+
+
+      for (var i=0; i<2; i++){
+
+          //place_img_bkg("info",par.img_bkg_x2_vec[this_pos_x[i]],par.img_bkg_y2_vec[i],par.img_bkg_width2,par.img_bkg_height2,par.img_bkg_color,opacity);
+        //if (par.randomize_info){ // but randomize for subjects?
+          place_img(par.outcome_images[this_pos[i]], "recognition_image", par.image_x2_vec[this_pos_x[i]] + par.img_bkg_width/2, par.image_y2_vec[i], par.image_width, par.image_height,opacity);
+          //place_reward(par.outcome_vals[this_pos[i]], "info", par.text_x2_vec[this_pos_x[i]], par.text_y2_vec[i], par.text_font_size,opacity);
+
+          if (probe_setting[i] == 1){
+            console.log(i)
+            d3.select("svg").append("text")
+                      .attr("class", "recognition_dot")
+                      .attr("x",  par.image_x2_vec[this_pos_x[i]] + par.img_bkg_width/2 + par.image_width/2)
+                      .attr("y", par.image_y2_vec[i] + par.image_height/2)
+                      .attr("font-family","monospace")
+                      .attr("font-weight","bold")
+                      .attr("font-size", par.image_height/4)
+                      .attr("text-anchor","middle")
+                      .attr("fill", "white")
+                      .style("opacity",0)
+                      .text(text)
+          }
+      }
+      var i = 2;
+      //place_img_bkg("info",par.img_bkg_x2_vec[this_pos_x[i]],par.img_bkg_y2_vec[i],par.img_bkg_width2,par.img_bkg_height2,par.img_bkg_color,opacity);
+    //if (par.randomize_info){ // but randomize for subjects?
+      place_img(par.outcome_images[i], "recognition_image", par.image_x2_vec[this_pos_x[i]], par.image_y2_vec[i], par.image_width, par.image_height,opacity);
+      if (probe_setting[i] == 1){
+        console.log(i)
+        d3.select("svg").append("text")
+                  .attr("class", "recognition_dot")
+                  .attr("x",  par.image_x2_vec[this_pos_x[i]] + par.image_width/2)
+                  .attr("y", par.image_y2_vec[i] + par.image_height/2)
+                  .attr("font-family","monospace")
+                  .attr("font-weight","bold")
+                  .attr("font-size", par.image_height/4)
+                  .attr("text-anchor","middle")
+                  .attr("fill", "white")
+                  .style("opacity",0)
+                  .text(text)
+      }
+      //place_reward(par.outcome_vals[i], "info", par.text_x2_vec[this_pos_x[i]], par.text_y2_vec[i], par.text_font_size,opacity);
+
+      /*
+      // change this to 3 images and a circle...
+      var r_img_width = par.outcome_img_width;
+      var r_img_height = par.outcome_img_height;
+
+      var r_imx = [par.w/2 - r_img_width/2, 2.5*par.w/6 - r_img_width/2, 3.5*par.w/6 - r_img_width/2];
+      var r_imy = [2.5*par.h/6 - r_img_height/2, 3.5*par.h/6 - r_img_height/2, 3.5*par.h/6 -r_img_height/2];
+
+      for (i = 0; i<3; i++){
+        place_img(recognition_images[i], "recognition_image", r_imx[i], r_imy[i], r_img_width, r_img_height,0);
+
+        // figure out whether to place it on the left or the right...
+
+        //
+
+        if (probe_loc == "left"){
+          var text = '<'
+          //var p_x = r_imx[i] + r_img_width/4;
+        }else{
+          //var p_x = r_imx[i] + 3*r_img_width/4;
+          var text = '>'
+        }
+
+        var p_y = r_imy[i] + r_img_height*Math.random();
+
+        if (position_probe[i]==1){
+
+          d3.select("svg").append("text")
+                    .attr("class", "recognition_dot")
+                    .attr("x",  r_imx[i] + r_img_width/2)
+                    .attr("y", r_imy[i] + r_img_height/2)
+                    .attr("font-family","monospace")
+                    .attr("font-weight","bold")
+                    .attr("font-size", r_img_height/4)
+                    .attr("text-anchor","middle")
+                    .attr("fill", "white")
+                    .style("opacity",0)
+                    .text(text)
+
+        //  d3.select("svg").append("circle")
+        //    .attr("class","recognition_dot")
+        //    .style("opacity",0)
+        //    .attr("class", "recognition_dot")
+        //    .attr("r", r_img_width/30)
+        //    .attr("cx", p_x)
+        //    .attr("cy", p_y)
+        //    .style("fill","red")
+        }
+
+      } */
     }
 
     var place_info = function(opacity){
@@ -294,7 +441,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     }
 
     var place_everything  = function(){
-      place_fixation();
+      //place_fixation();
       if (!recognition_trial){
         place_outcomes(0);
       }else{
@@ -529,7 +676,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
               //.transition()
               //.style("opacity",1)
-              //.duration(par.choice_fadein_time)
+              //.duration(par.choice_fadein_time)f
 
               // do we want a prompt?
               var bkg_y = par.h/2 + par.background_height/2;
@@ -538,29 +685,34 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
               if (recognition_trial){
 
-                d3.select(".recognition_image")
+                d3.selectAll(".recognition_image")
+                  .style("opacity",1)
+
+                d3.selectAll(".recognition_dot")
                   .style("opacity",1)
                 }
                 //wait_for_time(250,place_
 
-              if (trial.show_prompt){
-
-                if (recognition_trial){
-
-                  d3.select(".recognition_image")
-                    .style("opacity",1)
-                    place_text('Press p to PLAY the machine or r to REJECT.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
-                  //wait_for_time(250,place_text('Which banknote is this?.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White"))
-                  //place_text('Which banknote is this?.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
-
-                }else{
-                  if (trial.allow_reject){
-                    place_text('Press p to PLAY the machine or r to REJECT.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
-                  } else{
-                    place_text('Press p to PLAY the machine.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
+              wait_for_time(recognition_choice_stim_time, function(){
+                if (trial.show_prompt){
+                  if (!recognition_trial){
+                    if (trial.allow_reject){
+                      place_text('Press 1 to PLAY the machine or 2 to REJECT.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
+                    } else{
+                      place_text('Press 1 to PLAY the machine.', "choice_stim", par.w/2, txt_y, par.text_font_size/2, 1, "White")
+                    }
                   }
                 }
               }
+            )
+
+
+                if (recognition_trial){
+                  d3.select(".recognition_image")
+                    .style("opacity",1)
+                }
+
+
               // time stuff, etc.
               display_diode();
 
@@ -631,6 +783,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         stage_2_master(2);
 
       }
+
       if (!recognition_trial){
         var handle_slow_response = function(){
           count_time = false
@@ -770,17 +923,22 @@ jsPsych.plugins["evan-run-trial"] = (function() {
         }
 
         var choice_char = jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(response.key);
+        console.log(choice_char)
+        console.log(recognition_correct_key)
         response.recognition_choice = choice_char;
-        response.correct = choice_char == trial.recognition_correct_key;
+        response.correct = choice_char == recognition_correct_key;
 
         // can we mark whehter it's correct or incorrect?
         //place_text(response.recognition_choice, "choice_stim", par.w/2, par.h/2, par.text_font_size*10, 1, "White")
 
-        if (response.correct){
-          place_text('Correct', "choice_stim",par.w/2, par.h/2 + par.background_height/4, par.text_font_size, 1, "Green")
-        }else{
-          place_text('Wrong', "choice_stim",par.w/2, par.h/2 + par.background_height/4, par.text_font_size, 1, "Red")
+        if (trial.recognition_feedback){
+          if (response.correct){
+            place_text('Correct', "choice_stim",par.w/2, par.h/2, par.text_font_size/2, 1, "Green")
+          }else{
+            place_text('Wrong', "choice_stim",par.w/2, par.h/2, par.text_font_size/2, 1, "Red")
+          }
         }
+
 
         // change background color based on choice
         //if (choice_char == 'a'){d3.select('.choice_bkg').style('fill',accept_color);}
@@ -808,11 +966,13 @@ jsPsych.plugins["evan-run-trial"] = (function() {
       //        .style("opacity",1)
 
             var bkg_y = par.h/2 - par.background_height/2;
-            place_text('What image is this?', "choice_stim", par.w/2, par.h/2 - par.background_height/2 + par.stg_bkg_y/2, par.text_font_size/2, 1, "White")
-            place_text('Respond as fast as you can!', "choice_stim", par.w/2, par.h/2 - par.background_height/2 + 2*par.stg_bkg_y/2, par.text_font_size/2, 1, "White")
+            //place_text('Find the dot', "choice_stim", par.w/2, par.h/2 - par.background_height/2 + par.stg_bkg_y/2, par.text_font_size/4, 1, "White")
+            //place_text('Respond as fast as you can!', "choice_stim", par.w/2, par.h/2 - par.background_height/2 + 2*par.stg_bkg_y/2, par.text_font_size/2, 1, "White")
 
-            //place_text('s: scissors, h: house, g: girl', "choice_stim",par.w/2, par.h/2 + par.background_height/2 + par.stg_bkg_y/4, par.text_font_size/2, 1, "White")
-            place_text('scissors: s, house: h, girl: g', "choice_stim",par.w/2, par.h/2 + par.background_height/2, par.text_font_size/2, 1, "White")
+            if (trial.recognition_feedback){
+              place_text('Respond with correct arrow key', "choice_stim",par.w/2, par.h/2 + par.background_height/2 + par.stg_bkg_y/4, par.text_font_size/2, 1, "White")
+            }
+            //place_text('scissors: s, house: h, girl: g', "choice_stim",par.w/2, par.h/2 + par.background_height/2, par.text_font_size/2, 1, "White")
 
             // time stuff, etc.
             display_diode();

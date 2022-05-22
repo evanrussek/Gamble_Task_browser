@@ -149,14 +149,14 @@ jsPsych.plugins["evan-display-map"] = (function() {
         var txt_y =  par.h  - 2*par.stg_bkg_y/3;
         if (trial.choice_number == 0){
           place_text('Please study this map.', "prompt", par.w/2 + par.diode_width, par.stg_bkg_y, par.text_font_size/3, 1, "White")
-          place_text('Press 4 to continue', "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/3, 1, "White")
+          place_text('Press c to continue', "prompt", par.w/2 + par.diode_width, txt_y, par.text_font_size/3, 1, "White")
         }else{
           var txt_y =  par.h  - par.stg_bkg_y;
           var txt1 = 'Chances that ' + trial.choice_name + ' machine produces either banknote.'
           place_text(txt1, "prompt", par.w/2 + par.diode_width, par.stg_bkg_y, par.text_font_size/2, 1, "White")
 
           if (trial.prompt_text == null){
-            var txt2 = 'Press 4 to play the ' + trial.choice_name +' machine';
+            var txt2 = 'Press c to play the ' + trial.choice_name +' machine';
           } else{
             var txt2 = trial.prompt_text;
           }
@@ -173,7 +173,7 @@ jsPsych.plugins["evan-display-map"] = (function() {
     }
 
 
-    var valid_responses = ['4'];
+    var valid_responses = ['c'];
 
 
       var handle_response = function(info){
