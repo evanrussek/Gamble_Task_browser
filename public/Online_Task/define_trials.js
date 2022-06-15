@@ -1606,7 +1606,7 @@ var full_screen = {
 
 timeline = [];
 timeline.push(full_screen);
-timeline = timeline.concat(instruc_timeline1); // this includes training... // this doesn't change? 
+// timeline = timeline.concat(instruc_timeline1); // this includes training... // this doesn't change? 
 //timeline = timeline.concat(instruc_timeline2);
 // timeline = [];
 //timeline.push(full_screen);
