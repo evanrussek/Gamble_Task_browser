@@ -449,14 +449,13 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
 //all_loss_trials = loss_matched_trials.concat(loss_non_matched_trials);
 //all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 
-// need to actually copy these,
+// need to actually copy these, -- so you should be repeating each of these 2 times... - can you check the size?
 all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,2); // repeat each trial 2 times...
 all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,2);
 // the task is
 
 // make the first third of trials recognition trials
 n_recognition_trials_round = Math.round(all_loss_trials.length/3);
-n_recognition_trials_round = Math.round(all_loss_trials.length/2);
 n_recognition_each_outcome = Math.round(n_recognition_trials_round/3); // then for each of these, we want to evenly vary the recognition position
 
 for (var i = 0; i < all_loss_trials.length; i++){
@@ -492,12 +491,12 @@ all_win_trials = jsPsych.randomization.repeat(all_win_trials,1);
 // now, let's get it so that we start from a certain point...
 
 // block size . ---
-var n_blocks = 4;
+var n_blocks = 4; // do you need more than 4 blocks? ? ? ...
 
 // 4 win blocks and 4 loss blocks... // 2 and 2
 var block_size = all_loss_trials.length/(n_blocks/2);
 
-var all_trials = []
+all_trials = []
 
 // var loss_first = 1;
 
@@ -992,7 +991,7 @@ function rand_gen_info_quiz(){
 
 // fix the data saving...
 
-var build_play_machine_round = function(block_number, round_number){
+var build_play_machine_round = function(block_number, round_number, include_playing){
 
   /// this will make a round of going through each choice 10 times
   var this_round_trials = [];
@@ -1017,13 +1016,15 @@ var build_play_machine_round = function(block_number, round_number){
      var cx_trials_o1 = build_po_vec(10,all_prob_o1[cx_number - 1]);// build a_trials
      var cx_trials_o1 = jsPsych.randomization.repeat(cx_trials_o1,1);
   //   // build each passive trial
+    if (include_playing){
      for (var t = 0; t < cx_trials_o1.length; t++){
        this_round_trials.push(build_practice_trial_stg1(cx_number, cx_trials_o1[t]));
-       if (Math.random() < .1){
+       if (Math.random() < 0){
          this_round_trials.push(rand_gen_info_quiz())
        }
-       this_round_trials[this_round_trials.length - 1].data.block_number = block_number;
      }
+   } // end include playing
+   this_round_trials[this_round_trials.length - 1].data.block_number = block_number;
 
     // this_round_trials = this_round_trials.concat(jsPsych.randomization.repeat(quiz_trials,1));
    }
@@ -1044,7 +1045,7 @@ var build_play_machine_round = function(block_number, round_number){
                        var this_text = "You answered " + n_correct +" of the 12 questions correctly.";
                        return this_text;
                      },
-     line_2: "You've completed " + round_number + " out of 2 rounds.",
+     line_2: "You've completed " + round_number + " out of 3 rounds.",
      line_3: "",
      wait_for_press: true,
      data: {phase: 'INFO'},
@@ -1063,25 +1064,30 @@ var build_play_machine_round = function(block_number, round_number){
 var model_learning = [];
 
 // goes 2 rounds of experiences...
-var n_rounds = 2;
+var n_rounds = 3;
   for (var i = 0; i < n_rounds; i++){
 
       if (i < 2){
         var bn = 6;
       }else{var bn = 7};
 
-      play_trials = build_play_machine_round(bn, i+1);
+      if (i < 2){
+        var play_machine = true
+      }else{var play_machine = false}
+      play_trials = build_play_machine_round(bn, i+1, play_machine);
+      //if (i < 2){
       model_learning = model_learning.concat(play_trials);
+      //}
     //  model_learning.push(build_text_trial("You'll now be quizzed on the chances of each slot machine producing either banknote.","Please try your best.","", false))
       model_learning[model_learning.length-1].data.block_number = bn;
 //      model_learning = model_learning.concat(make_struc_quiz_block(i + 1, bn, false));
-      if (i == 1){
+      //if (i == 1){
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
-        add_save_block_data(model_learning[model_learning.length - 2])
-        model_learning[model_learning.length-1].data.block_number = bn + 1;
+      //  add_save_block_data(model_learning[model_learning.length - 2])
+      //  model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
-      }
-      if (i == 3){ // this never saved
+      //}
+      if (i == 2){ //
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
         add_save_block_data(model_learning[model_learning.length - 2])
         model_learning[model_learning.length-1].data.block_number = bn + 1;
@@ -1269,7 +1275,7 @@ var instruction_pages_1ab = [instruc_folder + '/Slide2.jpeg',
   	//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
       choices: ['Begin the first task!'],
       is_html: true,
-      stimulus: 'You passed the quiz! Great work. The first task will take about 30 minutes. Press the button to begin.'
+      stimulus: 'You passed the quiz! Great work. The task will take about 45 minutes. Press the button to begin.'
   }
   //instruc_timeline1.push(finish_instruc1_screen);
   // add a prompt to the feedback screen?
@@ -1377,9 +1383,9 @@ var instruction_pages_2c = [instruc_folder+"/Slide11.jpeg"];
   var options6b = ["Yes", "No", "I do not know."];
   var correct6b = 1;
 
-  var options7b = ["Just the speed of the image recognition questions.",
+  var options7b = ["Just the speed of the arrow recognition questions.",
   				"It is random",
-  				"Average number of points collected on a randomly selected game from each round as well as speed and accuracy of image recognition questions.",
+  				"Average number of points collected on a randomly selected game from each round as well as speed and accuracy of arrow recognition questions.",
   				"Just the number of points collected.",
   				"I do not know."];
   var correct7b = 2;
@@ -1482,7 +1488,7 @@ var instruction_pages_2c = [instruc_folder+"/Slide11.jpeg"];
   		//    button_html: '<button class="jspsych-btn" style="display:none">%choice%</button>',
   	    choices: ['Begin the task!'],
   	    is_html: true,
-  	    stimulus: 'You passed the quiz! Great work. The rest of the task will take about 25 minutes. Press the button to begin.'
+  	    stimulus: 'You passed the quiz! Great work. The rest of the task will take about 45 minutes. Press the button to begin.'
   	}
 
 
@@ -1584,14 +1590,13 @@ var end_screen = {
                                   .doc('end').set({
                                     bonus_data: bonus_data,
                                     end_time: new Date().toLocaleTimeString()})
-         		var string = 'You have finished the task. \
-         				   On the randomly selected games, \
-         					the average number of points you collected was '  + test_bonus_trial_points_avg + '.	For the attention checks you got ' + test_quiz_incorrect + ' incorrect.';
+         		var string = 'You have finished the task. Thank you for your contribution to this project! \
+         				   You will receive your payment and bonus shortly.'
 
          		return string;
          	},
         on_finish: function(){
-            window.location = "https://app.prolific.co/submissions/complete?cc=V23QBQM3";
+            window.location = "https://app.prolific.co/submissions/complete?cc=8F9C8FE6";
         }
      }
 
@@ -1600,22 +1605,15 @@ var full_screen = {
   fullscreen_mode: true
 };
 
-
-
-
-
 timeline = [];
 timeline.push(full_screen);
-// timeline = timeline.concat(instruc_timeline1); // this includes training... // this doesn't change? 
-//timeline = timeline.concat(instruc_timeline2);
-// timeline = [];
-//timeline.push(full_screen);
+timeline = timeline.concat(instruc_timeline1);
+timeline = timeline.concat(instruc_timeline2);
 timeline = timeline.concat(task2_timeline);
-//timeline = timeline.concat(task2_timeline.slice(0,2));
 timeline.push(end_screen);
 
 
-console.log(task2_timeline)
+// console.log(task2_timeline)
  var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13.JPG';
 
  //console.log(pretrain_slide)

@@ -131,7 +131,11 @@ jsPsych.plugins["evan-run-trial"] = (function() {
     var stim_pos_y = trial.stim_pos_y;
     var stim_pos_x = 1; /// change this?
 
-    var recognition_choice_stim_time = 800; // this is also a minimum response time...
+    if (recognition_trial){
+      var recognition_choice_stim_time = 1250; // this is also a minimum response time...
+    }else{
+      var recognition_choice_stim_time = 800; // this is also a minimum response time...
+    }
 
     //par = define_parameters('trial', trial.o1_image, trial.o2_image,
     //          trial.safe_image, trial.o1_val, trial.o2_val, trial.safe_val);
@@ -663,6 +667,27 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
     } // end remove trial info
 
+
+    var handle_slow_response = function(){
+      count_time = false
+      window.cancelAnimationFrame(rafID1);
+      window.cancelAnimationFrame(rafID2);
+
+      jsPsych.pluginAPI.clearAllTimeouts();
+      place_reward('Please respond faster!', 'slow_reply', par.slow_reply_x, par.slow_reply_y, par.slow_reply_font_size, 1)
+      d3.select(".slow_reply")
+        .attr("fill", "red")
+      response.choice = "SLOW";
+      response.accept = "NA";
+
+      // kill keyboard listeners
+      if (typeof keyboardListener !== 'undefined') {
+        jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
+      }
+
+      wait_for_time(par.slow_reply_time, end_trial);
+    }
+
     ///// stage 2 funcs
     var display_choice = function(){
       // want to add something showing that their choice was registered? - maybe change the background color?
@@ -785,31 +810,16 @@ jsPsych.plugins["evan-run-trial"] = (function() {
       }
 
       if (!recognition_trial){
-        var handle_slow_response = function(){
-          count_time = false
-          window.cancelAnimationFrame(rafID1);
-          window.cancelAnimationFrame(rafID2);
-
-          jsPsych.pluginAPI.clearAllTimeouts();
-          place_reward('Please respond faster!', 'slow_reply', par.slow_reply_x, par.slow_reply_y, par.slow_reply_font_size, 1)
-          d3.select(".slow_reply")
-            .attr("fill", "red")
-          response.choice = "SLOW";
-          response.accept = "NA";
-
-          // kill keyboard listeners
-          if (typeof keyboardListener !== 'undefined') {
-            jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
-          }
-
-          wait_for_time(par.slow_reply_time, end_trial);
-        }
 
         if (trial.allow_reject){
           var valid_responses = [par.accept_key, par.reject_key];
         }else{
           var valid_responses = [par.accept_key];
         }
+
+        // wait for time for this...
+
+        wait_for_time(recognition_choice_stim_time, function(){
 
           var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
               callback_function: handle_response,
@@ -818,6 +828,8 @@ jsPsych.plugins["evan-run-trial"] = (function() {
               persist: false,
               allow_held_key: false
             });
+          }) // end wait for time
+
       }
 
       //if (trial.limit_time){
@@ -1003,8 +1015,16 @@ jsPsych.plugins["evan-run-trial"] = (function() {
                 allow_held_key: false
               });
 
+              // 2 seconds to respond...
+              wait_for_time(2000, handle_slow_response)
+
+              // new!!!
+              //next_stage_fun = function(){handle_slow_response()};
+
           })
         })
+
+        // wait_for_time(2500, handle_slow_response())
 
 
     } // end display outcome
