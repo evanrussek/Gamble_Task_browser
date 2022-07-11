@@ -1067,9 +1067,9 @@ var model_learning = [];
 var n_rounds = 3;
   for (var i = 0; i < n_rounds; i++){
 
-      if (i < 2){
-        var bn = 6;
-      }else{var bn = 7};
+      //if (i < 2){
+      var bn = 6; // this shouldn't matter really?  -- collect one more to check...
+      //}else{var bn = 7};
 
       if (i < 2){
         var play_machine = true
@@ -1087,12 +1087,12 @@ var n_rounds = 3;
       //  model_learning[model_learning.length-1].data.block_number = bn + 1;
         //add_save_block_data[model_learning[model_learning.length - 2]]
       //}
-      if (i == 2){ //
+      //if (i == 2){ //
     //    model_learning.push(build_text_trial("Let's take a short break.","","", true))
-        add_save_block_data(model_learning[model_learning.length - 2])
+        add_save_block_data(model_learning[model_learning.length - 2]) // only saved the last one...
         model_learning[model_learning.length-1].data.block_number = bn + 1;
       //  add_save_block_data[model_learning[model_learning.length - 2]]
-      }
+      //}
       // do a quiz on each after this...
   }
 
