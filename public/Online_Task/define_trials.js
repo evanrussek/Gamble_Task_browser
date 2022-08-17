@@ -400,7 +400,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on < 0){ on = 0}
 
-          for (var rep = 0; rep < 1; rep++){
+          for (var rep = 0; rep < 2; rep++){
             var nm_w_o1 =  gen_test_trial(true, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn);
             win_non_matched_trials.push(nm_w_o1)
           }
@@ -411,7 +411,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on < 0){ on = 0}
 
-          for (var rep = 0; rep < 1; rep++){
+          for (var rep = 0; rep < 2; rep++){
               var nm_w_o2 =  gen_test_trial(false, p_idx, all_win_amounts[w_idx], false, all_win_safe_vals[sv_idx], tn, on, sn)
               win_non_matched_trials.push(nm_w_o2)
           }
@@ -422,7 +422,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on > 0){ on = 0}
 
-          for (var rep = 0; rep < 1; rep++){
+          for (var rep = 0; rep < 2; rep++){
               var nm_l_o1 =  gen_test_trial(true, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
               loss_non_matched_trials.push(nm_l_o1)
           }
@@ -433,7 +433,7 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
           var sn = const_add + round2(Math.ceil(8*Math.random() - 4));
           if (on > 0){ on = 0}
 
-          for (var rep = 0; rep < 1; rep++){
+          for (var rep = 0; rep < 2; rep++){
               var nm_l_o2 =  gen_test_trial(false, p_idx, all_loss_amounts[w_idx], false, all_loss_safe_vals[sv_idx], tn, on, sn);
               loss_non_matched_trials.push(nm_l_o2)
             }
@@ -450,8 +450,8 @@ for (var sv_idx = 0; sv_idx < all_win_safe_vals.length; sv_idx++){
 //all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 
 // need to actually copy these, -- so you should be repeating each of these 2 times... - can you check the size?
-all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,2); // repeat each trial 2 times...
-all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,2);
+all_loss_trials = jsPsych.randomization.repeat(loss_non_matched_trials,1); // repeat each trial 2 times...
+all_win_trials = jsPsych.randomization.repeat(win_non_matched_trials,1);
 // the task is
 
 // make the first third of trials recognition trials
@@ -480,7 +480,6 @@ for (var i = 0; i < all_loss_trials.length; i++){
 // shuffle again
 all_loss_trials = jsPsych.randomization.repeat(all_loss_trials,1);
 all_win_trials = jsPsych.randomization.repeat(all_win_trials,1);
-
 
 //console.log(all_loss_trials)
 //console.log(all_win_trials)
@@ -633,6 +632,7 @@ for (var tn = 0; tn < all_trials.length; tn++){
     trial_number = trial_number + 1;
     this_trial.data.trial_number = trial_number;
   }
+  console.log(this_trial)
   main_task.push(this_trial)
 }
 
@@ -1611,7 +1611,6 @@ timeline = timeline.concat(instruc_timeline1);
 timeline = timeline.concat(instruc_timeline2);
 timeline = timeline.concat(task2_timeline);
 timeline.push(end_screen);
-
 
 // console.log(task2_timeline)
  var final_slide = 'Stimuli/uws_instr_slides_ver2_jpg/Slide13.JPG';

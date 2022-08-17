@@ -25,7 +25,7 @@ var check_consent = function (elem) {
   }
 };
 
-doc_name = 'MEG_online_recognition';
+doc_name = 'MEG_online_recognition_ver_2';
 
 
 var start_task = function(){

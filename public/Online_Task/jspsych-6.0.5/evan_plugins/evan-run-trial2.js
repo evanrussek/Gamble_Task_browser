@@ -96,6 +96,10 @@ jsPsych.plugins["evan-run-trial"] = (function() {
   plugin.trial = function(display_element, trial) {
 
 
+    console.log('O1: ', trial.o1_image)
+    console.log('O2: ', trial.o2_image)
+    console.log('recognition_number: ', trial.recognition_number)
+
     var outcome_images = [trial.o1_image, trial.o2_image, trial.safe_image]; // split it by the position?
 
     var probe_image_idx = trial.recognition_number - 1;
@@ -302,6 +306,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
 
 
+      // this lookps through positions? -- probe setting designates outcomes...
       for (var i=0; i<2; i++){
 
           //place_img_bkg("info",par.img_bkg_x2_vec[this_pos_x[i]],par.img_bkg_y2_vec[i],par.img_bkg_width2,par.img_bkg_height2,par.img_bkg_color,opacity);
@@ -309,7 +314,8 @@ jsPsych.plugins["evan-run-trial"] = (function() {
           place_img(par.outcome_images[this_pos[i]], "recognition_image", par.image_x2_vec[this_pos_x[i]] + par.img_bkg_width/2, par.image_y2_vec[i], par.image_width, par.image_height,opacity);
           //place_reward(par.outcome_vals[this_pos[i]], "info", par.text_x2_vec[this_pos_x[i]], par.text_y2_vec[i], par.text_font_size,opacity);
 
-          if (probe_setting[i] == 1){
+          // this should be based on the stim_pos - ... fixed it?
+          if (probe_setting[this_pos[i]] == 1){
             console.log(i)
             d3.select("svg").append("text")
                       .attr("class", "recognition_dot")
@@ -821,7 +827,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
         wait_for_time(recognition_choice_stim_time, function(){
 
-          var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+          keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
               callback_function: handle_response,
               valid_responses: valid_responses,
               rt_method: 'performance', // check this
@@ -1007,7 +1013,8 @@ jsPsych.plugins["evan-run-trial"] = (function() {
 
             console.log('setting up listener')
 
-            var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+            // is this the problem
+            keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
                 callback_function: handle_response_recognition,
                 valid_responses: recognition_responses,
                 rt_method: 'performance', // check this
@@ -1016,7 +1023,7 @@ jsPsych.plugins["evan-run-trial"] = (function() {
               });
 
               // 2 seconds to respond...
-              wait_for_time(2000, handle_slow_response)
+              wait_for_time(2250, handle_slow_response)
 
               // new!!!
               //next_stage_fun = function(){handle_slow_response()};
